@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useEffect, useRef } from 'react';
-import { createEditor, Editor, Transforms, Text, Range, NodeEntry } from 'slate';
+import { createEditor, Editor, Transforms, Text, DecoratedRange, NodeEntry } from 'slate';
 import { Slate, Editable, RenderLeafProps, withReact } from 'slate-react';
 import { withHistory } from 'slate-history';
 import abcjs from 'abcjs';
@@ -14,8 +14,8 @@ const SlateEditor = () => {
   ];
   const dummyDiv = useRef<HTMLDivElement>(null);
 
-  const decorate = useCallback((entry: NodeEntry) => {
-    const ranges = [];
+  const decorate = useCallback((entry: NodeEntry): LeafRange[] => {
+    const ranges: LeafRange[] = [];
     const node = entry[0];
     const path = entry[1];
     if (Text.isText(node) && dummyDiv.current) {
@@ -63,13 +63,17 @@ const SlateEditor = () => {
   );
 };
 
+type LeafRange = DecoratedRange &
+{
+  highlight?: boolean;
+}
 
 interface LeafProps {
   attributes: {
     'data-slate-leaf': boolean;
   };
   children: React.ReactNode;
-  leaf: {
+    leaf: {
     highlight?: boolean;
     [key: string]: any;
   };
