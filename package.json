@@ -21,7 +21,6 @@
   "homepage": "https://github.com/delmyers/noteworthy#readme",
   "dependencies": {
     "abcjs": "^6.5.1",
-    "highlight.js": "^11.11.1",
     "jsdom": "^26.1.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
