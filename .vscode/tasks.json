@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "start",
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "compiled successfully",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Project is running at:",
+                    "endsPattern": "compiled successfully"
+                }
+            },
+            "label": "npm: start",
+            "detail": "webpack serve --mode development"
+        },
+        {
+            "type": "npm",
+            "script": "build",
+            "label": "npm:build"
+        }
+    ]
+}
