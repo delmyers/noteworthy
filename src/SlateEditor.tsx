@@ -1,15 +1,15 @@
 import React, { useMemo, useCallback, useEffect, useRef } from 'react';
-import { createEditor, Editor, Transforms, Text, DecoratedRange, NodeEntry } from 'slate';
+import { createEditor, Editor, Transforms, Text, Descendant, DecoratedRange, NodeEntry } from 'slate';
 import { Slate, Editable, RenderLeafProps, withReact } from 'slate-react';
 import { withHistory } from 'slate-history';
 import abcjs from 'abcjs';
+import { Music } from './Music';
 
 const SlateEditor = () => {
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
-  const initialValue = [
+  const initialValue : Descendant[] = [
     {
-      type: 'paragraph',
-      children: [{ text: 'X:1\nT:Cooley\'s\nM:4/4\nL:1/8\nK:Emin\n|:D2|EB{c}BA B2 EB|~B2 AB dBAG|FDAD BDAD|FDAD dAFD|\nEBBA B2 EB|B2 AB defg|afe^c dBAF|DEFD E2:|' }],
+      children: [{ text: Music.Instance.abc }],
     },
   ];
   const dummyDiv = useRef<HTMLDivElement>(null);
@@ -19,7 +19,7 @@ const SlateEditor = () => {
     const node = entry[0];
     const path = entry[1];
     if (Text.isText(node) && dummyDiv.current) {
-      const tune = abcjs.renderAbc(dummyDiv.current, node.text, { responsive: "resize" });
+      const tune : [abcjs.TuneObject] = undefined;
       if (tune && tune.length > 0) {
         const lines = tune[0].lines;
         for (const line of lines) {
@@ -50,9 +50,18 @@ const SlateEditor = () => {
     return <Leaf {...props} />;
   }, []);
 
+  const handleChange = (value: Descendant[]) => {
+    const isAstChange = editor.operations.some(
+      op => 'set_selection' !== op.type
+    );
+    if (isAstChange) {
+      const content = value.map(node => Editor.string(editor, [value.indexOf(node)])).join('\n');
+    }
+  };
+
   return (
     <div>
-      <Slate editor={editor} initialValue={initialValue}>
+      <Slate editor={editor} initialValue={initialValue} onChange={handleChange}>
         <Editable
           renderLeaf={renderLeaf}
           decorate={decorate}

@@ -26,9 +26,16 @@ module.exports = {
           loader: 'babel-loader',
         },
       },
+      {
+        test: /\.abc$/i,
+        type: 'asset/source',
+      }
     ],
   },
   resolve: {
+    alias: {
+      resources: path.resolve(__dirname, './src/resources/'),
+    },
     extensions: ['.tsx', '.ts', '.js'],
   },
   plugins: [
@@ -40,7 +47,10 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'public'),
     },
-    compress: true,
+    devMiddleware: {
+      writeToDisk: true,
+    },
+    compress: false,
     port: 3000,
   },
 };

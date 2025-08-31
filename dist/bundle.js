@@ -1,6 +1,950 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/@juggle/resize-observer/lib/DOMRectReadOnly.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/DOMRectReadOnly.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DOMRectReadOnly: () => (/* binding */ DOMRectReadOnly)
+/* harmony export */ });
+/* harmony import */ var _utils_freeze__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/freeze */ "./node_modules/@juggle/resize-observer/lib/utils/freeze.js");
+
+var DOMRectReadOnly = (function () {
+    function DOMRectReadOnly(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.top = this.y;
+        this.left = this.x;
+        this.bottom = this.top + this.height;
+        this.right = this.left + this.width;
+        return (0,_utils_freeze__WEBPACK_IMPORTED_MODULE_0__.freeze)(this);
+    }
+    DOMRectReadOnly.prototype.toJSON = function () {
+        var _a = this, x = _a.x, y = _a.y, top = _a.top, right = _a.right, bottom = _a.bottom, left = _a.left, width = _a.width, height = _a.height;
+        return { x: x, y: y, top: top, right: right, bottom: bottom, left: left, width: width, height: height };
+    };
+    DOMRectReadOnly.fromRect = function (rectangle) {
+        return new DOMRectReadOnly(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+    };
+    return DOMRectReadOnly;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/ResizeObservation.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/ResizeObservation.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObservation: () => (/* binding */ ResizeObservation)
+/* harmony export */ });
+/* harmony import */ var _ResizeObserverBoxOptions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ResizeObserverBoxOptions */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverBoxOptions.js");
+/* harmony import */ var _algorithms_calculateBoxSize__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./algorithms/calculateBoxSize */ "./node_modules/@juggle/resize-observer/lib/algorithms/calculateBoxSize.js");
+/* harmony import */ var _utils_element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/element */ "./node_modules/@juggle/resize-observer/lib/utils/element.js");
+
+
+
+var skipNotifyOnElement = function (target) {
+    return !(0,_utils_element__WEBPACK_IMPORTED_MODULE_2__.isSVG)(target)
+        && !(0,_utils_element__WEBPACK_IMPORTED_MODULE_2__.isReplacedElement)(target)
+        && getComputedStyle(target).display === 'inline';
+};
+var ResizeObservation = (function () {
+    function ResizeObservation(target, observedBox) {
+        this.target = target;
+        this.observedBox = observedBox || _ResizeObserverBoxOptions__WEBPACK_IMPORTED_MODULE_0__.ResizeObserverBoxOptions.CONTENT_BOX;
+        this.lastReportedSize = {
+            inlineSize: 0,
+            blockSize: 0
+        };
+    }
+    ResizeObservation.prototype.isActive = function () {
+        var size = (0,_algorithms_calculateBoxSize__WEBPACK_IMPORTED_MODULE_1__.calculateBoxSize)(this.target, this.observedBox, true);
+        if (skipNotifyOnElement(this.target)) {
+            this.lastReportedSize = size;
+        }
+        if (this.lastReportedSize.inlineSize !== size.inlineSize
+            || this.lastReportedSize.blockSize !== size.blockSize) {
+            return true;
+        }
+        return false;
+    };
+    return ResizeObservation;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/ResizeObserver.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/ResizeObserver.js ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObserver: () => (/* binding */ ResizeObserver)
+/* harmony export */ });
+/* harmony import */ var _ResizeObserverController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ResizeObserverController */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverController.js");
+/* harmony import */ var _utils_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/element */ "./node_modules/@juggle/resize-observer/lib/utils/element.js");
+
+
+var ResizeObserver = (function () {
+    function ResizeObserver(callback) {
+        if (arguments.length === 0) {
+            throw new TypeError("Failed to construct 'ResizeObserver': 1 argument required, but only 0 present.");
+        }
+        if (typeof callback !== 'function') {
+            throw new TypeError("Failed to construct 'ResizeObserver': The callback provided as parameter 1 is not a function.");
+        }
+        _ResizeObserverController__WEBPACK_IMPORTED_MODULE_0__.ResizeObserverController.connect(this, callback);
+    }
+    ResizeObserver.prototype.observe = function (target, options) {
+        if (arguments.length === 0) {
+            throw new TypeError("Failed to execute 'observe' on 'ResizeObserver': 1 argument required, but only 0 present.");
+        }
+        if (!(0,_utils_element__WEBPACK_IMPORTED_MODULE_1__.isElement)(target)) {
+            throw new TypeError("Failed to execute 'observe' on 'ResizeObserver': parameter 1 is not of type 'Element");
+        }
+        _ResizeObserverController__WEBPACK_IMPORTED_MODULE_0__.ResizeObserverController.observe(this, target, options);
+    };
+    ResizeObserver.prototype.unobserve = function (target) {
+        if (arguments.length === 0) {
+            throw new TypeError("Failed to execute 'unobserve' on 'ResizeObserver': 1 argument required, but only 0 present.");
+        }
+        if (!(0,_utils_element__WEBPACK_IMPORTED_MODULE_1__.isElement)(target)) {
+            throw new TypeError("Failed to execute 'unobserve' on 'ResizeObserver': parameter 1 is not of type 'Element");
+        }
+        _ResizeObserverController__WEBPACK_IMPORTED_MODULE_0__.ResizeObserverController.unobserve(this, target);
+    };
+    ResizeObserver.prototype.disconnect = function () {
+        _ResizeObserverController__WEBPACK_IMPORTED_MODULE_0__.ResizeObserverController.disconnect(this);
+    };
+    ResizeObserver.toString = function () {
+        return 'function ResizeObserver () { [polyfill code] }';
+    };
+    return ResizeObserver;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/ResizeObserverBoxOptions.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/ResizeObserverBoxOptions.js ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObserverBoxOptions: () => (/* binding */ ResizeObserverBoxOptions)
+/* harmony export */ });
+var ResizeObserverBoxOptions;
+(function (ResizeObserverBoxOptions) {
+    ResizeObserverBoxOptions["BORDER_BOX"] = "border-box";
+    ResizeObserverBoxOptions["CONTENT_BOX"] = "content-box";
+    ResizeObserverBoxOptions["DEVICE_PIXEL_CONTENT_BOX"] = "device-pixel-content-box";
+})(ResizeObserverBoxOptions || (ResizeObserverBoxOptions = {}));
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/ResizeObserverController.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/ResizeObserverController.js ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObserverController: () => (/* binding */ ResizeObserverController)
+/* harmony export */ });
+/* harmony import */ var _utils_scheduler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/scheduler */ "./node_modules/@juggle/resize-observer/lib/utils/scheduler.js");
+/* harmony import */ var _ResizeObservation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ResizeObservation */ "./node_modules/@juggle/resize-observer/lib/ResizeObservation.js");
+/* harmony import */ var _ResizeObserverDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ResizeObserverDetail */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverDetail.js");
+/* harmony import */ var _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/resizeObservers */ "./node_modules/@juggle/resize-observer/lib/utils/resizeObservers.js");
+
+
+
+
+var observerMap = new WeakMap();
+var getObservationIndex = function (observationTargets, target) {
+    for (var i = 0; i < observationTargets.length; i += 1) {
+        if (observationTargets[i].target === target) {
+            return i;
+        }
+    }
+    return -1;
+};
+var ResizeObserverController = (function () {
+    function ResizeObserverController() {
+    }
+    ResizeObserverController.connect = function (resizeObserver, callback) {
+        var detail = new _ResizeObserverDetail__WEBPACK_IMPORTED_MODULE_2__.ResizeObserverDetail(resizeObserver, callback);
+        observerMap.set(resizeObserver, detail);
+    };
+    ResizeObserverController.observe = function (resizeObserver, target, options) {
+        var detail = observerMap.get(resizeObserver);
+        var firstObservation = detail.observationTargets.length === 0;
+        if (getObservationIndex(detail.observationTargets, target) < 0) {
+            firstObservation && _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_3__.resizeObservers.push(detail);
+            detail.observationTargets.push(new _ResizeObservation__WEBPACK_IMPORTED_MODULE_1__.ResizeObservation(target, options && options.box));
+            (0,_utils_scheduler__WEBPACK_IMPORTED_MODULE_0__.updateCount)(1);
+            _utils_scheduler__WEBPACK_IMPORTED_MODULE_0__.scheduler.schedule();
+        }
+    };
+    ResizeObserverController.unobserve = function (resizeObserver, target) {
+        var detail = observerMap.get(resizeObserver);
+        var index = getObservationIndex(detail.observationTargets, target);
+        var lastObservation = detail.observationTargets.length === 1;
+        if (index >= 0) {
+            lastObservation && _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_3__.resizeObservers.splice(_utils_resizeObservers__WEBPACK_IMPORTED_MODULE_3__.resizeObservers.indexOf(detail), 1);
+            detail.observationTargets.splice(index, 1);
+            (0,_utils_scheduler__WEBPACK_IMPORTED_MODULE_0__.updateCount)(-1);
+        }
+    };
+    ResizeObserverController.disconnect = function (resizeObserver) {
+        var _this = this;
+        var detail = observerMap.get(resizeObserver);
+        detail.observationTargets.slice().forEach(function (ot) { return _this.unobserve(resizeObserver, ot.target); });
+        detail.activeTargets.splice(0, detail.activeTargets.length);
+    };
+    return ResizeObserverController;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/ResizeObserverDetail.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/ResizeObserverDetail.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObserverDetail: () => (/* binding */ ResizeObserverDetail)
+/* harmony export */ });
+var ResizeObserverDetail = (function () {
+    function ResizeObserverDetail(resizeObserver, callback) {
+        this.activeTargets = [];
+        this.skippedTargets = [];
+        this.observationTargets = [];
+        this.observer = resizeObserver;
+        this.callback = callback;
+    }
+    return ResizeObserverDetail;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/ResizeObserverEntry.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/ResizeObserverEntry.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObserverEntry: () => (/* binding */ ResizeObserverEntry)
+/* harmony export */ });
+/* harmony import */ var _algorithms_calculateBoxSize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./algorithms/calculateBoxSize */ "./node_modules/@juggle/resize-observer/lib/algorithms/calculateBoxSize.js");
+/* harmony import */ var _utils_freeze__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/freeze */ "./node_modules/@juggle/resize-observer/lib/utils/freeze.js");
+
+
+var ResizeObserverEntry = (function () {
+    function ResizeObserverEntry(target) {
+        var boxes = (0,_algorithms_calculateBoxSize__WEBPACK_IMPORTED_MODULE_0__.calculateBoxSizes)(target);
+        this.target = target;
+        this.contentRect = boxes.contentRect;
+        this.borderBoxSize = (0,_utils_freeze__WEBPACK_IMPORTED_MODULE_1__.freeze)([boxes.borderBoxSize]);
+        this.contentBoxSize = (0,_utils_freeze__WEBPACK_IMPORTED_MODULE_1__.freeze)([boxes.contentBoxSize]);
+        this.devicePixelContentBoxSize = (0,_utils_freeze__WEBPACK_IMPORTED_MODULE_1__.freeze)([boxes.devicePixelContentBoxSize]);
+    }
+    return ResizeObserverEntry;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/ResizeObserverSize.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/ResizeObserverSize.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObserverSize: () => (/* binding */ ResizeObserverSize)
+/* harmony export */ });
+/* harmony import */ var _utils_freeze__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/freeze */ "./node_modules/@juggle/resize-observer/lib/utils/freeze.js");
+
+var ResizeObserverSize = (function () {
+    function ResizeObserverSize(inlineSize, blockSize) {
+        this.inlineSize = inlineSize;
+        this.blockSize = blockSize;
+        (0,_utils_freeze__WEBPACK_IMPORTED_MODULE_0__.freeze)(this);
+    }
+    return ResizeObserverSize;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/algorithms/broadcastActiveObservations.js":
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/algorithms/broadcastActiveObservations.js ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   broadcastActiveObservations: () => (/* binding */ broadcastActiveObservations)
+/* harmony export */ });
+/* harmony import */ var _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/resizeObservers */ "./node_modules/@juggle/resize-observer/lib/utils/resizeObservers.js");
+/* harmony import */ var _ResizeObserverEntry__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ResizeObserverEntry */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverEntry.js");
+/* harmony import */ var _calculateDepthForNode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./calculateDepthForNode */ "./node_modules/@juggle/resize-observer/lib/algorithms/calculateDepthForNode.js");
+/* harmony import */ var _calculateBoxSize__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./calculateBoxSize */ "./node_modules/@juggle/resize-observer/lib/algorithms/calculateBoxSize.js");
+
+
+
+
+var broadcastActiveObservations = function () {
+    var shallowestDepth = Infinity;
+    var callbacks = [];
+    _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__.resizeObservers.forEach(function processObserver(ro) {
+        if (ro.activeTargets.length === 0) {
+            return;
+        }
+        var entries = [];
+        ro.activeTargets.forEach(function processTarget(ot) {
+            var entry = new _ResizeObserverEntry__WEBPACK_IMPORTED_MODULE_1__.ResizeObserverEntry(ot.target);
+            var targetDepth = (0,_calculateDepthForNode__WEBPACK_IMPORTED_MODULE_2__.calculateDepthForNode)(ot.target);
+            entries.push(entry);
+            ot.lastReportedSize = (0,_calculateBoxSize__WEBPACK_IMPORTED_MODULE_3__.calculateBoxSize)(ot.target, ot.observedBox);
+            if (targetDepth < shallowestDepth) {
+                shallowestDepth = targetDepth;
+            }
+        });
+        callbacks.push(function resizeObserverCallback() {
+            ro.callback.call(ro.observer, entries, ro.observer);
+        });
+        ro.activeTargets.splice(0, ro.activeTargets.length);
+    });
+    for (var _i = 0, callbacks_1 = callbacks; _i < callbacks_1.length; _i++) {
+        var callback = callbacks_1[_i];
+        callback();
+    }
+    return shallowestDepth;
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/algorithms/calculateBoxSize.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/algorithms/calculateBoxSize.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   calculateBoxSize: () => (/* binding */ calculateBoxSize),
+/* harmony export */   calculateBoxSizes: () => (/* binding */ calculateBoxSizes)
+/* harmony export */ });
+/* harmony import */ var _ResizeObserverBoxOptions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ResizeObserverBoxOptions */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverBoxOptions.js");
+/* harmony import */ var _ResizeObserverSize__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ResizeObserverSize */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverSize.js");
+/* harmony import */ var _DOMRectReadOnly__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../DOMRectReadOnly */ "./node_modules/@juggle/resize-observer/lib/DOMRectReadOnly.js");
+/* harmony import */ var _utils_element__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/element */ "./node_modules/@juggle/resize-observer/lib/utils/element.js");
+/* harmony import */ var _utils_freeze__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/freeze */ "./node_modules/@juggle/resize-observer/lib/utils/freeze.js");
+/* harmony import */ var _utils_global__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/global */ "./node_modules/@juggle/resize-observer/lib/utils/global.js");
+
+
+
+
+
+
+var cache = new WeakMap();
+var scrollRegexp = /auto|scroll/;
+var verticalRegexp = /^tb|vertical/;
+var IE = (/msie|trident/i).test(_utils_global__WEBPACK_IMPORTED_MODULE_5__.global.navigator && _utils_global__WEBPACK_IMPORTED_MODULE_5__.global.navigator.userAgent);
+var parseDimension = function (pixel) { return parseFloat(pixel || '0'); };
+var size = function (inlineSize, blockSize, switchSizes) {
+    if (inlineSize === void 0) { inlineSize = 0; }
+    if (blockSize === void 0) { blockSize = 0; }
+    if (switchSizes === void 0) { switchSizes = false; }
+    return new _ResizeObserverSize__WEBPACK_IMPORTED_MODULE_1__.ResizeObserverSize((switchSizes ? blockSize : inlineSize) || 0, (switchSizes ? inlineSize : blockSize) || 0);
+};
+var zeroBoxes = (0,_utils_freeze__WEBPACK_IMPORTED_MODULE_4__.freeze)({
+    devicePixelContentBoxSize: size(),
+    borderBoxSize: size(),
+    contentBoxSize: size(),
+    contentRect: new _DOMRectReadOnly__WEBPACK_IMPORTED_MODULE_2__.DOMRectReadOnly(0, 0, 0, 0)
+});
+var calculateBoxSizes = function (target, forceRecalculation) {
+    if (forceRecalculation === void 0) { forceRecalculation = false; }
+    if (cache.has(target) && !forceRecalculation) {
+        return cache.get(target);
+    }
+    if ((0,_utils_element__WEBPACK_IMPORTED_MODULE_3__.isHidden)(target)) {
+        cache.set(target, zeroBoxes);
+        return zeroBoxes;
+    }
+    var cs = getComputedStyle(target);
+    var svg = (0,_utils_element__WEBPACK_IMPORTED_MODULE_3__.isSVG)(target) && target.ownerSVGElement && target.getBBox();
+    var removePadding = !IE && cs.boxSizing === 'border-box';
+    var switchSizes = verticalRegexp.test(cs.writingMode || '');
+    var canScrollVertically = !svg && scrollRegexp.test(cs.overflowY || '');
+    var canScrollHorizontally = !svg && scrollRegexp.test(cs.overflowX || '');
+    var paddingTop = svg ? 0 : parseDimension(cs.paddingTop);
+    var paddingRight = svg ? 0 : parseDimension(cs.paddingRight);
+    var paddingBottom = svg ? 0 : parseDimension(cs.paddingBottom);
+    var paddingLeft = svg ? 0 : parseDimension(cs.paddingLeft);
+    var borderTop = svg ? 0 : parseDimension(cs.borderTopWidth);
+    var borderRight = svg ? 0 : parseDimension(cs.borderRightWidth);
+    var borderBottom = svg ? 0 : parseDimension(cs.borderBottomWidth);
+    var borderLeft = svg ? 0 : parseDimension(cs.borderLeftWidth);
+    var horizontalPadding = paddingLeft + paddingRight;
+    var verticalPadding = paddingTop + paddingBottom;
+    var horizontalBorderArea = borderLeft + borderRight;
+    var verticalBorderArea = borderTop + borderBottom;
+    var horizontalScrollbarThickness = !canScrollHorizontally ? 0 : target.offsetHeight - verticalBorderArea - target.clientHeight;
+    var verticalScrollbarThickness = !canScrollVertically ? 0 : target.offsetWidth - horizontalBorderArea - target.clientWidth;
+    var widthReduction = removePadding ? horizontalPadding + horizontalBorderArea : 0;
+    var heightReduction = removePadding ? verticalPadding + verticalBorderArea : 0;
+    var contentWidth = svg ? svg.width : parseDimension(cs.width) - widthReduction - verticalScrollbarThickness;
+    var contentHeight = svg ? svg.height : parseDimension(cs.height) - heightReduction - horizontalScrollbarThickness;
+    var borderBoxWidth = contentWidth + horizontalPadding + verticalScrollbarThickness + horizontalBorderArea;
+    var borderBoxHeight = contentHeight + verticalPadding + horizontalScrollbarThickness + verticalBorderArea;
+    var boxes = (0,_utils_freeze__WEBPACK_IMPORTED_MODULE_4__.freeze)({
+        devicePixelContentBoxSize: size(Math.round(contentWidth * devicePixelRatio), Math.round(contentHeight * devicePixelRatio), switchSizes),
+        borderBoxSize: size(borderBoxWidth, borderBoxHeight, switchSizes),
+        contentBoxSize: size(contentWidth, contentHeight, switchSizes),
+        contentRect: new _DOMRectReadOnly__WEBPACK_IMPORTED_MODULE_2__.DOMRectReadOnly(paddingLeft, paddingTop, contentWidth, contentHeight)
+    });
+    cache.set(target, boxes);
+    return boxes;
+};
+var calculateBoxSize = function (target, observedBox, forceRecalculation) {
+    var _a = calculateBoxSizes(target, forceRecalculation), borderBoxSize = _a.borderBoxSize, contentBoxSize = _a.contentBoxSize, devicePixelContentBoxSize = _a.devicePixelContentBoxSize;
+    switch (observedBox) {
+        case _ResizeObserverBoxOptions__WEBPACK_IMPORTED_MODULE_0__.ResizeObserverBoxOptions.DEVICE_PIXEL_CONTENT_BOX:
+            return devicePixelContentBoxSize;
+        case _ResizeObserverBoxOptions__WEBPACK_IMPORTED_MODULE_0__.ResizeObserverBoxOptions.BORDER_BOX:
+            return borderBoxSize;
+        default:
+            return contentBoxSize;
+    }
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/algorithms/calculateDepthForNode.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/algorithms/calculateDepthForNode.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   calculateDepthForNode: () => (/* binding */ calculateDepthForNode)
+/* harmony export */ });
+/* harmony import */ var _utils_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/element */ "./node_modules/@juggle/resize-observer/lib/utils/element.js");
+
+var calculateDepthForNode = function (node) {
+    if ((0,_utils_element__WEBPACK_IMPORTED_MODULE_0__.isHidden)(node)) {
+        return Infinity;
+    }
+    var depth = 0;
+    var parent = node.parentNode;
+    while (parent) {
+        depth += 1;
+        parent = parent.parentNode;
+    }
+    return depth;
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/algorithms/deliverResizeLoopError.js":
+/*!***************************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/algorithms/deliverResizeLoopError.js ***!
+  \***************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deliverResizeLoopError: () => (/* binding */ deliverResizeLoopError)
+/* harmony export */ });
+var msg = 'ResizeObserver loop completed with undelivered notifications.';
+var deliverResizeLoopError = function () {
+    var event;
+    if (typeof ErrorEvent === 'function') {
+        event = new ErrorEvent('error', {
+            message: msg
+        });
+    }
+    else {
+        event = document.createEvent('Event');
+        event.initEvent('error', false, false);
+        event.message = msg;
+    }
+    window.dispatchEvent(event);
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/algorithms/gatherActiveObservationsAtDepth.js":
+/*!************************************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/algorithms/gatherActiveObservationsAtDepth.js ***!
+  \************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   gatherActiveObservationsAtDepth: () => (/* binding */ gatherActiveObservationsAtDepth)
+/* harmony export */ });
+/* harmony import */ var _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/resizeObservers */ "./node_modules/@juggle/resize-observer/lib/utils/resizeObservers.js");
+/* harmony import */ var _calculateDepthForNode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./calculateDepthForNode */ "./node_modules/@juggle/resize-observer/lib/algorithms/calculateDepthForNode.js");
+
+
+var gatherActiveObservationsAtDepth = function (depth) {
+    _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__.resizeObservers.forEach(function processObserver(ro) {
+        ro.activeTargets.splice(0, ro.activeTargets.length);
+        ro.skippedTargets.splice(0, ro.skippedTargets.length);
+        ro.observationTargets.forEach(function processTarget(ot) {
+            if (ot.isActive()) {
+                if ((0,_calculateDepthForNode__WEBPACK_IMPORTED_MODULE_1__.calculateDepthForNode)(ot.target) > depth) {
+                    ro.activeTargets.push(ot);
+                }
+                else {
+                    ro.skippedTargets.push(ot);
+                }
+            }
+        });
+    });
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/algorithms/hasActiveObservations.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/algorithms/hasActiveObservations.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   hasActiveObservations: () => (/* binding */ hasActiveObservations)
+/* harmony export */ });
+/* harmony import */ var _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/resizeObservers */ "./node_modules/@juggle/resize-observer/lib/utils/resizeObservers.js");
+
+var hasActiveObservations = function () {
+    return _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__.resizeObservers.some(function (ro) { return ro.activeTargets.length > 0; });
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/algorithms/hasSkippedObservations.js":
+/*!***************************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/algorithms/hasSkippedObservations.js ***!
+  \***************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   hasSkippedObservations: () => (/* binding */ hasSkippedObservations)
+/* harmony export */ });
+/* harmony import */ var _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/resizeObservers */ "./node_modules/@juggle/resize-observer/lib/utils/resizeObservers.js");
+
+var hasSkippedObservations = function () {
+    return _utils_resizeObservers__WEBPACK_IMPORTED_MODULE_0__.resizeObservers.some(function (ro) { return ro.skippedTargets.length > 0; });
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/exports/resize-observer.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/exports/resize-observer.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ResizeObserver: () => (/* reexport safe */ _ResizeObserver__WEBPACK_IMPORTED_MODULE_0__.ResizeObserver),
+/* harmony export */   ResizeObserverEntry: () => (/* reexport safe */ _ResizeObserverEntry__WEBPACK_IMPORTED_MODULE_1__.ResizeObserverEntry),
+/* harmony export */   ResizeObserverSize: () => (/* reexport safe */ _ResizeObserverSize__WEBPACK_IMPORTED_MODULE_2__.ResizeObserverSize)
+/* harmony export */ });
+/* harmony import */ var _ResizeObserver__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ResizeObserver */ "./node_modules/@juggle/resize-observer/lib/ResizeObserver.js");
+/* harmony import */ var _ResizeObserverEntry__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ResizeObserverEntry */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverEntry.js");
+/* harmony import */ var _ResizeObserverSize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ResizeObserverSize */ "./node_modules/@juggle/resize-observer/lib/ResizeObserverSize.js");
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/element.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/element.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isElement: () => (/* binding */ isElement),
+/* harmony export */   isHidden: () => (/* binding */ isHidden),
+/* harmony export */   isReplacedElement: () => (/* binding */ isReplacedElement),
+/* harmony export */   isSVG: () => (/* binding */ isSVG)
+/* harmony export */ });
+var isSVG = function (target) { return target instanceof SVGElement && 'getBBox' in target; };
+var isHidden = function (target) {
+    if (isSVG(target)) {
+        var _a = target.getBBox(), width = _a.width, height = _a.height;
+        return !width && !height;
+    }
+    var _b = target, offsetWidth = _b.offsetWidth, offsetHeight = _b.offsetHeight;
+    return !(offsetWidth || offsetHeight || target.getClientRects().length);
+};
+var isElement = function (obj) {
+    var _a;
+    if (obj instanceof Element) {
+        return true;
+    }
+    var scope = (_a = obj === null || obj === void 0 ? void 0 : obj.ownerDocument) === null || _a === void 0 ? void 0 : _a.defaultView;
+    return !!(scope && obj instanceof scope.Element);
+};
+var isReplacedElement = function (target) {
+    switch (target.tagName) {
+        case 'INPUT':
+            if (target.type !== 'image') {
+                break;
+            }
+        case 'VIDEO':
+        case 'AUDIO':
+        case 'EMBED':
+        case 'OBJECT':
+        case 'CANVAS':
+        case 'IFRAME':
+        case 'IMG':
+            return true;
+    }
+    return false;
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/freeze.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/freeze.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   freeze: () => (/* binding */ freeze)
+/* harmony export */ });
+var freeze = function (obj) { return Object.freeze(obj); };
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/global.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/global.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   global: () => (/* binding */ global)
+/* harmony export */ });
+var global = typeof window !== 'undefined' ? window : {};
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/process.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/process.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   process: () => (/* binding */ process)
+/* harmony export */ });
+/* harmony import */ var _algorithms_hasActiveObservations__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../algorithms/hasActiveObservations */ "./node_modules/@juggle/resize-observer/lib/algorithms/hasActiveObservations.js");
+/* harmony import */ var _algorithms_hasSkippedObservations__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../algorithms/hasSkippedObservations */ "./node_modules/@juggle/resize-observer/lib/algorithms/hasSkippedObservations.js");
+/* harmony import */ var _algorithms_deliverResizeLoopError__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../algorithms/deliverResizeLoopError */ "./node_modules/@juggle/resize-observer/lib/algorithms/deliverResizeLoopError.js");
+/* harmony import */ var _algorithms_broadcastActiveObservations__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../algorithms/broadcastActiveObservations */ "./node_modules/@juggle/resize-observer/lib/algorithms/broadcastActiveObservations.js");
+/* harmony import */ var _algorithms_gatherActiveObservationsAtDepth__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../algorithms/gatherActiveObservationsAtDepth */ "./node_modules/@juggle/resize-observer/lib/algorithms/gatherActiveObservationsAtDepth.js");
+
+
+
+
+
+var process = function () {
+    var depth = 0;
+    (0,_algorithms_gatherActiveObservationsAtDepth__WEBPACK_IMPORTED_MODULE_4__.gatherActiveObservationsAtDepth)(depth);
+    while ((0,_algorithms_hasActiveObservations__WEBPACK_IMPORTED_MODULE_0__.hasActiveObservations)()) {
+        depth = (0,_algorithms_broadcastActiveObservations__WEBPACK_IMPORTED_MODULE_3__.broadcastActiveObservations)();
+        (0,_algorithms_gatherActiveObservationsAtDepth__WEBPACK_IMPORTED_MODULE_4__.gatherActiveObservationsAtDepth)(depth);
+    }
+    if ((0,_algorithms_hasSkippedObservations__WEBPACK_IMPORTED_MODULE_1__.hasSkippedObservations)()) {
+        (0,_algorithms_deliverResizeLoopError__WEBPACK_IMPORTED_MODULE_2__.deliverResizeLoopError)();
+    }
+    return depth > 0;
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/queueMicroTask.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/queueMicroTask.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   queueMicroTask: () => (/* binding */ queueMicroTask)
+/* harmony export */ });
+var trigger;
+var callbacks = [];
+var notify = function () { return callbacks.splice(0).forEach(function (cb) { return cb(); }); };
+var queueMicroTask = function (callback) {
+    if (!trigger) {
+        var toggle_1 = 0;
+        var el_1 = document.createTextNode('');
+        var config = { characterData: true };
+        new MutationObserver(function () { return notify(); }).observe(el_1, config);
+        trigger = function () { el_1.textContent = "".concat(toggle_1 ? toggle_1-- : toggle_1++); };
+    }
+    callbacks.push(callback);
+    trigger();
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/queueResizeObserver.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/queueResizeObserver.js ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   queueResizeObserver: () => (/* binding */ queueResizeObserver)
+/* harmony export */ });
+/* harmony import */ var _queueMicroTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./queueMicroTask */ "./node_modules/@juggle/resize-observer/lib/utils/queueMicroTask.js");
+
+var queueResizeObserver = function (cb) {
+    (0,_queueMicroTask__WEBPACK_IMPORTED_MODULE_0__.queueMicroTask)(function ResizeObserver() {
+        requestAnimationFrame(cb);
+    });
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/resizeObservers.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/resizeObservers.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   resizeObservers: () => (/* binding */ resizeObservers)
+/* harmony export */ });
+var resizeObservers = [];
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@juggle/resize-observer/lib/utils/scheduler.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@juggle/resize-observer/lib/utils/scheduler.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   scheduler: () => (/* binding */ scheduler),
+/* harmony export */   updateCount: () => (/* binding */ updateCount)
+/* harmony export */ });
+/* harmony import */ var _process__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./process */ "./node_modules/@juggle/resize-observer/lib/utils/process.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./global */ "./node_modules/@juggle/resize-observer/lib/utils/global.js");
+/* harmony import */ var _queueResizeObserver__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./queueResizeObserver */ "./node_modules/@juggle/resize-observer/lib/utils/queueResizeObserver.js");
+
+
+
+var watching = 0;
+var isWatching = function () { return !!watching; };
+var CATCH_PERIOD = 250;
+var observerConfig = { attributes: true, characterData: true, childList: true, subtree: true };
+var events = [
+    'resize',
+    'load',
+    'transitionend',
+    'animationend',
+    'animationstart',
+    'animationiteration',
+    'keyup',
+    'keydown',
+    'mouseup',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'blur',
+    'focus'
+];
+var time = function (timeout) {
+    if (timeout === void 0) { timeout = 0; }
+    return Date.now() + timeout;
+};
+var scheduled = false;
+var Scheduler = (function () {
+    function Scheduler() {
+        var _this = this;
+        this.stopped = true;
+        this.listener = function () { return _this.schedule(); };
+    }
+    Scheduler.prototype.run = function (timeout) {
+        var _this = this;
+        if (timeout === void 0) { timeout = CATCH_PERIOD; }
+        if (scheduled) {
+            return;
+        }
+        scheduled = true;
+        var until = time(timeout);
+        (0,_queueResizeObserver__WEBPACK_IMPORTED_MODULE_2__.queueResizeObserver)(function () {
+            var elementsHaveResized = false;
+            try {
+                elementsHaveResized = (0,_process__WEBPACK_IMPORTED_MODULE_0__.process)();
+            }
+            finally {
+                scheduled = false;
+                timeout = until - time();
+                if (!isWatching()) {
+                    return;
+                }
+                if (elementsHaveResized) {
+                    _this.run(1000);
+                }
+                else if (timeout > 0) {
+                    _this.run(timeout);
+                }
+                else {
+                    _this.start();
+                }
+            }
+        });
+    };
+    Scheduler.prototype.schedule = function () {
+        this.stop();
+        this.run();
+    };
+    Scheduler.prototype.observe = function () {
+        var _this = this;
+        var cb = function () { return _this.observer && _this.observer.observe(document.body, observerConfig); };
+        document.body ? cb() : _global__WEBPACK_IMPORTED_MODULE_1__.global.addEventListener('DOMContentLoaded', cb);
+    };
+    Scheduler.prototype.start = function () {
+        var _this = this;
+        if (this.stopped) {
+            this.stopped = false;
+            this.observer = new MutationObserver(this.listener);
+            this.observe();
+            events.forEach(function (name) { return _global__WEBPACK_IMPORTED_MODULE_1__.global.addEventListener(name, _this.listener, true); });
+        }
+    };
+    Scheduler.prototype.stop = function () {
+        var _this = this;
+        if (!this.stopped) {
+            this.observer && this.observer.disconnect();
+            events.forEach(function (name) { return _global__WEBPACK_IMPORTED_MODULE_1__.global.removeEventListener(name, _this.listener, true); });
+            this.stopped = true;
+        }
+    };
+    return Scheduler;
+}());
+var scheduler = new Scheduler();
+var updateCount = function (n) {
+    !watching && n > 0 && scheduler.start();
+    watching += n;
+    !watching && scheduler.stop();
+};
+
+
+
+/***/ }),
+
 /***/ "./node_modules/abcjs/index.js":
 /*!*************************************!*\
   !*** ./node_modules/abcjs/index.js ***!
@@ -26399,6 +27343,2994 @@ module.exports = Svg;
 var version = '6.5.1';
 
 module.exports = version;
+
+
+/***/ }),
+
+/***/ "./node_modules/ansi-html-community/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/ansi-html-community/index.js ***!
+  \***************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = ansiHTML
+
+// Reference to https://github.com/sindresorhus/ansi-regex
+var _regANSI = /(?:(?:\u001b\[)|\u009b)(?:(?:[0-9]{1,3})?(?:(?:;[0-9]{0,3})*)?[A-M|f-m])|\u001b[A-M]/
+
+var _defColors = {
+  reset: ['fff', '000'], // [FOREGROUD_COLOR, BACKGROUND_COLOR]
+  black: '000',
+  red: 'ff0000',
+  green: '209805',
+  yellow: 'e8bf03',
+  blue: '0000ff',
+  magenta: 'ff00ff',
+  cyan: '00ffee',
+  lightgrey: 'f0f0f0',
+  darkgrey: '888'
+}
+var _styles = {
+  30: 'black',
+  31: 'red',
+  32: 'green',
+  33: 'yellow',
+  34: 'blue',
+  35: 'magenta',
+  36: 'cyan',
+  37: 'lightgrey'
+}
+var _openTags = {
+  '1': 'font-weight:bold', // bold
+  '2': 'opacity:0.5', // dim
+  '3': '<i>', // italic
+  '4': '<u>', // underscore
+  '8': 'display:none', // hidden
+  '9': '<del>' // delete
+}
+var _closeTags = {
+  '23': '</i>', // reset italic
+  '24': '</u>', // reset underscore
+  '29': '</del>' // reset delete
+}
+
+;[0, 21, 22, 27, 28, 39, 49].forEach(function (n) {
+  _closeTags[n] = '</span>'
+})
+
+/**
+ * Converts text with ANSI color codes to HTML markup.
+ * @param {String} text
+ * @returns {*}
+ */
+function ansiHTML (text) {
+  // Returns the text if the string has no ANSI escape code.
+  if (!_regANSI.test(text)) {
+    return text
+  }
+
+  // Cache opened sequence.
+  var ansiCodes = []
+  // Replace with markup.
+  var ret = text.replace(/\033\[(\d+)m/g, function (match, seq) {
+    var ot = _openTags[seq]
+    if (ot) {
+      // If current sequence has been opened, close it.
+      if (!!~ansiCodes.indexOf(seq)) { // eslint-disable-line no-extra-boolean-cast
+        ansiCodes.pop()
+        return '</span>'
+      }
+      // Open tag.
+      ansiCodes.push(seq)
+      return ot[0] === '<' ? ot : '<span style="' + ot + ';">'
+    }
+
+    var ct = _closeTags[seq]
+    if (ct) {
+      // Pop sequence
+      ansiCodes.pop()
+      return ct
+    }
+    return ''
+  })
+
+  // Make sure tags are closed.
+  var l = ansiCodes.length
+  ;(l > 0) && (ret += Array(l + 1).join('</span>'))
+
+  return ret
+}
+
+/**
+ * Customize colors.
+ * @param {Object} colors reference to _defColors
+ */
+ansiHTML.setColors = function (colors) {
+  if (typeof colors !== 'object') {
+    throw new Error('`colors` parameter must be an Object.')
+  }
+
+  var _finalColors = {}
+  for (var key in _defColors) {
+    var hex = colors.hasOwnProperty(key) ? colors[key] : null
+    if (!hex) {
+      _finalColors[key] = _defColors[key]
+      continue
+    }
+    if ('reset' === key) {
+      if (typeof hex === 'string') {
+        hex = [hex]
+      }
+      if (!Array.isArray(hex) || hex.length === 0 || hex.some(function (h) {
+        return typeof h !== 'string'
+      })) {
+        throw new Error('The value of `' + key + '` property must be an Array and each item could only be a hex string, e.g.: FF0000')
+      }
+      var defHexColor = _defColors[key]
+      if (!hex[0]) {
+        hex[0] = defHexColor[0]
+      }
+      if (hex.length === 1 || !hex[1]) {
+        hex = [hex[0]]
+        hex.push(defHexColor[1])
+      }
+
+      hex = hex.slice(0, 2)
+    } else if (typeof hex !== 'string') {
+      throw new Error('The value of `' + key + '` property must be a hex string, e.g.: FF0000')
+    }
+    _finalColors[key] = hex
+  }
+  _setTags(_finalColors)
+}
+
+/**
+ * Reset colors.
+ */
+ansiHTML.reset = function () {
+  _setTags(_defColors)
+}
+
+/**
+ * Expose tags, including open and close.
+ * @type {Object}
+ */
+ansiHTML.tags = {}
+
+if (Object.defineProperty) {
+  Object.defineProperty(ansiHTML.tags, 'open', {
+    get: function () { return _openTags }
+  })
+  Object.defineProperty(ansiHTML.tags, 'close', {
+    get: function () { return _closeTags }
+  })
+} else {
+  ansiHTML.tags.open = _openTags
+  ansiHTML.tags.close = _closeTags
+}
+
+function _setTags (colors) {
+  // reset all
+  _openTags['0'] = 'font-weight:normal;opacity:1;color:#' + colors.reset[0] + ';background:#' + colors.reset[1]
+  // inverse
+  _openTags['7'] = 'color:#' + colors.reset[1] + ';background:#' + colors.reset[0]
+  // dark grey
+  _openTags['90'] = 'color:#' + colors.darkgrey
+
+  for (var code in _styles) {
+    var color = _styles[code]
+    var oriColor = colors[color] || '000'
+    _openTags[code] = 'color:#' + oriColor
+    code = parseInt(code)
+    _openTags[(code + 10).toString()] = 'background:#' + oriColor
+  }
+}
+
+ansiHTML.reset()
+
+
+/***/ }),
+
+/***/ "./node_modules/compute-scroll-into-view/dist/index.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/compute-scroll-into-view/dist/index.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   compute: () => (/* binding */ r)
+/* harmony export */ });
+const t=t=>"object"==typeof t&&null!=t&&1===t.nodeType,e=(t,e)=>(!e||"hidden"!==t)&&("visible"!==t&&"clip"!==t),n=(t,n)=>{if(t.clientHeight<t.scrollHeight||t.clientWidth<t.scrollWidth){const o=getComputedStyle(t,null);return e(o.overflowY,n)||e(o.overflowX,n)||(t=>{const e=(t=>{if(!t.ownerDocument||!t.ownerDocument.defaultView)return null;try{return t.ownerDocument.defaultView.frameElement}catch(t){return null}})(t);return!!e&&(e.clientHeight<t.scrollHeight||e.clientWidth<t.scrollWidth)})(t)}return!1},o=(t,e,n,o,l,r,i,s)=>r<t&&i>e||r>t&&i<e?0:r<=t&&s<=n||i>=e&&s>=n?r-t-o:i>e&&s<n||r<t&&s>n?i-e+l:0,l=t=>{const e=t.parentElement;return null==e?t.getRootNode().host||null:e},r=(e,r)=>{var i,s,d,h;if("undefined"==typeof document)return[];const{scrollMode:c,block:f,inline:u,boundary:a,skipOverflowHiddenElements:g}=r,p="function"==typeof a?a:t=>t!==a;if(!t(e))throw new TypeError("Invalid target");const m=document.scrollingElement||document.documentElement,w=[];let W=e;for(;t(W)&&p(W);){if(W=l(W),W===m){w.push(W);break}null!=W&&W===document.body&&n(W)&&!n(document.documentElement)||null!=W&&n(W,g)&&w.push(W)}const b=null!=(s=null==(i=window.visualViewport)?void 0:i.width)?s:innerWidth,H=null!=(h=null==(d=window.visualViewport)?void 0:d.height)?h:innerHeight,{scrollX:y,scrollY:M}=window,{height:v,width:E,top:x,right:C,bottom:I,left:R}=e.getBoundingClientRect(),{top:T,right:B,bottom:F,left:V}=(t=>{const e=window.getComputedStyle(t);return{top:parseFloat(e.scrollMarginTop)||0,right:parseFloat(e.scrollMarginRight)||0,bottom:parseFloat(e.scrollMarginBottom)||0,left:parseFloat(e.scrollMarginLeft)||0}})(e);let k="start"===f||"nearest"===f?x-T:"end"===f?I+F:x+v/2-T+F,D="center"===u?R+E/2-V+B:"end"===u?C+B:R-V;const L=[];for(let t=0;t<w.length;t++){const e=w[t],{height:l,width:r,top:i,right:s,bottom:d,left:h}=e.getBoundingClientRect();if("if-needed"===c&&x>=0&&R>=0&&I<=H&&C<=b&&(e===m&&!n(e)||x>=i&&I<=d&&R>=h&&C<=s))return L;const a=getComputedStyle(e),g=parseInt(a.borderLeftWidth,10),p=parseInt(a.borderTopWidth,10),W=parseInt(a.borderRightWidth,10),T=parseInt(a.borderBottomWidth,10);let B=0,F=0;const V="offsetWidth"in e?e.offsetWidth-e.clientWidth-g-W:0,S="offsetHeight"in e?e.offsetHeight-e.clientHeight-p-T:0,X="offsetWidth"in e?0===e.offsetWidth?0:r/e.offsetWidth:0,Y="offsetHeight"in e?0===e.offsetHeight?0:l/e.offsetHeight:0;if(m===e)B="start"===f?k:"end"===f?k-H:"nearest"===f?o(M,M+H,H,p,T,M+k,M+k+v,v):k-H/2,F="start"===u?D:"center"===u?D-b/2:"end"===u?D-b:o(y,y+b,b,g,W,y+D,y+D+E,E),B=Math.max(0,B+M),F=Math.max(0,F+y);else{B="start"===f?k-i-p:"end"===f?k-d+T+S:"nearest"===f?o(i,d,l,p,T+S,k,k+v,v):k-(i+l/2)+S/2,F="start"===u?D-h-g:"center"===u?D-(h+r/2)+V/2:"end"===u?D-s+W+V:o(h,s,r,g,W+V,D,D+E,E);const{scrollLeft:t,scrollTop:n}=e;B=0===Y?0:Math.max(0,Math.min(n+B/Y,e.scrollHeight-l/Y+S)),F=0===X?0:Math.max(0,Math.min(t+F/X,e.scrollWidth-r/X+V)),k+=n-B,D+=t-F}L.push({el:e,top:B,left:F})}return L};//# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/direction/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/direction/index.js ***!
+  \*****************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = direction
+
+var RTL = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC'
+var LTR =
+  'A-Za-z\u00C0-\u00D6\u00D8-\u00F6' +
+  '\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u200E\u2C00-\uFB1C' +
+  '\uFE00-\uFE6F\uFEFD-\uFFFF'
+
+var rtl = new RegExp('^[^' + LTR + ']*[' + RTL + ']')
+var ltr = new RegExp('^[^' + RTL + ']*[' + LTR + ']')
+
+function direction(value) {
+  value = String(value || '')
+
+  if (rtl.test(value)) {
+    return 'rtl'
+  }
+
+  if (ltr.test(value)) {
+    return 'ltr'
+  }
+
+  return 'neutral'
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/events/events.js":
+/*!***************************************!*\
+  !*** ./node_modules/events/events.js ***!
+  \***************************************/
+/***/ ((module) => {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var R = typeof Reflect === 'object' ? Reflect : null
+var ReflectApply = R && typeof R.apply === 'function'
+  ? R.apply
+  : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
+  }
+
+var ReflectOwnKeys
+if (R && typeof R.ownKeys === 'function') {
+  ReflectOwnKeys = R.ownKeys
+} else if (Object.getOwnPropertySymbols) {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target)
+      .concat(Object.getOwnPropertySymbols(target));
+  };
+} else {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target);
+  };
+}
+
+function ProcessEmitWarning(warning) {
+  if (console && console.warn) console.warn(warning);
+}
+
+var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+  return value !== value;
+}
+
+function EventEmitter() {
+  EventEmitter.init.call(this);
+}
+module.exports = EventEmitter;
+module.exports.once = once;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._eventsCount = 0;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+var defaultMaxListeners = 10;
+
+function checkListener(listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+}
+
+Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+  enumerable: true,
+  get: function() {
+    return defaultMaxListeners;
+  },
+  set: function(arg) {
+    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+    }
+    defaultMaxListeners = arg;
+  }
+});
+
+EventEmitter.init = function() {
+
+  if (this._events === undefined ||
+      this._events === Object.getPrototypeOf(this)._events) {
+    this._events = Object.create(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+  }
+  this._maxListeners = n;
+  return this;
+};
+
+function _getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
+
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return _getMaxListeners(this);
+};
+
+EventEmitter.prototype.emit = function emit(type) {
+  var args = [];
+  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+  var doError = (type === 'error');
+
+  var events = this._events;
+  if (events !== undefined)
+    doError = (doError && events.error === undefined);
+  else if (!doError)
+    return false;
+
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    var er;
+    if (args.length > 0)
+      er = args[0];
+    if (er instanceof Error) {
+      // Note: The comments on the `throw` lines are intentional, they show
+      // up in Node's output if this results in an unhandled exception.
+      throw er; // Unhandled 'error' event
+    }
+    // At least give some kind of context to the user
+    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+    err.context = er;
+    throw err; // Unhandled 'error' event
+  }
+
+  var handler = events[type];
+
+  if (handler === undefined)
+    return false;
+
+  if (typeof handler === 'function') {
+    ReflectApply(handler, this, args);
+  } else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      ReflectApply(listeners[i], this, args);
+  }
+
+  return true;
+};
+
+function _addListener(target, type, listener, prepend) {
+  var m;
+  var events;
+  var existing;
+
+  checkListener(listener);
+
+  events = target._events;
+  if (events === undefined) {
+    events = target._events = Object.create(null);
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener !== undefined) {
+      target.emit('newListener', type,
+                  listener.listener ? listener.listener : listener);
+
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
+
+  if (existing === undefined) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] =
+        prepend ? [listener, existing] : [existing, listener];
+      // If we've already got an array, just append.
+    } else if (prepend) {
+      existing.unshift(listener);
+    } else {
+      existing.push(listener);
+    }
+
+    // Check for listener leak
+    m = _getMaxListeners(target);
+    if (m > 0 && existing.length > m && !existing.warned) {
+      existing.warned = true;
+      // No error code for this since it is a Warning
+      // eslint-disable-next-line no-restricted-syntax
+      var w = new Error('Possible EventEmitter memory leak detected. ' +
+                          existing.length + ' ' + String(type) + ' listeners ' +
+                          'added. Use emitter.setMaxListeners() to ' +
+                          'increase limit');
+      w.name = 'MaxListenersExceededWarning';
+      w.emitter = target;
+      w.type = type;
+      w.count = existing.length;
+      ProcessEmitWarning(w);
+    }
+  }
+
+  return target;
+}
+
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+
+function onceWrapper() {
+  if (!this.fired) {
+    this.target.removeListener(this.type, this.wrapFn);
+    this.fired = true;
+    if (arguments.length === 0)
+      return this.listener.call(this.target);
+    return this.listener.apply(this.target, arguments);
+  }
+}
+
+function _onceWrap(target, type, listener) {
+  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+  var wrapped = onceWrapper.bind(state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
+}
+
+EventEmitter.prototype.once = function once(type, listener) {
+  checkListener(listener);
+  this.on(type, _onceWrap(this, type, listener));
+  return this;
+};
+
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      checkListener(listener);
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+
+// Emits a 'removeListener' event if and only if the listener was removed.
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+
+      checkListener(listener);
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      list = events[type];
+      if (list === undefined)
+        return this;
+
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+
+        if (list.length === 1)
+          events[type] = list[0];
+
+        if (events.removeListener !== undefined)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events, i;
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (events.removeListener === undefined) {
+        if (arguments.length === 0) {
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== undefined) {
+          if (--this._eventsCount === 0)
+            this._events = Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners !== undefined) {
+        // LIFO order
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+
+      return this;
+    };
+
+function _listeners(target, type, unwrap) {
+  var events = target._events;
+
+  if (events === undefined)
+    return [];
+
+  var evlistener = events[type];
+  if (evlistener === undefined)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ?
+    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
+};
+
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
+};
+
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events !== undefined) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener !== undefined) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
+}
+
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+};
+
+function arrayClone(arr, n) {
+  var copy = new Array(n);
+  for (var i = 0; i < n; ++i)
+    copy[i] = arr[i];
+  return copy;
+}
+
+function spliceOne(list, index) {
+  for (; index + 1 < list.length; index++)
+    list[index] = list[index + 1];
+  list.pop();
+}
+
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
+}
+
+function once(emitter, name) {
+  return new Promise(function (resolve, reject) {
+    function errorListener(err) {
+      emitter.removeListener(name, resolver);
+      reject(err);
+    }
+
+    function resolver() {
+      if (typeof emitter.removeListener === 'function') {
+        emitter.removeListener('error', errorListener);
+      }
+      resolve([].slice.call(arguments));
+    };
+
+    eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
+    if (name !== 'error') {
+      addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
+    }
+  });
+}
+
+function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
+  if (typeof emitter.on === 'function') {
+    eventTargetAgnosticAddListener(emitter, 'error', handler, flags);
+  }
+}
+
+function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+  if (typeof emitter.on === 'function') {
+    if (flags.once) {
+      emitter.once(name, listener);
+    } else {
+      emitter.on(name, listener);
+    }
+  } else if (typeof emitter.addEventListener === 'function') {
+    // EventTarget does not have `error` event semantics like Node
+    // EventEmitters, we do not listen for `error` events here.
+    emitter.addEventListener(name, function wrapListener(arg) {
+      // IE does not have builtin `{ once: true }` support so we
+      // have to do it manually.
+      if (flags.once) {
+        emitter.removeEventListener(name, wrapListener);
+      }
+      listener(arg);
+    });
+  } else {
+    throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/immer/dist/immer.mjs":
+/*!*******************************************!*\
+  !*** ./node_modules/immer/dist/immer.mjs ***!
+  \*******************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Immer: () => (/* binding */ Immer2),
+/* harmony export */   applyPatches: () => (/* binding */ applyPatches),
+/* harmony export */   castDraft: () => (/* binding */ castDraft),
+/* harmony export */   castImmutable: () => (/* binding */ castImmutable),
+/* harmony export */   createDraft: () => (/* binding */ createDraft),
+/* harmony export */   current: () => (/* binding */ current),
+/* harmony export */   enableMapSet: () => (/* binding */ enableMapSet),
+/* harmony export */   enablePatches: () => (/* binding */ enablePatches),
+/* harmony export */   finishDraft: () => (/* binding */ finishDraft),
+/* harmony export */   freeze: () => (/* binding */ freeze),
+/* harmony export */   immerable: () => (/* binding */ DRAFTABLE),
+/* harmony export */   isDraft: () => (/* binding */ isDraft),
+/* harmony export */   isDraftable: () => (/* binding */ isDraftable),
+/* harmony export */   nothing: () => (/* binding */ NOTHING),
+/* harmony export */   original: () => (/* binding */ original),
+/* harmony export */   produce: () => (/* binding */ produce),
+/* harmony export */   produceWithPatches: () => (/* binding */ produceWithPatches),
+/* harmony export */   setAutoFreeze: () => (/* binding */ setAutoFreeze),
+/* harmony export */   setUseStrictShallowCopy: () => (/* binding */ setUseStrictShallowCopy)
+/* harmony export */ });
+// src/utils/env.ts
+var NOTHING = Symbol.for("immer-nothing");
+var DRAFTABLE = Symbol.for("immer-draftable");
+var DRAFT_STATE = Symbol.for("immer-state");
+
+// src/utils/errors.ts
+var errors =  true ? [
+  // All error codes, starting by 0:
+  function(plugin) {
+    return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
+  },
+  function(thing) {
+    return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
+  },
+  "This object has been frozen and should not be mutated",
+  function(data) {
+    return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data;
+  },
+  "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
+  "Immer forbids circular references",
+  "The first or second argument to `produce` must be a function",
+  "The third argument to `produce` must be a function or undefined",
+  "First argument to `createDraft` must be a plain object, an array, or an immerable object",
+  "First argument to `finishDraft` must be a draft returned by `createDraft`",
+  function(thing) {
+    return `'current' expects a draft, got: ${thing}`;
+  },
+  "Object.defineProperty() cannot be used on an Immer draft",
+  "Object.setPrototypeOf() cannot be used on an Immer draft",
+  "Immer only supports deleting array indices",
+  "Immer only supports setting array indices and the 'length' property",
+  function(thing) {
+    return `'original' expects a draft, got: ${thing}`;
+  }
+  // Note: if more errors are added, the errorOffset in Patches.ts should be increased
+  // See Patches.ts for additional errors
+] : 0;
+function die(error, ...args) {
+  if (true) {
+    const e = errors[error];
+    const msg = typeof e === "function" ? e.apply(null, args) : e;
+    throw new Error(`[Immer] ${msg}`);
+  }
+  // removed by dead control flow
+
+}
+
+// src/utils/common.ts
+var getPrototypeOf = Object.getPrototypeOf;
+function isDraft(value) {
+  return !!value && !!value[DRAFT_STATE];
+}
+function isDraftable(value) {
+  if (!value)
+    return false;
+  return isPlainObject(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!value.constructor?.[DRAFTABLE] || isMap(value) || isSet(value);
+}
+var objectCtorString = Object.prototype.constructor.toString();
+function isPlainObject(value) {
+  if (!value || typeof value !== "object")
+    return false;
+  const proto = getPrototypeOf(value);
+  if (proto === null) {
+    return true;
+  }
+  const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+  if (Ctor === Object)
+    return true;
+  return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
+}
+function original(value) {
+  if (!isDraft(value))
+    die(15, value);
+  return value[DRAFT_STATE].base_;
+}
+function each(obj, iter) {
+  if (getArchtype(obj) === 0 /* Object */) {
+    Reflect.ownKeys(obj).forEach((key) => {
+      iter(key, obj[key], obj);
+    });
+  } else {
+    obj.forEach((entry, index) => iter(index, entry, obj));
+  }
+}
+function getArchtype(thing) {
+  const state = thing[DRAFT_STATE];
+  return state ? state.type_ : Array.isArray(thing) ? 1 /* Array */ : isMap(thing) ? 2 /* Map */ : isSet(thing) ? 3 /* Set */ : 0 /* Object */;
+}
+function has(thing, prop) {
+  return getArchtype(thing) === 2 /* Map */ ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
+}
+function get(thing, prop) {
+  return getArchtype(thing) === 2 /* Map */ ? thing.get(prop) : thing[prop];
+}
+function set(thing, propOrOldValue, value) {
+  const t = getArchtype(thing);
+  if (t === 2 /* Map */)
+    thing.set(propOrOldValue, value);
+  else if (t === 3 /* Set */) {
+    thing.add(value);
+  } else
+    thing[propOrOldValue] = value;
+}
+function is(x, y) {
+  if (x === y) {
+    return x !== 0 || 1 / x === 1 / y;
+  } else {
+    return x !== x && y !== y;
+  }
+}
+function isMap(target) {
+  return target instanceof Map;
+}
+function isSet(target) {
+  return target instanceof Set;
+}
+function latest(state) {
+  return state.copy_ || state.base_;
+}
+function shallowCopy(base, strict) {
+  if (isMap(base)) {
+    return new Map(base);
+  }
+  if (isSet(base)) {
+    return new Set(base);
+  }
+  if (Array.isArray(base))
+    return Array.prototype.slice.call(base);
+  const isPlain = isPlainObject(base);
+  if (strict === true || strict === "class_only" && !isPlain) {
+    const descriptors = Object.getOwnPropertyDescriptors(base);
+    delete descriptors[DRAFT_STATE];
+    let keys = Reflect.ownKeys(descriptors);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const desc = descriptors[key];
+      if (desc.writable === false) {
+        desc.writable = true;
+        desc.configurable = true;
+      }
+      if (desc.get || desc.set)
+        descriptors[key] = {
+          configurable: true,
+          writable: true,
+          // could live with !!desc.set as well here...
+          enumerable: desc.enumerable,
+          value: base[key]
+        };
+    }
+    return Object.create(getPrototypeOf(base), descriptors);
+  } else {
+    const proto = getPrototypeOf(base);
+    if (proto !== null && isPlain) {
+      return { ...base };
+    }
+    const obj = Object.create(proto);
+    return Object.assign(obj, base);
+  }
+}
+function freeze(obj, deep = false) {
+  if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
+    return obj;
+  if (getArchtype(obj) > 1) {
+    obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
+  }
+  Object.freeze(obj);
+  if (deep)
+    Object.entries(obj).forEach(([key, value]) => freeze(value, true));
+  return obj;
+}
+function dontMutateFrozenCollections() {
+  die(2);
+}
+function isFrozen(obj) {
+  return Object.isFrozen(obj);
+}
+
+// src/utils/plugins.ts
+var plugins = {};
+function getPlugin(pluginKey) {
+  const plugin = plugins[pluginKey];
+  if (!plugin) {
+    die(0, pluginKey);
+  }
+  return plugin;
+}
+function loadPlugin(pluginKey, implementation) {
+  if (!plugins[pluginKey])
+    plugins[pluginKey] = implementation;
+}
+
+// src/core/scope.ts
+var currentScope;
+function getCurrentScope() {
+  return currentScope;
+}
+function createScope(parent_, immer_) {
+  return {
+    drafts_: [],
+    parent_,
+    immer_,
+    // Whenever the modified draft contains a draft from another scope, we
+    // need to prevent auto-freezing so the unowned draft can be finalized.
+    canAutoFreeze_: true,
+    unfinalizedDrafts_: 0
+  };
+}
+function usePatchesInScope(scope, patchListener) {
+  if (patchListener) {
+    getPlugin("Patches");
+    scope.patches_ = [];
+    scope.inversePatches_ = [];
+    scope.patchListener_ = patchListener;
+  }
+}
+function revokeScope(scope) {
+  leaveScope(scope);
+  scope.drafts_.forEach(revokeDraft);
+  scope.drafts_ = null;
+}
+function leaveScope(scope) {
+  if (scope === currentScope) {
+    currentScope = scope.parent_;
+  }
+}
+function enterScope(immer2) {
+  return currentScope = createScope(currentScope, immer2);
+}
+function revokeDraft(draft) {
+  const state = draft[DRAFT_STATE];
+  if (state.type_ === 0 /* Object */ || state.type_ === 1 /* Array */)
+    state.revoke_();
+  else
+    state.revoked_ = true;
+}
+
+// src/core/finalize.ts
+function processResult(result, scope) {
+  scope.unfinalizedDrafts_ = scope.drafts_.length;
+  const baseDraft = scope.drafts_[0];
+  const isReplaced = result !== void 0 && result !== baseDraft;
+  if (isReplaced) {
+    if (baseDraft[DRAFT_STATE].modified_) {
+      revokeScope(scope);
+      die(4);
+    }
+    if (isDraftable(result)) {
+      result = finalize(scope, result);
+      if (!scope.parent_)
+        maybeFreeze(scope, result);
+    }
+    if (scope.patches_) {
+      getPlugin("Patches").generateReplacementPatches_(
+        baseDraft[DRAFT_STATE].base_,
+        result,
+        scope.patches_,
+        scope.inversePatches_
+      );
+    }
+  } else {
+    result = finalize(scope, baseDraft, []);
+  }
+  revokeScope(scope);
+  if (scope.patches_) {
+    scope.patchListener_(scope.patches_, scope.inversePatches_);
+  }
+  return result !== NOTHING ? result : void 0;
+}
+function finalize(rootScope, value, path) {
+  if (isFrozen(value))
+    return value;
+  const state = value[DRAFT_STATE];
+  if (!state) {
+    each(
+      value,
+      (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
+    );
+    return value;
+  }
+  if (state.scope_ !== rootScope)
+    return value;
+  if (!state.modified_) {
+    maybeFreeze(rootScope, state.base_, true);
+    return state.base_;
+  }
+  if (!state.finalized_) {
+    state.finalized_ = true;
+    state.scope_.unfinalizedDrafts_--;
+    const result = state.copy_;
+    let resultEach = result;
+    let isSet2 = false;
+    if (state.type_ === 3 /* Set */) {
+      resultEach = new Set(result);
+      result.clear();
+      isSet2 = true;
+    }
+    each(
+      resultEach,
+      (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
+    );
+    maybeFreeze(rootScope, result, false);
+    if (path && rootScope.patches_) {
+      getPlugin("Patches").generatePatches_(
+        state,
+        path,
+        rootScope.patches_,
+        rootScope.inversePatches_
+      );
+    }
+  }
+  return state.copy_;
+}
+function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
+  if ( true && childValue === targetObject)
+    die(5);
+  if (isDraft(childValue)) {
+    const path = rootPath && parentState && parentState.type_ !== 3 /* Set */ && // Set objects are atomic since they have no keys.
+    !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
+    const res = finalize(rootScope, childValue, path);
+    set(targetObject, prop, res);
+    if (isDraft(res)) {
+      rootScope.canAutoFreeze_ = false;
+    } else
+      return;
+  } else if (targetIsSet) {
+    targetObject.add(childValue);
+  }
+  if (isDraftable(childValue) && !isFrozen(childValue)) {
+    if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
+      return;
+    }
+    finalize(rootScope, childValue);
+    if ((!parentState || !parentState.scope_.parent_) && typeof prop !== "symbol" && Object.prototype.propertyIsEnumerable.call(targetObject, prop))
+      maybeFreeze(rootScope, childValue);
+  }
+}
+function maybeFreeze(scope, value, deep = false) {
+  if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
+    freeze(value, deep);
+  }
+}
+
+// src/core/proxy.ts
+function createProxyProxy(base, parent) {
+  const isArray = Array.isArray(base);
+  const state = {
+    type_: isArray ? 1 /* Array */ : 0 /* Object */,
+    // Track which produce call this is associated with.
+    scope_: parent ? parent.scope_ : getCurrentScope(),
+    // True for both shallow and deep changes.
+    modified_: false,
+    // Used during finalization.
+    finalized_: false,
+    // Track which properties have been assigned (true) or deleted (false).
+    assigned_: {},
+    // The parent draft state.
+    parent_: parent,
+    // The base state.
+    base_: base,
+    // The base proxy.
+    draft_: null,
+    // set below
+    // The base copy with any updated values.
+    copy_: null,
+    // Called by the `produce` function.
+    revoke_: null,
+    isManual_: false
+  };
+  let target = state;
+  let traps = objectTraps;
+  if (isArray) {
+    target = [state];
+    traps = arrayTraps;
+  }
+  const { revoke, proxy } = Proxy.revocable(target, traps);
+  state.draft_ = proxy;
+  state.revoke_ = revoke;
+  return proxy;
+}
+var objectTraps = {
+  get(state, prop) {
+    if (prop === DRAFT_STATE)
+      return state;
+    const source = latest(state);
+    if (!has(source, prop)) {
+      return readPropFromProto(state, source, prop);
+    }
+    const value = source[prop];
+    if (state.finalized_ || !isDraftable(value)) {
+      return value;
+    }
+    if (value === peek(state.base_, prop)) {
+      prepareCopy(state);
+      return state.copy_[prop] = createProxy(value, state);
+    }
+    return value;
+  },
+  has(state, prop) {
+    return prop in latest(state);
+  },
+  ownKeys(state) {
+    return Reflect.ownKeys(latest(state));
+  },
+  set(state, prop, value) {
+    const desc = getDescriptorFromProto(latest(state), prop);
+    if (desc?.set) {
+      desc.set.call(state.draft_, value);
+      return true;
+    }
+    if (!state.modified_) {
+      const current2 = peek(latest(state), prop);
+      const currentState = current2?.[DRAFT_STATE];
+      if (currentState && currentState.base_ === value) {
+        state.copy_[prop] = value;
+        state.assigned_[prop] = false;
+        return true;
+      }
+      if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
+        return true;
+      prepareCopy(state);
+      markChanged(state);
+    }
+    if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
+    (value !== void 0 || prop in state.copy_) || // special case: NaN
+    Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
+      return true;
+    state.copy_[prop] = value;
+    state.assigned_[prop] = true;
+    return true;
+  },
+  deleteProperty(state, prop) {
+    if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
+      state.assigned_[prop] = false;
+      prepareCopy(state);
+      markChanged(state);
+    } else {
+      delete state.assigned_[prop];
+    }
+    if (state.copy_) {
+      delete state.copy_[prop];
+    }
+    return true;
+  },
+  // Note: We never coerce `desc.value` into an Immer draft, because we can't make
+  // the same guarantee in ES5 mode.
+  getOwnPropertyDescriptor(state, prop) {
+    const owner = latest(state);
+    const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
+    if (!desc)
+      return desc;
+    return {
+      writable: true,
+      configurable: state.type_ !== 1 /* Array */ || prop !== "length",
+      enumerable: desc.enumerable,
+      value: owner[prop]
+    };
+  },
+  defineProperty() {
+    die(11);
+  },
+  getPrototypeOf(state) {
+    return getPrototypeOf(state.base_);
+  },
+  setPrototypeOf() {
+    die(12);
+  }
+};
+var arrayTraps = {};
+each(objectTraps, (key, fn) => {
+  arrayTraps[key] = function() {
+    arguments[0] = arguments[0][0];
+    return fn.apply(this, arguments);
+  };
+});
+arrayTraps.deleteProperty = function(state, prop) {
+  if ( true && isNaN(parseInt(prop)))
+    die(13);
+  return arrayTraps.set.call(this, state, prop, void 0);
+};
+arrayTraps.set = function(state, prop, value) {
+  if ( true && prop !== "length" && isNaN(parseInt(prop)))
+    die(14);
+  return objectTraps.set.call(this, state[0], prop, value, state[0]);
+};
+function peek(draft, prop) {
+  const state = draft[DRAFT_STATE];
+  const source = state ? latest(state) : draft;
+  return source[prop];
+}
+function readPropFromProto(state, source, prop) {
+  const desc = getDescriptorFromProto(source, prop);
+  return desc ? `value` in desc ? desc.value : (
+    // This is a very special case, if the prop is a getter defined by the
+    // prototype, we should invoke it with the draft as context!
+    desc.get?.call(state.draft_)
+  ) : void 0;
+}
+function getDescriptorFromProto(source, prop) {
+  if (!(prop in source))
+    return void 0;
+  let proto = getPrototypeOf(source);
+  while (proto) {
+    const desc = Object.getOwnPropertyDescriptor(proto, prop);
+    if (desc)
+      return desc;
+    proto = getPrototypeOf(proto);
+  }
+  return void 0;
+}
+function markChanged(state) {
+  if (!state.modified_) {
+    state.modified_ = true;
+    if (state.parent_) {
+      markChanged(state.parent_);
+    }
+  }
+}
+function prepareCopy(state) {
+  if (!state.copy_) {
+    state.copy_ = shallowCopy(
+      state.base_,
+      state.scope_.immer_.useStrictShallowCopy_
+    );
+  }
+}
+
+// src/core/immerClass.ts
+var Immer2 = class {
+  constructor(config) {
+    this.autoFreeze_ = true;
+    this.useStrictShallowCopy_ = false;
+    /**
+     * The `produce` function takes a value and a "recipe function" (whose
+     * return value often depends on the base state). The recipe function is
+     * free to mutate its first argument however it wants. All mutations are
+     * only ever applied to a __copy__ of the base state.
+     *
+     * Pass only a function to create a "curried producer" which relieves you
+     * from passing the recipe function every time.
+     *
+     * Only plain objects and arrays are made mutable. All other objects are
+     * considered uncopyable.
+     *
+     * Note: This function is __bound__ to its `Immer` instance.
+     *
+     * @param {any} base - the initial state
+     * @param {Function} recipe - function that receives a proxy of the base state as first argument and which can be freely modified
+     * @param {Function} patchListener - optional function that will be called with all the patches produced here
+     * @returns {any} a new state, or the initial state if nothing was modified
+     */
+    this.produce = (base, recipe, patchListener) => {
+      if (typeof base === "function" && typeof recipe !== "function") {
+        const defaultBase = recipe;
+        recipe = base;
+        const self = this;
+        return function curriedProduce(base2 = defaultBase, ...args) {
+          return self.produce(base2, (draft) => recipe.call(this, draft, ...args));
+        };
+      }
+      if (typeof recipe !== "function")
+        die(6);
+      if (patchListener !== void 0 && typeof patchListener !== "function")
+        die(7);
+      let result;
+      if (isDraftable(base)) {
+        const scope = enterScope(this);
+        const proxy = createProxy(base, void 0);
+        let hasError = true;
+        try {
+          result = recipe(proxy);
+          hasError = false;
+        } finally {
+          if (hasError)
+            revokeScope(scope);
+          else
+            leaveScope(scope);
+        }
+        usePatchesInScope(scope, patchListener);
+        return processResult(result, scope);
+      } else if (!base || typeof base !== "object") {
+        result = recipe(base);
+        if (result === void 0)
+          result = base;
+        if (result === NOTHING)
+          result = void 0;
+        if (this.autoFreeze_)
+          freeze(result, true);
+        if (patchListener) {
+          const p = [];
+          const ip = [];
+          getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
+          patchListener(p, ip);
+        }
+        return result;
+      } else
+        die(1, base);
+    };
+    this.produceWithPatches = (base, recipe) => {
+      if (typeof base === "function") {
+        return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
+      }
+      let patches, inversePatches;
+      const result = this.produce(base, recipe, (p, ip) => {
+        patches = p;
+        inversePatches = ip;
+      });
+      return [result, patches, inversePatches];
+    };
+    if (typeof config?.autoFreeze === "boolean")
+      this.setAutoFreeze(config.autoFreeze);
+    if (typeof config?.useStrictShallowCopy === "boolean")
+      this.setUseStrictShallowCopy(config.useStrictShallowCopy);
+  }
+  createDraft(base) {
+    if (!isDraftable(base))
+      die(8);
+    if (isDraft(base))
+      base = current(base);
+    const scope = enterScope(this);
+    const proxy = createProxy(base, void 0);
+    proxy[DRAFT_STATE].isManual_ = true;
+    leaveScope(scope);
+    return proxy;
+  }
+  finishDraft(draft, patchListener) {
+    const state = draft && draft[DRAFT_STATE];
+    if (!state || !state.isManual_)
+      die(9);
+    const { scope_: scope } = state;
+    usePatchesInScope(scope, patchListener);
+    return processResult(void 0, scope);
+  }
+  /**
+   * Pass true to automatically freeze all copies created by Immer.
+   *
+   * By default, auto-freezing is enabled.
+   */
+  setAutoFreeze(value) {
+    this.autoFreeze_ = value;
+  }
+  /**
+   * Pass true to enable strict shallow copy.
+   *
+   * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
+   */
+  setUseStrictShallowCopy(value) {
+    this.useStrictShallowCopy_ = value;
+  }
+  applyPatches(base, patches) {
+    let i;
+    for (i = patches.length - 1; i >= 0; i--) {
+      const patch = patches[i];
+      if (patch.path.length === 0 && patch.op === "replace") {
+        base = patch.value;
+        break;
+      }
+    }
+    if (i > -1) {
+      patches = patches.slice(i + 1);
+    }
+    const applyPatchesImpl = getPlugin("Patches").applyPatches_;
+    if (isDraft(base)) {
+      return applyPatchesImpl(base, patches);
+    }
+    return this.produce(
+      base,
+      (draft) => applyPatchesImpl(draft, patches)
+    );
+  }
+};
+function createProxy(value, parent) {
+  const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
+  const scope = parent ? parent.scope_ : getCurrentScope();
+  scope.drafts_.push(draft);
+  return draft;
+}
+
+// src/core/current.ts
+function current(value) {
+  if (!isDraft(value))
+    die(10, value);
+  return currentImpl(value);
+}
+function currentImpl(value) {
+  if (!isDraftable(value) || isFrozen(value))
+    return value;
+  const state = value[DRAFT_STATE];
+  let copy;
+  if (state) {
+    if (!state.modified_)
+      return state.base_;
+    state.finalized_ = true;
+    copy = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
+  } else {
+    copy = shallowCopy(value, true);
+  }
+  each(copy, (key, childValue) => {
+    set(copy, key, currentImpl(childValue));
+  });
+  if (state) {
+    state.finalized_ = false;
+  }
+  return copy;
+}
+
+// src/plugins/patches.ts
+function enablePatches() {
+  const errorOffset = 16;
+  if (true) {
+    errors.push(
+      'Sets cannot have "replace" patches.',
+      function(op) {
+        return "Unsupported patch operation: " + op;
+      },
+      function(path) {
+        return "Cannot apply patch, path doesn't resolve: " + path;
+      },
+      "Patching reserved attributes like __proto__, prototype and constructor is not allowed"
+    );
+  }
+  const REPLACE = "replace";
+  const ADD = "add";
+  const REMOVE = "remove";
+  function generatePatches_(state, basePath, patches, inversePatches) {
+    switch (state.type_) {
+      case 0 /* Object */:
+      case 2 /* Map */:
+        return generatePatchesFromAssigned(
+          state,
+          basePath,
+          patches,
+          inversePatches
+        );
+      case 1 /* Array */:
+        return generateArrayPatches(state, basePath, patches, inversePatches);
+      case 3 /* Set */:
+        return generateSetPatches(
+          state,
+          basePath,
+          patches,
+          inversePatches
+        );
+    }
+  }
+  function generateArrayPatches(state, basePath, patches, inversePatches) {
+    let { base_, assigned_ } = state;
+    let copy_ = state.copy_;
+    if (copy_.length < base_.length) {
+      ;
+      [base_, copy_] = [copy_, base_];
+      [patches, inversePatches] = [inversePatches, patches];
+    }
+    for (let i = 0; i < base_.length; i++) {
+      if (assigned_[i] && copy_[i] !== base_[i]) {
+        const path = basePath.concat([i]);
+        patches.push({
+          op: REPLACE,
+          path,
+          // Need to maybe clone it, as it can in fact be the original value
+          // due to the base/copy inversion at the start of this function
+          value: clonePatchValueIfNeeded(copy_[i])
+        });
+        inversePatches.push({
+          op: REPLACE,
+          path,
+          value: clonePatchValueIfNeeded(base_[i])
+        });
+      }
+    }
+    for (let i = base_.length; i < copy_.length; i++) {
+      const path = basePath.concat([i]);
+      patches.push({
+        op: ADD,
+        path,
+        // Need to maybe clone it, as it can in fact be the original value
+        // due to the base/copy inversion at the start of this function
+        value: clonePatchValueIfNeeded(copy_[i])
+      });
+    }
+    for (let i = copy_.length - 1; base_.length <= i; --i) {
+      const path = basePath.concat([i]);
+      inversePatches.push({
+        op: REMOVE,
+        path
+      });
+    }
+  }
+  function generatePatchesFromAssigned(state, basePath, patches, inversePatches) {
+    const { base_, copy_ } = state;
+    each(state.assigned_, (key, assignedValue) => {
+      const origValue = get(base_, key);
+      const value = get(copy_, key);
+      const op = !assignedValue ? REMOVE : has(base_, key) ? REPLACE : ADD;
+      if (origValue === value && op === REPLACE)
+        return;
+      const path = basePath.concat(key);
+      patches.push(op === REMOVE ? { op, path } : { op, path, value });
+      inversePatches.push(
+        op === ADD ? { op: REMOVE, path } : op === REMOVE ? { op: ADD, path, value: clonePatchValueIfNeeded(origValue) } : { op: REPLACE, path, value: clonePatchValueIfNeeded(origValue) }
+      );
+    });
+  }
+  function generateSetPatches(state, basePath, patches, inversePatches) {
+    let { base_, copy_ } = state;
+    let i = 0;
+    base_.forEach((value) => {
+      if (!copy_.has(value)) {
+        const path = basePath.concat([i]);
+        patches.push({
+          op: REMOVE,
+          path,
+          value
+        });
+        inversePatches.unshift({
+          op: ADD,
+          path,
+          value
+        });
+      }
+      i++;
+    });
+    i = 0;
+    copy_.forEach((value) => {
+      if (!base_.has(value)) {
+        const path = basePath.concat([i]);
+        patches.push({
+          op: ADD,
+          path,
+          value
+        });
+        inversePatches.unshift({
+          op: REMOVE,
+          path,
+          value
+        });
+      }
+      i++;
+    });
+  }
+  function generateReplacementPatches_(baseValue, replacement, patches, inversePatches) {
+    patches.push({
+      op: REPLACE,
+      path: [],
+      value: replacement === NOTHING ? void 0 : replacement
+    });
+    inversePatches.push({
+      op: REPLACE,
+      path: [],
+      value: baseValue
+    });
+  }
+  function applyPatches_(draft, patches) {
+    patches.forEach((patch) => {
+      const { path, op } = patch;
+      let base = draft;
+      for (let i = 0; i < path.length - 1; i++) {
+        const parentType = getArchtype(base);
+        let p = path[i];
+        if (typeof p !== "string" && typeof p !== "number") {
+          p = "" + p;
+        }
+        if ((parentType === 0 /* Object */ || parentType === 1 /* Array */) && (p === "__proto__" || p === "constructor"))
+          die(errorOffset + 3);
+        if (typeof base === "function" && p === "prototype")
+          die(errorOffset + 3);
+        base = get(base, p);
+        if (typeof base !== "object")
+          die(errorOffset + 2, path.join("/"));
+      }
+      const type = getArchtype(base);
+      const value = deepClonePatchValue(patch.value);
+      const key = path[path.length - 1];
+      switch (op) {
+        case REPLACE:
+          switch (type) {
+            case 2 /* Map */:
+              return base.set(key, value);
+            case 3 /* Set */:
+              die(errorOffset);
+            default:
+              return base[key] = value;
+          }
+        case ADD:
+          switch (type) {
+            case 1 /* Array */:
+              return key === "-" ? base.push(value) : base.splice(key, 0, value);
+            case 2 /* Map */:
+              return base.set(key, value);
+            case 3 /* Set */:
+              return base.add(value);
+            default:
+              return base[key] = value;
+          }
+        case REMOVE:
+          switch (type) {
+            case 1 /* Array */:
+              return base.splice(key, 1);
+            case 2 /* Map */:
+              return base.delete(key);
+            case 3 /* Set */:
+              return base.delete(patch.value);
+            default:
+              return delete base[key];
+          }
+        default:
+          die(errorOffset + 1, op);
+      }
+    });
+    return draft;
+  }
+  function deepClonePatchValue(obj) {
+    if (!isDraftable(obj))
+      return obj;
+    if (Array.isArray(obj))
+      return obj.map(deepClonePatchValue);
+    if (isMap(obj))
+      return new Map(
+        Array.from(obj.entries()).map(([k, v]) => [k, deepClonePatchValue(v)])
+      );
+    if (isSet(obj))
+      return new Set(Array.from(obj).map(deepClonePatchValue));
+    const cloned = Object.create(getPrototypeOf(obj));
+    for (const key in obj)
+      cloned[key] = deepClonePatchValue(obj[key]);
+    if (has(obj, DRAFTABLE))
+      cloned[DRAFTABLE] = obj[DRAFTABLE];
+    return cloned;
+  }
+  function clonePatchValueIfNeeded(obj) {
+    if (isDraft(obj)) {
+      return deepClonePatchValue(obj);
+    } else
+      return obj;
+  }
+  loadPlugin("Patches", {
+    applyPatches_,
+    generatePatches_,
+    generateReplacementPatches_
+  });
+}
+
+// src/plugins/mapset.ts
+function enableMapSet() {
+  class DraftMap extends Map {
+    constructor(target, parent) {
+      super();
+      this[DRAFT_STATE] = {
+        type_: 2 /* Map */,
+        parent_: parent,
+        scope_: parent ? parent.scope_ : getCurrentScope(),
+        modified_: false,
+        finalized_: false,
+        copy_: void 0,
+        assigned_: void 0,
+        base_: target,
+        draft_: this,
+        isManual_: false,
+        revoked_: false
+      };
+    }
+    get size() {
+      return latest(this[DRAFT_STATE]).size;
+    }
+    has(key) {
+      return latest(this[DRAFT_STATE]).has(key);
+    }
+    set(key, value) {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      if (!latest(state).has(key) || latest(state).get(key) !== value) {
+        prepareMapCopy(state);
+        markChanged(state);
+        state.assigned_.set(key, true);
+        state.copy_.set(key, value);
+        state.assigned_.set(key, true);
+      }
+      return this;
+    }
+    delete(key) {
+      if (!this.has(key)) {
+        return false;
+      }
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      prepareMapCopy(state);
+      markChanged(state);
+      if (state.base_.has(key)) {
+        state.assigned_.set(key, false);
+      } else {
+        state.assigned_.delete(key);
+      }
+      state.copy_.delete(key);
+      return true;
+    }
+    clear() {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      if (latest(state).size) {
+        prepareMapCopy(state);
+        markChanged(state);
+        state.assigned_ = /* @__PURE__ */ new Map();
+        each(state.base_, (key) => {
+          state.assigned_.set(key, false);
+        });
+        state.copy_.clear();
+      }
+    }
+    forEach(cb, thisArg) {
+      const state = this[DRAFT_STATE];
+      latest(state).forEach((_value, key, _map) => {
+        cb.call(thisArg, this.get(key), key, this);
+      });
+    }
+    get(key) {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      const value = latest(state).get(key);
+      if (state.finalized_ || !isDraftable(value)) {
+        return value;
+      }
+      if (value !== state.base_.get(key)) {
+        return value;
+      }
+      const draft = createProxy(value, state);
+      prepareMapCopy(state);
+      state.copy_.set(key, draft);
+      return draft;
+    }
+    keys() {
+      return latest(this[DRAFT_STATE]).keys();
+    }
+    values() {
+      const iterator = this.keys();
+      return {
+        [Symbol.iterator]: () => this.values(),
+        next: () => {
+          const r = iterator.next();
+          if (r.done)
+            return r;
+          const value = this.get(r.value);
+          return {
+            done: false,
+            value
+          };
+        }
+      };
+    }
+    entries() {
+      const iterator = this.keys();
+      return {
+        [Symbol.iterator]: () => this.entries(),
+        next: () => {
+          const r = iterator.next();
+          if (r.done)
+            return r;
+          const value = this.get(r.value);
+          return {
+            done: false,
+            value: [r.value, value]
+          };
+        }
+      };
+    }
+    [(DRAFT_STATE, Symbol.iterator)]() {
+      return this.entries();
+    }
+  }
+  function proxyMap_(target, parent) {
+    return new DraftMap(target, parent);
+  }
+  function prepareMapCopy(state) {
+    if (!state.copy_) {
+      state.assigned_ = /* @__PURE__ */ new Map();
+      state.copy_ = new Map(state.base_);
+    }
+  }
+  class DraftSet extends Set {
+    constructor(target, parent) {
+      super();
+      this[DRAFT_STATE] = {
+        type_: 3 /* Set */,
+        parent_: parent,
+        scope_: parent ? parent.scope_ : getCurrentScope(),
+        modified_: false,
+        finalized_: false,
+        copy_: void 0,
+        base_: target,
+        draft_: this,
+        drafts_: /* @__PURE__ */ new Map(),
+        revoked_: false,
+        isManual_: false
+      };
+    }
+    get size() {
+      return latest(this[DRAFT_STATE]).size;
+    }
+    has(value) {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      if (!state.copy_) {
+        return state.base_.has(value);
+      }
+      if (state.copy_.has(value))
+        return true;
+      if (state.drafts_.has(value) && state.copy_.has(state.drafts_.get(value)))
+        return true;
+      return false;
+    }
+    add(value) {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      if (!this.has(value)) {
+        prepareSetCopy(state);
+        markChanged(state);
+        state.copy_.add(value);
+      }
+      return this;
+    }
+    delete(value) {
+      if (!this.has(value)) {
+        return false;
+      }
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      prepareSetCopy(state);
+      markChanged(state);
+      return state.copy_.delete(value) || (state.drafts_.has(value) ? state.copy_.delete(state.drafts_.get(value)) : (
+        /* istanbul ignore next */
+        false
+      ));
+    }
+    clear() {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      if (latest(state).size) {
+        prepareSetCopy(state);
+        markChanged(state);
+        state.copy_.clear();
+      }
+    }
+    values() {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      prepareSetCopy(state);
+      return state.copy_.values();
+    }
+    entries() {
+      const state = this[DRAFT_STATE];
+      assertUnrevoked(state);
+      prepareSetCopy(state);
+      return state.copy_.entries();
+    }
+    keys() {
+      return this.values();
+    }
+    [(DRAFT_STATE, Symbol.iterator)]() {
+      return this.values();
+    }
+    forEach(cb, thisArg) {
+      const iterator = this.values();
+      let result = iterator.next();
+      while (!result.done) {
+        cb.call(thisArg, result.value, result.value, this);
+        result = iterator.next();
+      }
+    }
+  }
+  function proxySet_(target, parent) {
+    return new DraftSet(target, parent);
+  }
+  function prepareSetCopy(state) {
+    if (!state.copy_) {
+      state.copy_ = /* @__PURE__ */ new Set();
+      state.base_.forEach((value) => {
+        if (isDraftable(value)) {
+          const draft = createProxy(value, state);
+          state.drafts_.set(value, draft);
+          state.copy_.add(draft);
+        } else {
+          state.copy_.add(value);
+        }
+      });
+    }
+  }
+  function assertUnrevoked(state) {
+    if (state.revoked_)
+      die(3, JSON.stringify(latest(state)));
+  }
+  loadPlugin("MapSet", { proxyMap_, proxySet_ });
+}
+
+// src/immer.ts
+var immer = new Immer2();
+var produce = immer.produce;
+var produceWithPatches = immer.produceWithPatches.bind(
+  immer
+);
+var setAutoFreeze = immer.setAutoFreeze.bind(immer);
+var setUseStrictShallowCopy = immer.setUseStrictShallowCopy.bind(immer);
+var applyPatches = immer.applyPatches.bind(immer);
+var createDraft = immer.createDraft.bind(immer);
+var finishDraft = immer.finishDraft.bind(immer);
+function castDraft(value) {
+  return value;
+}
+function castImmutable(value) {
+  return value;
+}
+
+//# sourceMappingURL=immer.mjs.map
+
+/***/ }),
+
+/***/ "./node_modules/is-hotkey/lib/index.js":
+/*!*********************************************!*\
+  !*** ./node_modules/is-hotkey/lib/index.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/**
+ * Constants.
+ */
+
+var IS_MAC = typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform);
+
+var MODIFIERS = {
+  alt: 'altKey',
+  control: 'ctrlKey',
+  meta: 'metaKey',
+  shift: 'shiftKey'
+};
+
+var ALIASES = {
+  add: '+',
+  break: 'pause',
+  cmd: 'meta',
+  command: 'meta',
+  ctl: 'control',
+  ctrl: 'control',
+  del: 'delete',
+  down: 'arrowdown',
+  esc: 'escape',
+  ins: 'insert',
+  left: 'arrowleft',
+  mod: IS_MAC ? 'meta' : 'control',
+  opt: 'alt',
+  option: 'alt',
+  return: 'enter',
+  right: 'arrowright',
+  space: ' ',
+  spacebar: ' ',
+  up: 'arrowup',
+  win: 'meta',
+  windows: 'meta'
+};
+
+var CODES = {
+  backspace: 8,
+  tab: 9,
+  enter: 13,
+  shift: 16,
+  control: 17,
+  alt: 18,
+  pause: 19,
+  capslock: 20,
+  escape: 27,
+  ' ': 32,
+  pageup: 33,
+  pagedown: 34,
+  end: 35,
+  home: 36,
+  arrowleft: 37,
+  arrowup: 38,
+  arrowright: 39,
+  arrowdown: 40,
+  insert: 45,
+  delete: 46,
+  meta: 91,
+  numlock: 144,
+  scrolllock: 145,
+  ';': 186,
+  '=': 187,
+  ',': 188,
+  '-': 189,
+  '.': 190,
+  '/': 191,
+  '`': 192,
+  '[': 219,
+  '\\': 220,
+  ']': 221,
+  '\'': 222
+};
+
+for (var f = 1; f < 20; f++) {
+  CODES['f' + f] = 111 + f;
+}
+
+/**
+ * Is hotkey?
+ */
+
+function isHotkey(hotkey, options, event) {
+  if (options && !('byKey' in options)) {
+    event = options;
+    options = null;
+  }
+
+  if (!Array.isArray(hotkey)) {
+    hotkey = [hotkey];
+  }
+
+  var array = hotkey.map(function (string) {
+    return parseHotkey(string, options);
+  });
+  var check = function check(e) {
+    return array.some(function (object) {
+      return compareHotkey(object, e);
+    });
+  };
+  var ret = event == null ? check : check(event);
+  return ret;
+}
+
+function isCodeHotkey(hotkey, event) {
+  return isHotkey(hotkey, event);
+}
+
+function isKeyHotkey(hotkey, event) {
+  return isHotkey(hotkey, { byKey: true }, event);
+}
+
+/**
+ * Parse.
+ */
+
+function parseHotkey(hotkey, options) {
+  var byKey = options && options.byKey;
+  var ret = {};
+
+  // Special case to handle the `+` key since we use it as a separator.
+  hotkey = hotkey.replace('++', '+add');
+  var values = hotkey.split('+');
+  var length = values.length;
+
+  // Ensure that all the modifiers are set to false unless the hotkey has them.
+
+  for (var k in MODIFIERS) {
+    ret[MODIFIERS[k]] = false;
+  }
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = values[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var value = _step.value;
+
+      var optional = value.endsWith('?') && value.length > 1;
+
+      if (optional) {
+        value = value.slice(0, -1);
+      }
+
+      var name = toKeyName(value);
+      var modifier = MODIFIERS[name];
+
+      if (value.length > 1 && !modifier && !ALIASES[value] && !CODES[name]) {
+        throw new TypeError('Unknown modifier: "' + value + '"');
+      }
+
+      if (length === 1 || !modifier) {
+        if (byKey) {
+          ret.key = name;
+        } else {
+          ret.which = toKeyCode(value);
+        }
+      }
+
+      if (modifier) {
+        ret[modifier] = optional ? null : true;
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return ret;
+}
+
+/**
+ * Compare.
+ */
+
+function compareHotkey(object, event) {
+  for (var key in object) {
+    var expected = object[key];
+    var actual = void 0;
+
+    if (expected == null) {
+      continue;
+    }
+
+    if (key === 'key' && event.key != null) {
+      actual = event.key.toLowerCase();
+    } else if (key === 'which') {
+      actual = expected === 91 && event.which === 93 ? 91 : event.which;
+    } else {
+      actual = event[key];
+    }
+
+    if (actual == null && expected === false) {
+      continue;
+    }
+
+    if (actual !== expected) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Utils.
+ */
+
+function toKeyCode(name) {
+  name = toKeyName(name);
+  var code = CODES[name] || name.toUpperCase().charCodeAt(0);
+  return code;
+}
+
+function toKeyName(name) {
+  name = name.toLowerCase();
+  name = ALIASES[name] || name;
+  return name;
+}
+
+/**
+ * Export.
+ */
+
+exports["default"] = isHotkey;
+exports.isHotkey = isHotkey;
+exports.isCodeHotkey = isCodeHotkey;
+exports.isKeyHotkey = isKeyHotkey;
+exports.parseHotkey = parseHotkey;
+exports.compareHotkey = compareHotkey;
+exports.toKeyCode = toKeyCode;
+exports.toKeyName = toKeyName;
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_Symbol.js":
+/*!****************************************!*\
+  !*** ./node_modules/lodash/_Symbol.js ***!
+  \****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var root = __webpack_require__(/*! ./_root */ "./node_modules/lodash/_root.js");
+
+/** Built-in value references. */
+var Symbol = root.Symbol;
+
+module.exports = Symbol;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_baseGetTag.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash/_baseGetTag.js ***!
+  \********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var Symbol = __webpack_require__(/*! ./_Symbol */ "./node_modules/lodash/_Symbol.js"),
+    getRawTag = __webpack_require__(/*! ./_getRawTag */ "./node_modules/lodash/_getRawTag.js"),
+    objectToString = __webpack_require__(/*! ./_objectToString */ "./node_modules/lodash/_objectToString.js");
+
+/** `Object#toString` result references. */
+var nullTag = '[object Null]',
+    undefinedTag = '[object Undefined]';
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+/**
+ * The base implementation of `getTag` without fallbacks for buggy environments.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the `toStringTag`.
+ */
+function baseGetTag(value) {
+  if (value == null) {
+    return value === undefined ? undefinedTag : nullTag;
+  }
+  return (symToStringTag && symToStringTag in Object(value))
+    ? getRawTag(value)
+    : objectToString(value);
+}
+
+module.exports = baseGetTag;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_baseTrim.js":
+/*!******************************************!*\
+  !*** ./node_modules/lodash/_baseTrim.js ***!
+  \******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var trimmedEndIndex = __webpack_require__(/*! ./_trimmedEndIndex */ "./node_modules/lodash/_trimmedEndIndex.js");
+
+/** Used to match leading whitespace. */
+var reTrimStart = /^\s+/;
+
+/**
+ * The base implementation of `_.trim`.
+ *
+ * @private
+ * @param {string} string The string to trim.
+ * @returns {string} Returns the trimmed string.
+ */
+function baseTrim(string) {
+  return string
+    ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
+    : string;
+}
+
+module.exports = baseTrim;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_freeGlobal.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash/_freeGlobal.js ***!
+  \********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof __webpack_require__.g == 'object' && __webpack_require__.g && __webpack_require__.g.Object === Object && __webpack_require__.g;
+
+module.exports = freeGlobal;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_getRawTag.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash/_getRawTag.js ***!
+  \*******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var Symbol = __webpack_require__(/*! ./_Symbol */ "./node_modules/lodash/_Symbol.js");
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+/**
+ * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the raw `toStringTag`.
+ */
+function getRawTag(value) {
+  var isOwn = hasOwnProperty.call(value, symToStringTag),
+      tag = value[symToStringTag];
+
+  try {
+    value[symToStringTag] = undefined;
+    var unmasked = true;
+  } catch (e) {}
+
+  var result = nativeObjectToString.call(value);
+  if (unmasked) {
+    if (isOwn) {
+      value[symToStringTag] = tag;
+    } else {
+      delete value[symToStringTag];
+    }
+  }
+  return result;
+}
+
+module.exports = getRawTag;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_objectToString.js":
+/*!************************************************!*\
+  !*** ./node_modules/lodash/_objectToString.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/**
+ * Converts `value` to a string using `Object.prototype.toString`.
+ *
+ * @private
+ * @param {*} value The value to convert.
+ * @returns {string} Returns the converted string.
+ */
+function objectToString(value) {
+  return nativeObjectToString.call(value);
+}
+
+module.exports = objectToString;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_root.js":
+/*!**************************************!*\
+  !*** ./node_modules/lodash/_root.js ***!
+  \**************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var freeGlobal = __webpack_require__(/*! ./_freeGlobal */ "./node_modules/lodash/_freeGlobal.js");
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+module.exports = root;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_trimmedEndIndex.js":
+/*!*************************************************!*\
+  !*** ./node_modules/lodash/_trimmedEndIndex.js ***!
+  \*************************************************/
+/***/ ((module) => {
+
+/** Used to match a single whitespace character. */
+var reWhitespace = /\s/;
+
+/**
+ * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
+ * character of `string`.
+ *
+ * @private
+ * @param {string} string The string to inspect.
+ * @returns {number} Returns the index of the last non-whitespace character.
+ */
+function trimmedEndIndex(string) {
+  var index = string.length;
+
+  while (index-- && reWhitespace.test(string.charAt(index))) {}
+  return index;
+}
+
+module.exports = trimmedEndIndex;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/debounce.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/debounce.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var isObject = __webpack_require__(/*! ./isObject */ "./node_modules/lodash/isObject.js"),
+    now = __webpack_require__(/*! ./now */ "./node_modules/lodash/now.js"),
+    toNumber = __webpack_require__(/*! ./toNumber */ "./node_modules/lodash/toNumber.js");
+
+/** Error message constants. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max,
+    nativeMin = Math.min;
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed `func` invocations and a `flush` method to immediately invoke them.
+ * Provide `options` to indicate whether `func` should be invoked on the
+ * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+ * with the last arguments provided to the debounced function. Subsequent
+ * calls to the debounced function return the result of the last `func`
+ * invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the debounced function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=false]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {number} [options.maxWait]
+ *  The maximum time `func` is allowed to be delayed before it's invoked.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // Avoid costly calculations while the window size is in flux.
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+ * jQuery(element).on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+ * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', debounced);
+ *
+ * // Cancel the trailing debounced invocation.
+ * jQuery(window).on('popstate', debounced.cancel);
+ */
+function debounce(func, wait, options) {
+  var lastArgs,
+      lastThis,
+      maxWait,
+      result,
+      timerId,
+      lastCallTime,
+      lastInvokeTime = 0,
+      leading = false,
+      maxing = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = toNumber(wait) || 0;
+  if (isObject(options)) {
+    leading = !!options.leading;
+    maxing = 'maxWait' in options;
+    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+
+  function invokeFunc(time) {
+    var args = lastArgs,
+        thisArg = lastThis;
+
+    lastArgs = lastThis = undefined;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+
+  function leadingEdge(time) {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time;
+    // Start the timer for the trailing edge.
+    timerId = setTimeout(timerExpired, wait);
+    // Invoke the leading edge.
+    return leading ? invokeFunc(time) : result;
+  }
+
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime,
+        timeWaiting = wait - timeSinceLastCall;
+
+    return maxing
+      ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
+      : timeWaiting;
+  }
+
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime;
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+  }
+
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+
+  function trailingEdge(time) {
+    timerId = undefined;
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = undefined;
+    return result;
+  }
+
+  function cancel() {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = undefined;
+  }
+
+  function flush() {
+    return timerId === undefined ? result : trailingEdge(now());
+  }
+
+  function debounced() {
+    var time = now(),
+        isInvoking = shouldInvoke(time);
+
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timerId === undefined) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        // Handle invocations in a tight loop.
+        clearTimeout(timerId);
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === undefined) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
+}
+
+module.exports = debounce;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isObject.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/isObject.js ***!
+  \*****************************************/
+/***/ ((module) => {
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return value != null && (type == 'object' || type == 'function');
+}
+
+module.exports = isObject;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isObjectLike.js":
+/*!*********************************************!*\
+  !*** ./node_modules/lodash/isObjectLike.js ***!
+  \*********************************************/
+/***/ ((module) => {
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return value != null && typeof value == 'object';
+}
+
+module.exports = isObjectLike;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isSymbol.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/isSymbol.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var baseGetTag = __webpack_require__(/*! ./_baseGetTag */ "./node_modules/lodash/_baseGetTag.js"),
+    isObjectLike = __webpack_require__(/*! ./isObjectLike */ "./node_modules/lodash/isObjectLike.js");
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && baseGetTag(value) == symbolTag);
+}
+
+module.exports = isSymbol;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/now.js":
+/*!************************************!*\
+  !*** ./node_modules/lodash/now.js ***!
+  \************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var root = __webpack_require__(/*! ./_root */ "./node_modules/lodash/_root.js");
+
+/**
+ * Gets the timestamp of the number of milliseconds that have elapsed since
+ * the Unix epoch (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Date
+ * @returns {number} Returns the timestamp.
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => Logs the number of milliseconds it took for the deferred invocation.
+ */
+var now = function() {
+  return root.Date.now();
+};
+
+module.exports = now;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/throttle.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/throttle.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var debounce = __webpack_require__(/*! ./debounce */ "./node_modules/lodash/debounce.js"),
+    isObject = __webpack_require__(/*! ./isObject */ "./node_modules/lodash/isObject.js");
+
+/** Error message constants. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a throttled function that only invokes `func` at most once per
+ * every `wait` milliseconds. The throttled function comes with a `cancel`
+ * method to cancel delayed `func` invocations and a `flush` method to
+ * immediately invoke them. Provide `options` to indicate whether `func`
+ * should be invoked on the leading and/or trailing edge of the `wait`
+ * timeout. The `func` is invoked with the last arguments provided to the
+ * throttled function. Subsequent calls to the throttled function return the
+ * result of the last `func` invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the throttled function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.throttle` and `_.debounce`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to throttle.
+ * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=true]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new throttled function.
+ * @example
+ *
+ * // Avoid excessively updating the position while scrolling.
+ * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+ *
+ * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
+ * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
+ * jQuery(element).on('click', throttled);
+ *
+ * // Cancel the trailing throttled invocation.
+ * jQuery(window).on('popstate', throttled.cancel);
+ */
+function throttle(func, wait, options) {
+  var leading = true,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  if (isObject(options)) {
+    leading = 'leading' in options ? !!options.leading : leading;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+  return debounce(func, wait, {
+    'leading': leading,
+    'maxWait': wait,
+    'trailing': trailing
+  });
+}
+
+module.exports = throttle;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/toNumber.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/toNumber.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var baseTrim = __webpack_require__(/*! ./_baseTrim */ "./node_modules/lodash/_baseTrim.js"),
+    isObject = __webpack_require__(/*! ./isObject */ "./node_modules/lodash/isObject.js"),
+    isSymbol = __webpack_require__(/*! ./isSymbol */ "./node_modules/lodash/isSymbol.js");
+
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = baseTrim(value);
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+module.exports = toNumber;
 
 
 /***/ }),
@@ -53583,6 +57515,15060 @@ if (false) // removed by dead control flow
 
 /***/ }),
 
+/***/ "./node_modules/scroll-into-view-if-needed/dist/index.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/scroll-into-view-if-needed/dist/index.js ***!
+  \***************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ e)
+/* harmony export */ });
+/* harmony import */ var compute_scroll_into_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! compute-scroll-into-view */ "./node_modules/compute-scroll-into-view/dist/index.js");
+const o=t=>!1===t?{block:"end",inline:"nearest"}:(t=>t===Object(t)&&0!==Object.keys(t).length)(t)?t:{block:"start",inline:"nearest"};function e(e,r){if(!e.isConnected||!(t=>{let o=t;for(;o&&o.parentNode;){if(o.parentNode===document)return!0;o=o.parentNode instanceof ShadowRoot?o.parentNode.host:o.parentNode}return!1})(e))return;const n=(t=>{const o=window.getComputedStyle(t);return{top:parseFloat(o.scrollMarginTop)||0,right:parseFloat(o.scrollMarginRight)||0,bottom:parseFloat(o.scrollMarginBottom)||0,left:parseFloat(o.scrollMarginLeft)||0}})(e);if((t=>"object"==typeof t&&"function"==typeof t.behavior)(r))return r.behavior((0,compute_scroll_into_view__WEBPACK_IMPORTED_MODULE_0__.compute)(e,r));const l="boolean"==typeof r||null==r?void 0:r.behavior;for(const{el:a,top:i,left:s}of (0,compute_scroll_into_view__WEBPACK_IMPORTED_MODULE_0__.compute)(e,o(r))){const t=i-n.top+n.bottom,o=s-n.left+n.right;a.scroll({top:t,left:o,behavior:l})}}//# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/slate-dom/dist/index.es.js":
+/*!*************************************************!*\
+  !*** ./node_modules/slate-dom/dist/index.es.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CAN_USE_DOM: () => (/* binding */ CAN_USE_DOM),
+/* harmony export */   DOMEditor: () => (/* binding */ DOMEditor),
+/* harmony export */   DOMElement: () => (/* binding */ DOMElement),
+/* harmony export */   DOMNode: () => (/* binding */ DOMNode),
+/* harmony export */   DOMRange: () => (/* binding */ DOMRange),
+/* harmony export */   DOMSelection: () => (/* binding */ DOMSelection),
+/* harmony export */   DOMStaticRange: () => (/* binding */ DOMStaticRange),
+/* harmony export */   DOMText: () => (/* binding */ DOMText),
+/* harmony export */   EDITOR_TO_ELEMENT: () => (/* binding */ EDITOR_TO_ELEMENT),
+/* harmony export */   EDITOR_TO_FORCE_RENDER: () => (/* binding */ EDITOR_TO_FORCE_RENDER),
+/* harmony export */   EDITOR_TO_KEY_TO_ELEMENT: () => (/* binding */ EDITOR_TO_KEY_TO_ELEMENT),
+/* harmony export */   EDITOR_TO_ON_CHANGE: () => (/* binding */ EDITOR_TO_ON_CHANGE),
+/* harmony export */   EDITOR_TO_PENDING_ACTION: () => (/* binding */ EDITOR_TO_PENDING_ACTION),
+/* harmony export */   EDITOR_TO_PENDING_DIFFS: () => (/* binding */ EDITOR_TO_PENDING_DIFFS),
+/* harmony export */   EDITOR_TO_PENDING_INSERTION_MARKS: () => (/* binding */ EDITOR_TO_PENDING_INSERTION_MARKS),
+/* harmony export */   EDITOR_TO_PENDING_SELECTION: () => (/* binding */ EDITOR_TO_PENDING_SELECTION),
+/* harmony export */   EDITOR_TO_PLACEHOLDER_ELEMENT: () => (/* binding */ EDITOR_TO_PLACEHOLDER_ELEMENT),
+/* harmony export */   EDITOR_TO_SCHEDULE_FLUSH: () => (/* binding */ EDITOR_TO_SCHEDULE_FLUSH),
+/* harmony export */   EDITOR_TO_USER_MARKS: () => (/* binding */ EDITOR_TO_USER_MARKS),
+/* harmony export */   EDITOR_TO_USER_SELECTION: () => (/* binding */ EDITOR_TO_USER_SELECTION),
+/* harmony export */   EDITOR_TO_WINDOW: () => (/* binding */ EDITOR_TO_WINDOW),
+/* harmony export */   ELEMENT_TO_NODE: () => (/* binding */ ELEMENT_TO_NODE),
+/* harmony export */   HAS_BEFORE_INPUT_SUPPORT: () => (/* binding */ HAS_BEFORE_INPUT_SUPPORT),
+/* harmony export */   Hotkeys: () => (/* binding */ hotkeys),
+/* harmony export */   IS_ANDROID: () => (/* binding */ IS_ANDROID),
+/* harmony export */   IS_CHROME: () => (/* binding */ IS_CHROME),
+/* harmony export */   IS_COMPOSING: () => (/* binding */ IS_COMPOSING),
+/* harmony export */   IS_FIREFOX: () => (/* binding */ IS_FIREFOX),
+/* harmony export */   IS_FIREFOX_LEGACY: () => (/* binding */ IS_FIREFOX_LEGACY),
+/* harmony export */   IS_FOCUSED: () => (/* binding */ IS_FOCUSED),
+/* harmony export */   IS_IOS: () => (/* binding */ IS_IOS),
+/* harmony export */   IS_NODE_MAP_DIRTY: () => (/* binding */ IS_NODE_MAP_DIRTY),
+/* harmony export */   IS_READ_ONLY: () => (/* binding */ IS_READ_ONLY),
+/* harmony export */   IS_UC_MOBILE: () => (/* binding */ IS_UC_MOBILE),
+/* harmony export */   IS_WEBKIT: () => (/* binding */ IS_WEBKIT),
+/* harmony export */   IS_WECHATBROWSER: () => (/* binding */ IS_WECHATBROWSER),
+/* harmony export */   Key: () => (/* binding */ Key),
+/* harmony export */   MARK_PLACEHOLDER_SYMBOL: () => (/* binding */ MARK_PLACEHOLDER_SYMBOL),
+/* harmony export */   NODE_TO_ELEMENT: () => (/* binding */ NODE_TO_ELEMENT),
+/* harmony export */   NODE_TO_INDEX: () => (/* binding */ NODE_TO_INDEX),
+/* harmony export */   NODE_TO_KEY: () => (/* binding */ NODE_TO_KEY),
+/* harmony export */   NODE_TO_PARENT: () => (/* binding */ NODE_TO_PARENT),
+/* harmony export */   PLACEHOLDER_SYMBOL: () => (/* binding */ PLACEHOLDER_SYMBOL),
+/* harmony export */   TRIPLE_CLICK: () => (/* binding */ TRIPLE_CLICK),
+/* harmony export */   applyStringDiff: () => (/* binding */ applyStringDiff),
+/* harmony export */   getActiveElement: () => (/* binding */ getActiveElement),
+/* harmony export */   getDefaultView: () => (/* binding */ getDefaultView),
+/* harmony export */   getSelection: () => (/* binding */ getSelection),
+/* harmony export */   hasShadowRoot: () => (/* binding */ hasShadowRoot),
+/* harmony export */   isAfter: () => (/* binding */ isAfter),
+/* harmony export */   isBefore: () => (/* binding */ isBefore),
+/* harmony export */   isDOMElement: () => (/* binding */ isDOMElement),
+/* harmony export */   isDOMNode: () => (/* binding */ isDOMNode),
+/* harmony export */   isDOMSelection: () => (/* binding */ isDOMSelection),
+/* harmony export */   isElementDecorationsEqual: () => (/* binding */ isElementDecorationsEqual),
+/* harmony export */   isPlainTextOnlyPaste: () => (/* binding */ isPlainTextOnlyPaste),
+/* harmony export */   isTextDecorationsEqual: () => (/* binding */ isTextDecorationsEqual),
+/* harmony export */   isTrackedMutation: () => (/* binding */ isTrackedMutation),
+/* harmony export */   mergeStringDiffs: () => (/* binding */ mergeStringDiffs),
+/* harmony export */   normalizeDOMPoint: () => (/* binding */ normalizeDOMPoint),
+/* harmony export */   normalizePoint: () => (/* binding */ normalizePoint),
+/* harmony export */   normalizeRange: () => (/* binding */ normalizeRange),
+/* harmony export */   normalizeStringDiff: () => (/* binding */ normalizeStringDiff),
+/* harmony export */   splitDecorationsByChild: () => (/* binding */ splitDecorationsByChild),
+/* harmony export */   targetRange: () => (/* binding */ targetRange),
+/* harmony export */   verifyDiffState: () => (/* binding */ verifyDiffState),
+/* harmony export */   withDOM: () => (/* binding */ withDOM)
+/* harmony export */ });
+/* harmony import */ var slate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! slate */ "./node_modules/slate/dist/index.es.js");
+/* harmony import */ var is_hotkey__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! is-hotkey */ "./node_modules/is-hotkey/lib/index.js");
+
+
+
+/**
+ * Types.
+ */
+// COMPAT: This is required to prevent TypeScript aliases from doing some very
+// weird things for Slate's types with the same name as globals. (2019/11/27)
+// https://github.com/microsoft/TypeScript/issues/35002
+var DOMNode = globalThis.Node;
+var DOMElement = globalThis.Element;
+var DOMText = globalThis.Text;
+var DOMRange = globalThis.Range;
+var DOMSelection = globalThis.Selection;
+var DOMStaticRange = globalThis.StaticRange;
+/**
+ * Returns the host window of a DOM node
+ */
+var getDefaultView = value => {
+  return value && value.ownerDocument && value.ownerDocument.defaultView || null;
+};
+/**
+ * Check if a DOM node is a comment node.
+ */
+var isDOMComment = value => {
+  return isDOMNode(value) && value.nodeType === 8;
+};
+/**
+ * Check if a DOM node is an element node.
+ */
+var isDOMElement = value => {
+  return isDOMNode(value) && value.nodeType === 1;
+};
+/**
+ * Check if a value is a DOM node.
+ */
+var isDOMNode = value => {
+  var window = getDefaultView(value);
+  return !!window && value instanceof window.Node;
+};
+/**
+ * Check if a value is a DOM selection.
+ */
+var isDOMSelection = value => {
+  var window = value && value.anchorNode && getDefaultView(value.anchorNode);
+  return !!window && value instanceof window.Selection;
+};
+/**
+ * Check if a DOM node is an element node.
+ */
+var isDOMText = value => {
+  return isDOMNode(value) && value.nodeType === 3;
+};
+/**
+ * Checks whether a paste event is a plaintext-only event.
+ */
+var isPlainTextOnlyPaste = event => {
+  return event.clipboardData && event.clipboardData.getData('text/plain') !== '' && event.clipboardData.types.length === 1;
+};
+/**
+ * Normalize a DOM point so that it always refers to a text node.
+ */
+var normalizeDOMPoint = domPoint => {
+  var [node, offset] = domPoint;
+  // If it's an element node, its offset refers to the index of its children
+  // including comment nodes, so try to find the right text child node.
+  if (isDOMElement(node) && node.childNodes.length) {
+    var isLast = offset === node.childNodes.length;
+    var index = isLast ? offset - 1 : offset;
+    [node, index] = getEditableChildAndIndex(node, index, isLast ? 'backward' : 'forward');
+    // If the editable child found is in front of input offset, we instead seek to its end
+    isLast = index < offset;
+    // If the node has children, traverse until we have a leaf node. Leaf nodes
+    // can be either text nodes, or other void DOM nodes.
+    while (isDOMElement(node) && node.childNodes.length) {
+      var i = isLast ? node.childNodes.length - 1 : 0;
+      node = getEditableChild(node, i, isLast ? 'backward' : 'forward');
+    }
+    // Determine the new offset inside the text node.
+    offset = isLast && node.textContent != null ? node.textContent.length : 0;
+  }
+  // Return the node and offset.
+  return [node, offset];
+};
+/**
+ * Determines whether the active element is nested within a shadowRoot
+ */
+var hasShadowRoot = node => {
+  var parent = node && node.parentNode;
+  while (parent) {
+    if (parent.toString() === '[object ShadowRoot]') {
+      return true;
+    }
+    parent = parent.parentNode;
+  }
+  return false;
+};
+/**
+ * Get the nearest editable child and index at `index` in a `parent`, preferring
+ * `direction`.
+ */
+var getEditableChildAndIndex = (parent, index, direction) => {
+  var {
+    childNodes
+  } = parent;
+  var child = childNodes[index];
+  var i = index;
+  var triedForward = false;
+  var triedBackward = false;
+  // While the child is a comment node, or an element node with no children,
+  // keep iterating to find a sibling non-void, non-comment node.
+  while (isDOMComment(child) || isDOMElement(child) && child.childNodes.length === 0 || isDOMElement(child) && child.getAttribute('contenteditable') === 'false') {
+    if (triedForward && triedBackward) {
+      break;
+    }
+    if (i >= childNodes.length) {
+      triedForward = true;
+      i = index - 1;
+      direction = 'backward';
+      continue;
+    }
+    if (i < 0) {
+      triedBackward = true;
+      i = index + 1;
+      direction = 'forward';
+      continue;
+    }
+    child = childNodes[i];
+    index = i;
+    i += direction === 'forward' ? 1 : -1;
+  }
+  return [child, index];
+};
+/**
+ * Get the nearest editable child at `index` in a `parent`, preferring
+ * `direction`.
+ */
+var getEditableChild = (parent, index, direction) => {
+  var [child] = getEditableChildAndIndex(parent, index, direction);
+  return child;
+};
+/**
+ * Get a plaintext representation of the content of a node, accounting for block
+ * elements which get a newline appended.
+ *
+ * The domNode must be attached to the DOM.
+ */
+var getPlainText = domNode => {
+  var text = '';
+  if (isDOMText(domNode) && domNode.nodeValue) {
+    return domNode.nodeValue;
+  }
+  if (isDOMElement(domNode)) {
+    for (var childNode of Array.from(domNode.childNodes)) {
+      text += getPlainText(childNode);
+    }
+    var display = getComputedStyle(domNode).getPropertyValue('display');
+    if (display === 'block' || display === 'list' || domNode.tagName === 'BR') {
+      text += '\n';
+    }
+  }
+  return text;
+};
+/**
+ * Get x-slate-fragment attribute from data-slate-fragment
+ */
+var catchSlateFragment = /data-slate-fragment="(.+?)"/m;
+var getSlateFragmentAttribute = dataTransfer => {
+  var htmlData = dataTransfer.getData('text/html');
+  var [, fragment] = htmlData.match(catchSlateFragment) || [];
+  return fragment;
+};
+/**
+ * Get the dom selection from Shadow Root if possible, otherwise from the document
+ */
+var getSelection = root => {
+  if (root.getSelection != null) {
+    return root.getSelection();
+  }
+  return document.getSelection();
+};
+/**
+ * Check whether a mutation originates from a editable element inside the editor.
+ */
+var isTrackedMutation = (editor, mutation, batch) => {
+  var {
+    target
+  } = mutation;
+  if (isDOMElement(target) && target.matches('[contentEditable="false"]')) {
+    return false;
+  }
+  var {
+    document
+  } = DOMEditor.getWindow(editor);
+  if (document.contains(target)) {
+    return DOMEditor.hasDOMNode(editor, target, {
+      editable: true
+    });
+  }
+  var parentMutation = batch.find(_ref => {
+    var {
+      addedNodes,
+      removedNodes
+    } = _ref;
+    for (var node of addedNodes) {
+      if (node === target || node.contains(target)) {
+        return true;
+      }
+    }
+    for (var _node of removedNodes) {
+      if (_node === target || _node.contains(target)) {
+        return true;
+      }
+    }
+  });
+  if (!parentMutation || parentMutation === mutation) {
+    return false;
+  }
+  // Target add/remove is tracked. Track the mutation if we track the parent mutation.
+  return isTrackedMutation(editor, parentMutation, batch);
+};
+/**
+ * Retrieves the deepest active element in the DOM, considering nested shadow DOMs.
+ */
+var getActiveElement = () => {
+  var activeElement = document.activeElement;
+  while ((_activeElement = activeElement) !== null && _activeElement !== void 0 && _activeElement.shadowRoot && (_activeElement$shadow = activeElement.shadowRoot) !== null && _activeElement$shadow !== void 0 && _activeElement$shadow.activeElement) {
+    var _activeElement, _activeElement$shadow, _activeElement2;
+    activeElement = (_activeElement2 = activeElement) === null || _activeElement2 === void 0 || (_activeElement2 = _activeElement2.shadowRoot) === null || _activeElement2 === void 0 ? void 0 : _activeElement2.activeElement;
+  }
+  return activeElement;
+};
+/**
+ * @returns `true` if `otherNode` is before `node` in the document; otherwise, `false`.
+ */
+var isBefore = (node, otherNode) => Boolean(node.compareDocumentPosition(otherNode) & DOMNode.DOCUMENT_POSITION_PRECEDING);
+/**
+ * @returns `true` if `otherNode` is after `node` in the document; otherwise, `false`.
+ */
+var isAfter = (node, otherNode) => Boolean(node.compareDocumentPosition(otherNode) & DOMNode.DOCUMENT_POSITION_FOLLOWING);
+
+var _navigator$userAgent$, _navigator$userAgent$2;
+var IS_IOS = typeof navigator !== 'undefined' && typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+var IS_APPLE = typeof navigator !== 'undefined' && /Mac OS X/.test(navigator.userAgent);
+var IS_ANDROID = typeof navigator !== 'undefined' && /Android/.test(navigator.userAgent);
+var IS_FIREFOX = typeof navigator !== 'undefined' && /^(?!.*Seamonkey)(?=.*Firefox).*/i.test(navigator.userAgent);
+var IS_WEBKIT = typeof navigator !== 'undefined' && /AppleWebKit(?!.*Chrome)/i.test(navigator.userAgent);
+// "modern" Edge was released at 79.x
+var IS_EDGE_LEGACY = typeof navigator !== 'undefined' && /Edge?\/(?:[0-6][0-9]|[0-7][0-8])(?:\.)/i.test(navigator.userAgent);
+var IS_CHROME = typeof navigator !== 'undefined' && /Chrome/i.test(navigator.userAgent);
+// Native `beforeInput` events don't work well with react on Chrome 75
+// and older, Chrome 76+ can use `beforeInput` though.
+var IS_CHROME_LEGACY = typeof navigator !== 'undefined' && /Chrome?\/(?:[0-7][0-5]|[0-6][0-9])(?:\.)/i.test(navigator.userAgent);
+var IS_ANDROID_CHROME_LEGACY = IS_ANDROID && typeof navigator !== 'undefined' && /Chrome?\/(?:[0-5]?\d)(?:\.)/i.test(navigator.userAgent);
+// Firefox did not support `beforeInput` until `v87`.
+var IS_FIREFOX_LEGACY = typeof navigator !== 'undefined' && /^(?!.*Seamonkey)(?=.*Firefox\/(?:[0-7][0-9]|[0-8][0-6])(?:\.)).*/i.test(navigator.userAgent);
+// UC mobile browser
+var IS_UC_MOBILE = typeof navigator !== 'undefined' && /.*UCBrowser/.test(navigator.userAgent);
+// Wechat browser (not including mac wechat)
+var IS_WECHATBROWSER = typeof navigator !== 'undefined' && /.*Wechat/.test(navigator.userAgent) && !/.*MacWechat/.test(navigator.userAgent) && (
+// avoid lookbehind (buggy in safari < 16.4)
+!IS_CHROME || IS_CHROME_LEGACY); // wechat and low chrome is real wechat
+// Check if DOM is available as React does internally.
+// https://github.com/facebook/react/blob/master/packages/shared/ExecutionEnvironment.js
+var CAN_USE_DOM = !!(typeof window !== 'undefined' && typeof window.document !== 'undefined' && typeof window.document.createElement !== 'undefined');
+// Check if the browser is Safari and older than 17
+typeof navigator !== 'undefined' && /Safari/.test(navigator.userAgent) && /Version\/(\d+)/.test(navigator.userAgent) && ((_navigator$userAgent$ = navigator.userAgent.match(/Version\/(\d+)/)) !== null && _navigator$userAgent$ !== void 0 && _navigator$userAgent$[1] ? parseInt((_navigator$userAgent$2 = navigator.userAgent.match(/Version\/(\d+)/)) === null || _navigator$userAgent$2 === void 0 ? void 0 : _navigator$userAgent$2[1], 10) < 17 : false);
+// COMPAT: Firefox/Edge Legacy don't support the `beforeinput` event
+// Chrome Legacy doesn't support `beforeinput` correctly
+var HAS_BEFORE_INPUT_SUPPORT = (!IS_CHROME_LEGACY || !IS_ANDROID_CHROME_LEGACY) && !IS_EDGE_LEGACY &&
+// globalThis is undefined in older browsers
+typeof globalThis !== 'undefined' && globalThis.InputEvent &&
+// @ts-ignore The `getTargetRanges` property isn't recognized.
+typeof globalThis.InputEvent.prototype.getTargetRanges === 'function';
+
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+
+function _toPrimitive(input, hint) {
+  if (_typeof(input) !== "object" || input === null) return input;
+  var prim = input[Symbol.toPrimitive];
+  if (prim !== undefined) {
+    var res = prim.call(input, hint || "default");
+    if (_typeof(res) !== "object") return res;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (hint === "string" ? String : Number)(input);
+}
+
+function _toPropertyKey(arg) {
+  var key = _toPrimitive(arg, "string");
+  return _typeof(key) === "symbol" ? key : String(key);
+}
+
+function _defineProperty(obj, key, value) {
+  key = _toPropertyKey(key);
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+
+/**
+ * An auto-incrementing identifier for keys.
+ */
+var n = 0;
+/**
+ * A class that keeps track of a key string. We use a full class here because we
+ * want to be able to use them as keys in `WeakMap` objects.
+ */
+class Key {
+  constructor() {
+    _defineProperty(this, "id", void 0);
+    this.id = "".concat(n++);
+  }
+}
+
+/**
+ * Two weak maps that allow us rebuild a path given a node. They are populated
+ * at render time such that after a render occurs we can always backtrack.
+ */
+var IS_NODE_MAP_DIRTY = new WeakMap();
+var NODE_TO_INDEX = new WeakMap();
+var NODE_TO_PARENT = new WeakMap();
+/**
+ * Weak maps that allow us to go between Slate nodes and DOM nodes. These
+ * are used to resolve DOM event-related logic into Slate actions.
+ */
+var EDITOR_TO_WINDOW = new WeakMap();
+var EDITOR_TO_ELEMENT = new WeakMap();
+var EDITOR_TO_PLACEHOLDER_ELEMENT = new WeakMap();
+var ELEMENT_TO_NODE = new WeakMap();
+var NODE_TO_ELEMENT = new WeakMap();
+var NODE_TO_KEY = new WeakMap();
+var EDITOR_TO_KEY_TO_ELEMENT = new WeakMap();
+/**
+ * Weak maps for storing editor-related state.
+ */
+var IS_READ_ONLY = new WeakMap();
+var IS_FOCUSED = new WeakMap();
+var IS_COMPOSING = new WeakMap();
+var EDITOR_TO_USER_SELECTION = new WeakMap();
+/**
+ * Weak map for associating the context `onChange` context with the plugin.
+ */
+var EDITOR_TO_ON_CHANGE = new WeakMap();
+/**
+ * Weak maps for saving pending state on composition stage.
+ */
+var EDITOR_TO_SCHEDULE_FLUSH = new WeakMap();
+var EDITOR_TO_PENDING_INSERTION_MARKS = new WeakMap();
+var EDITOR_TO_USER_MARKS = new WeakMap();
+/**
+ * Android input handling specific weak-maps
+ */
+var EDITOR_TO_PENDING_DIFFS = new WeakMap();
+var EDITOR_TO_PENDING_ACTION = new WeakMap();
+var EDITOR_TO_PENDING_SELECTION = new WeakMap();
+var EDITOR_TO_FORCE_RENDER = new WeakMap();
+/**
+ * Symbols.
+ */
+var PLACEHOLDER_SYMBOL = Symbol('placeholder');
+var MARK_PLACEHOLDER_SYMBOL = Symbol('mark-placeholder');
+
+// eslint-disable-next-line no-redeclare
+var DOMEditor = {
+  androidPendingDiffs: editor => EDITOR_TO_PENDING_DIFFS.get(editor),
+  androidScheduleFlush: editor => {
+    var _EDITOR_TO_SCHEDULE_F;
+    (_EDITOR_TO_SCHEDULE_F = EDITOR_TO_SCHEDULE_FLUSH.get(editor)) === null || _EDITOR_TO_SCHEDULE_F === void 0 || _EDITOR_TO_SCHEDULE_F();
+  },
+  blur: editor => {
+    var el = DOMEditor.toDOMNode(editor, editor);
+    var root = DOMEditor.findDocumentOrShadowRoot(editor);
+    IS_FOCUSED.set(editor, false);
+    if (root.activeElement === el) {
+      el.blur();
+    }
+  },
+  deselect: editor => {
+    var {
+      selection
+    } = editor;
+    var root = DOMEditor.findDocumentOrShadowRoot(editor);
+    var domSelection = getSelection(root);
+    if (domSelection && domSelection.rangeCount > 0) {
+      domSelection.removeAllRanges();
+    }
+    if (selection) {
+      slate__WEBPACK_IMPORTED_MODULE_0__.Transforms.deselect(editor);
+    }
+  },
+  findDocumentOrShadowRoot: editor => {
+    var el = DOMEditor.toDOMNode(editor, editor);
+    var root = el.getRootNode();
+    if (root instanceof Document || root instanceof ShadowRoot) {
+      return root;
+    }
+    return el.ownerDocument;
+  },
+  findEventRange: (editor, event) => {
+    if ('nativeEvent' in event) {
+      event = event.nativeEvent;
+    }
+    var {
+      clientX: x,
+      clientY: y,
+      target
+    } = event;
+    if (x == null || y == null) {
+      throw new Error("Cannot resolve a Slate range from a DOM event: ".concat(event));
+    }
+    var node = DOMEditor.toSlateNode(editor, event.target);
+    var path = DOMEditor.findPath(editor, node);
+    // If the drop target is inside a void node, move it into either the
+    // next or previous node, depending on which side the `x` and `y`
+    // coordinates are closest to.
+    if (slate__WEBPACK_IMPORTED_MODULE_0__.Element.isElement(node) && slate__WEBPACK_IMPORTED_MODULE_0__.Editor.isVoid(editor, node)) {
+      var rect = target.getBoundingClientRect();
+      var isPrev = editor.isInline(node) ? x - rect.left < rect.left + rect.width - x : y - rect.top < rect.top + rect.height - y;
+      var edge = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.point(editor, path, {
+        edge: isPrev ? 'start' : 'end'
+      });
+      var point = isPrev ? slate__WEBPACK_IMPORTED_MODULE_0__.Editor.before(editor, edge) : slate__WEBPACK_IMPORTED_MODULE_0__.Editor.after(editor, edge);
+      if (point) {
+        var _range = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, point);
+        return _range;
+      }
+    }
+    // Else resolve a range from the caret position where the drop occured.
+    var domRange;
+    var {
+      document
+    } = DOMEditor.getWindow(editor);
+    // COMPAT: In Firefox, `caretRangeFromPoint` doesn't exist. (2016/07/25)
+    if (document.caretRangeFromPoint) {
+      domRange = document.caretRangeFromPoint(x, y);
+    } else {
+      var position = document.caretPositionFromPoint(x, y);
+      if (position) {
+        domRange = document.createRange();
+        domRange.setStart(position.offsetNode, position.offset);
+        domRange.setEnd(position.offsetNode, position.offset);
+      }
+    }
+    if (!domRange) {
+      throw new Error("Cannot resolve a Slate range from a DOM event: ".concat(event));
+    }
+    // Resolve a Slate range from the DOM range.
+    var range = DOMEditor.toSlateRange(editor, domRange, {
+      exactMatch: false,
+      suppressThrow: false
+    });
+    return range;
+  },
+  findKey: (editor, node) => {
+    var key = NODE_TO_KEY.get(node);
+    if (!key) {
+      key = new Key();
+      NODE_TO_KEY.set(node, key);
+    }
+    return key;
+  },
+  findPath: (editor, node) => {
+    var path = [];
+    var child = node;
+    while (true) {
+      var parent = NODE_TO_PARENT.get(child);
+      if (parent == null) {
+        if (slate__WEBPACK_IMPORTED_MODULE_0__.Editor.isEditor(child)) {
+          return path;
+        } else {
+          break;
+        }
+      }
+      var i = NODE_TO_INDEX.get(child);
+      if (i == null) {
+        break;
+      }
+      path.unshift(i);
+      child = parent;
+    }
+    throw new Error("Unable to find the path for Slate node: ".concat(slate__WEBPACK_IMPORTED_MODULE_0__.Scrubber.stringify(node)));
+  },
+  focus: function focus(editor) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+      retries: 5
+    };
+    // Return if already focused
+    if (IS_FOCUSED.get(editor)) {
+      return;
+    }
+    // Return if no dom node is associated with the editor, which means the editor is not yet mounted
+    // or has been unmounted. This can happen especially, while retrying to focus the editor.
+    if (!EDITOR_TO_ELEMENT.get(editor)) {
+      return;
+    }
+    // Retry setting focus if the editor has pending operations.
+    // The DOM (selection) is unstable while changes are applied.
+    // Retry until retries are exhausted or editor is focused.
+    if (options.retries <= 0) {
+      throw new Error('Could not set focus, editor seems stuck with pending operations');
+    }
+    if (editor.operations.length > 0) {
+      setTimeout(() => {
+        DOMEditor.focus(editor, {
+          retries: options.retries - 1
+        });
+      }, 10);
+      return;
+    }
+    var el = DOMEditor.toDOMNode(editor, editor);
+    var root = DOMEditor.findDocumentOrShadowRoot(editor);
+    if (root.activeElement !== el) {
+      // Ensure that the DOM selection state is set to the editor's selection
+      if (editor.selection && root instanceof Document) {
+        var domSelection = getSelection(root);
+        var domRange = DOMEditor.toDOMRange(editor, editor.selection);
+        domSelection === null || domSelection === void 0 || domSelection.removeAllRanges();
+        domSelection === null || domSelection === void 0 || domSelection.addRange(domRange);
+      }
+      // Create a new selection in the top of the document if missing
+      if (!editor.selection) {
+        slate__WEBPACK_IMPORTED_MODULE_0__.Transforms.select(editor, slate__WEBPACK_IMPORTED_MODULE_0__.Editor.start(editor, []));
+      }
+      // IS_FOCUSED should be set before calling el.focus() to ensure that
+      // FocusedContext is updated to the correct value
+      IS_FOCUSED.set(editor, true);
+      el.focus({
+        preventScroll: true
+      });
+    }
+  },
+  getWindow: editor => {
+    var window = EDITOR_TO_WINDOW.get(editor);
+    if (!window) {
+      throw new Error('Unable to find a host window element for this editor');
+    }
+    return window;
+  },
+  hasDOMNode: function hasDOMNode(editor, target) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var {
+      editable = false
+    } = options;
+    var editorEl = DOMEditor.toDOMNode(editor, editor);
+    var targetEl;
+    // COMPAT: In Firefox, reading `target.nodeType` will throw an error if
+    // target is originating from an internal "restricted" element (e.g. a
+    // stepper arrow on a number input). (2018/05/04)
+    // https://github.com/ianstormtaylor/slate/issues/1819
+    try {
+      targetEl = isDOMElement(target) ? target : target.parentElement;
+    } catch (err) {
+      if (err instanceof Error && !err.message.includes('Permission denied to access property "nodeType"')) {
+        throw err;
+      }
+    }
+    if (!targetEl) {
+      return false;
+    }
+    return targetEl.closest("[data-slate-editor]") === editorEl && (!editable || targetEl.isContentEditable ? true : typeof targetEl.isContentEditable === 'boolean' &&
+    // isContentEditable exists only on HTMLElement, and on other nodes it will be undefined
+    // this is the core logic that lets you know you got the right editor.selection instead of null when editor is contenteditable="false"(readOnly)
+    targetEl.closest('[contenteditable="false"]') === editorEl || !!targetEl.getAttribute('data-slate-zero-width'));
+  },
+  hasEditableTarget: (editor, target) => isDOMNode(target) && DOMEditor.hasDOMNode(editor, target, {
+    editable: true
+  }),
+  hasRange: (editor, range) => {
+    var {
+      anchor,
+      focus
+    } = range;
+    return slate__WEBPACK_IMPORTED_MODULE_0__.Editor.hasPath(editor, anchor.path) && slate__WEBPACK_IMPORTED_MODULE_0__.Editor.hasPath(editor, focus.path);
+  },
+  hasSelectableTarget: (editor, target) => DOMEditor.hasEditableTarget(editor, target) || DOMEditor.isTargetInsideNonReadonlyVoid(editor, target),
+  hasTarget: (editor, target) => isDOMNode(target) && DOMEditor.hasDOMNode(editor, target),
+  insertData: (editor, data) => {
+    editor.insertData(data);
+  },
+  insertFragmentData: (editor, data) => editor.insertFragmentData(data),
+  insertTextData: (editor, data) => editor.insertTextData(data),
+  isComposing: editor => {
+    return !!IS_COMPOSING.get(editor);
+  },
+  isFocused: editor => !!IS_FOCUSED.get(editor),
+  isReadOnly: editor => !!IS_READ_ONLY.get(editor),
+  isTargetInsideNonReadonlyVoid: (editor, target) => {
+    if (IS_READ_ONLY.get(editor)) return false;
+    var slateNode = DOMEditor.hasTarget(editor, target) && DOMEditor.toSlateNode(editor, target);
+    return slate__WEBPACK_IMPORTED_MODULE_0__.Element.isElement(slateNode) && slate__WEBPACK_IMPORTED_MODULE_0__.Editor.isVoid(editor, slateNode);
+  },
+  setFragmentData: (editor, data, originEvent) => editor.setFragmentData(data, originEvent),
+  toDOMNode: (editor, node) => {
+    var KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor);
+    var domNode = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.isEditor(node) ? EDITOR_TO_ELEMENT.get(editor) : KEY_TO_ELEMENT === null || KEY_TO_ELEMENT === void 0 ? void 0 : KEY_TO_ELEMENT.get(DOMEditor.findKey(editor, node));
+    if (!domNode) {
+      throw new Error("Cannot resolve a DOM node from Slate node: ".concat(slate__WEBPACK_IMPORTED_MODULE_0__.Scrubber.stringify(node)));
+    }
+    return domNode;
+  },
+  toDOMPoint: (editor, point) => {
+    var [node] = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.node(editor, point.path);
+    var el = DOMEditor.toDOMNode(editor, node);
+    var domPoint;
+    // If we're inside a void node, force the offset to 0, otherwise the zero
+    // width spacing character will result in an incorrect offset of 1
+    if (slate__WEBPACK_IMPORTED_MODULE_0__.Editor.void(editor, {
+      at: point
+    })) {
+      point = {
+        path: point.path,
+        offset: 0
+      };
+    }
+    // For each leaf, we need to isolate its content, which means filtering
+    // to its direct text and zero-width spans. (We have to filter out any
+    // other siblings that may have been rendered alongside them.)
+    var selector = "[data-slate-string], [data-slate-zero-width]";
+    var texts = Array.from(el.querySelectorAll(selector));
+    var start = 0;
+    for (var i = 0; i < texts.length; i++) {
+      var text = texts[i];
+      var domNode = text.childNodes[0];
+      if (domNode == null || domNode.textContent == null) {
+        continue;
+      }
+      var {
+        length
+      } = domNode.textContent;
+      var attr = text.getAttribute('data-slate-length');
+      var trueLength = attr == null ? length : parseInt(attr, 10);
+      var end = start + trueLength;
+      // Prefer putting the selection inside the mark placeholder to ensure
+      // composed text is displayed with the correct marks.
+      var nextText = texts[i + 1];
+      if (point.offset === end && nextText !== null && nextText !== void 0 && nextText.hasAttribute('data-slate-mark-placeholder')) {
+        var _nextText$textContent;
+        var domText = nextText.childNodes[0];
+        domPoint = [
+        // COMPAT: If we don't explicity set the dom point to be on the actual
+        // dom text element, chrome will put the selection behind the actual dom
+        // text element, causing domRange.getBoundingClientRect() calls on a collapsed
+        // selection to return incorrect zero values (https://bugs.chromium.org/p/chromium/issues/detail?id=435438)
+        // which will cause issues when scrolling to it.
+        domText instanceof DOMText ? domText : nextText, (_nextText$textContent = nextText.textContent) !== null && _nextText$textContent !== void 0 && _nextText$textContent.startsWith('\uFEFF') ? 1 : 0];
+        break;
+      }
+      if (point.offset <= end) {
+        var offset = Math.min(length, Math.max(0, point.offset - start));
+        domPoint = [domNode, offset];
+        break;
+      }
+      start = end;
+    }
+    if (!domPoint) {
+      throw new Error("Cannot resolve a DOM point from Slate point: ".concat(slate__WEBPACK_IMPORTED_MODULE_0__.Scrubber.stringify(point)));
+    }
+    return domPoint;
+  },
+  toDOMRange: (editor, range) => {
+    var {
+      anchor,
+      focus
+    } = range;
+    var isBackward = slate__WEBPACK_IMPORTED_MODULE_0__.Range.isBackward(range);
+    var domAnchor = DOMEditor.toDOMPoint(editor, anchor);
+    var domFocus = slate__WEBPACK_IMPORTED_MODULE_0__.Range.isCollapsed(range) ? domAnchor : DOMEditor.toDOMPoint(editor, focus);
+    var window = DOMEditor.getWindow(editor);
+    var domRange = window.document.createRange();
+    var [startNode, startOffset] = isBackward ? domFocus : domAnchor;
+    var [endNode, endOffset] = isBackward ? domAnchor : domFocus;
+    // A slate Point at zero-width Leaf always has an offset of 0 but a native DOM selection at
+    // zero-width node has an offset of 1 so we have to check if we are in a zero-width node and
+    // adjust the offset accordingly.
+    var startEl = isDOMElement(startNode) ? startNode : startNode.parentElement;
+    var isStartAtZeroWidth = !!startEl.getAttribute('data-slate-zero-width');
+    var endEl = isDOMElement(endNode) ? endNode : endNode.parentElement;
+    var isEndAtZeroWidth = !!endEl.getAttribute('data-slate-zero-width');
+    domRange.setStart(startNode, isStartAtZeroWidth ? 1 : startOffset);
+    domRange.setEnd(endNode, isEndAtZeroWidth ? 1 : endOffset);
+    return domRange;
+  },
+  toSlateNode: (editor, domNode) => {
+    var domEl = isDOMElement(domNode) ? domNode : domNode.parentElement;
+    if (domEl && !domEl.hasAttribute('data-slate-node')) {
+      domEl = domEl.closest("[data-slate-node]");
+    }
+    var node = domEl ? ELEMENT_TO_NODE.get(domEl) : null;
+    if (!node) {
+      throw new Error("Cannot resolve a Slate node from DOM node: ".concat(domEl));
+    }
+    return node;
+  },
+  toSlatePoint: (editor, domPoint, options) => {
+    var {
+      exactMatch,
+      suppressThrow,
+      searchDirection = 'backward'
+    } = options;
+    var [nearestNode, nearestOffset] = exactMatch ? domPoint : normalizeDOMPoint(domPoint);
+    var parentNode = nearestNode.parentNode;
+    var textNode = null;
+    var offset = 0;
+    if (parentNode) {
+      var _domNode$textContent, _domNode$textContent2;
+      var editorEl = DOMEditor.toDOMNode(editor, editor);
+      var potentialVoidNode = parentNode.closest('[data-slate-void="true"]');
+      // Need to ensure that the closest void node is actually a void node
+      // within this editor, and not a void node within some parent editor. This can happen
+      // if this editor is within a void node of another editor ("nested editors", like in
+      // the "Editable Voids" example on the docs site).
+      var voidNode = potentialVoidNode && editorEl.contains(potentialVoidNode) ? potentialVoidNode : null;
+      var potentialNonEditableNode = parentNode.closest('[contenteditable="false"]');
+      var nonEditableNode = potentialNonEditableNode && editorEl.contains(potentialNonEditableNode) ? potentialNonEditableNode : null;
+      var leafNode = parentNode.closest('[data-slate-leaf]');
+      var domNode = null;
+      // Calculate how far into the text node the `nearestNode` is, so that we
+      // can determine what the offset relative to the text node is.
+      if (leafNode) {
+        textNode = leafNode.closest('[data-slate-node="text"]');
+        if (textNode) {
+          var window = DOMEditor.getWindow(editor);
+          var range = window.document.createRange();
+          range.setStart(textNode, 0);
+          range.setEnd(nearestNode, nearestOffset);
+          var contents = range.cloneContents();
+          var removals = [...Array.prototype.slice.call(contents.querySelectorAll('[data-slate-zero-width]')), ...Array.prototype.slice.call(contents.querySelectorAll('[contenteditable=false]'))];
+          removals.forEach(el => {
+            // COMPAT: While composing at the start of a text node, some keyboards put
+            // the text content inside the zero width space.
+            if (IS_ANDROID && !exactMatch && el.hasAttribute('data-slate-zero-width') && el.textContent.length > 0 && el.textContext !== '\uFEFF') {
+              if (el.textContent.startsWith('\uFEFF')) {
+                el.textContent = el.textContent.slice(1);
+              }
+              return;
+            }
+            el.parentNode.removeChild(el);
+          });
+          // COMPAT: Edge has a bug where Range.prototype.toString() will
+          // convert \n into \r\n. The bug causes a loop when slate-dom
+          // attempts to reposition its cursor to match the native position. Use
+          // textContent.length instead.
+          // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/10291116/
+          offset = contents.textContent.length;
+          domNode = textNode;
+        }
+      } else if (voidNode) {
+        // For void nodes, the element with the offset key will be a cousin, not an
+        // ancestor, so find it by going down from the nearest void parent and taking the
+        // first one that isn't inside a nested editor.
+        var leafNodes = voidNode.querySelectorAll('[data-slate-leaf]');
+        for (var index = 0; index < leafNodes.length; index++) {
+          var current = leafNodes[index];
+          if (DOMEditor.hasDOMNode(editor, current)) {
+            leafNode = current;
+            break;
+          }
+        }
+        // COMPAT: In read-only editors the leaf is not rendered.
+        if (!leafNode) {
+          offset = 1;
+        } else {
+          textNode = leafNode.closest('[data-slate-node="text"]');
+          domNode = leafNode;
+          offset = domNode.textContent.length;
+          domNode.querySelectorAll('[data-slate-zero-width]').forEach(el => {
+            offset -= el.textContent.length;
+          });
+        }
+      } else if (nonEditableNode) {
+        // Find the edge of the nearest leaf in `searchDirection`
+        var getLeafNodes = node => node ? node.querySelectorAll(
+        // Exclude leaf nodes in nested editors
+        '[data-slate-leaf]:not(:scope [data-slate-editor] [data-slate-leaf])') : [];
+        var elementNode = nonEditableNode.closest('[data-slate-node="element"]');
+        if (searchDirection === 'forward') {
+          var _leafNodes$find;
+          var _leafNodes = [...getLeafNodes(elementNode), ...getLeafNodes(elementNode === null || elementNode === void 0 ? void 0 : elementNode.nextElementSibling)];
+          leafNode = (_leafNodes$find = _leafNodes.find(leaf => isAfter(nonEditableNode, leaf))) !== null && _leafNodes$find !== void 0 ? _leafNodes$find : null;
+        } else {
+          var _leafNodes2$findLast;
+          var _leafNodes2 = [...getLeafNodes(elementNode === null || elementNode === void 0 ? void 0 : elementNode.previousElementSibling), ...getLeafNodes(elementNode)];
+          leafNode = (_leafNodes2$findLast = _leafNodes2.findLast(leaf => isBefore(nonEditableNode, leaf))) !== null && _leafNodes2$findLast !== void 0 ? _leafNodes2$findLast : null;
+        }
+        if (leafNode) {
+          textNode = leafNode.closest('[data-slate-node="text"]');
+          domNode = leafNode;
+          if (searchDirection === 'forward') {
+            offset = 0;
+          } else {
+            offset = domNode.textContent.length;
+            domNode.querySelectorAll('[data-slate-zero-width]').forEach(el => {
+              offset -= el.textContent.length;
+            });
+          }
+        }
+      }
+      if (domNode && offset === domNode.textContent.length &&
+      // COMPAT: Android IMEs might remove the zero width space while composing,
+      // and we don't add it for line-breaks.
+      IS_ANDROID && domNode.getAttribute('data-slate-zero-width') === 'z' && (_domNode$textContent = domNode.textContent) !== null && _domNode$textContent !== void 0 && _domNode$textContent.startsWith('\uFEFF') && (
+      // COMPAT: If the parent node is a Slate zero-width space, editor is
+      // because the text node should have no characters. However, during IME
+      // composition the ASCII characters will be prepended to the zero-width
+      // space, so subtract 1 from the offset to account for the zero-width
+      // space character.
+      parentNode.hasAttribute('data-slate-zero-width') ||
+      // COMPAT: In Firefox, `range.cloneContents()` returns an extra trailing '\n'
+      // when the document ends with a new-line character. This results in the offset
+      // length being off by one, so we need to subtract one to account for this.
+      IS_FIREFOX && (_domNode$textContent2 = domNode.textContent) !== null && _domNode$textContent2 !== void 0 && _domNode$textContent2.endsWith('\n\n'))) {
+        offset--;
+      }
+    }
+    if (IS_ANDROID && !textNode && !exactMatch) {
+      var node = parentNode.hasAttribute('data-slate-node') ? parentNode : parentNode.closest('[data-slate-node]');
+      if (node && DOMEditor.hasDOMNode(editor, node, {
+        editable: true
+      })) {
+        var _slateNode = DOMEditor.toSlateNode(editor, node);
+        var {
+          path: _path,
+          offset: _offset
+        } = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.start(editor, DOMEditor.findPath(editor, _slateNode));
+        if (!node.querySelector('[data-slate-leaf]')) {
+          _offset = nearestOffset;
+        }
+        return {
+          path: _path,
+          offset: _offset
+        };
+      }
+    }
+    if (!textNode) {
+      if (suppressThrow) {
+        return null;
+      }
+      throw new Error("Cannot resolve a Slate point from DOM point: ".concat(domPoint));
+    }
+    // COMPAT: If someone is clicking from one Slate editor into another,
+    // the select event fires twice, once for the old editor's `element`
+    // first, and then afterwards for the correct `element`. (2017/03/03)
+    var slateNode = DOMEditor.toSlateNode(editor, textNode);
+    var path = DOMEditor.findPath(editor, slateNode);
+    return {
+      path,
+      offset
+    };
+  },
+  toSlateRange: (editor, domRange, options) => {
+    var _focusNode$textConten;
+    var {
+      exactMatch,
+      suppressThrow
+    } = options;
+    var el = isDOMSelection(domRange) ? domRange.anchorNode : domRange.startContainer;
+    var anchorNode;
+    var anchorOffset;
+    var focusNode;
+    var focusOffset;
+    var isCollapsed;
+    if (el) {
+      if (isDOMSelection(domRange)) {
+        // COMPAT: In firefox the normal seletion way does not work
+        // (https://github.com/ianstormtaylor/slate/pull/5486#issue-1820720223)
+        if (IS_FIREFOX && domRange.rangeCount > 1) {
+          focusNode = domRange.focusNode; // Focus node works fine
+          var firstRange = domRange.getRangeAt(0);
+          var lastRange = domRange.getRangeAt(domRange.rangeCount - 1);
+          // Here we are in the contenteditable mode of a table in firefox
+          if (focusNode instanceof HTMLTableRowElement && firstRange.startContainer instanceof HTMLTableRowElement && lastRange.startContainer instanceof HTMLTableRowElement) {
+            // HTMLElement, becouse Element is a slate element
+            function getLastChildren(element) {
+              if (element.childElementCount > 0) {
+                return getLastChildren(element.children[0]);
+              } else {
+                return element;
+              }
+            }
+            var firstNodeRow = firstRange.startContainer;
+            var lastNodeRow = lastRange.startContainer;
+            // This should never fail as "The HTMLElement interface represents any HTML element."
+            var firstNode = getLastChildren(firstNodeRow.children[firstRange.startOffset]);
+            var lastNode = getLastChildren(lastNodeRow.children[lastRange.startOffset]);
+            // Zero, as we allways take the right one as the anchor point
+            focusOffset = 0;
+            if (lastNode.childNodes.length > 0) {
+              anchorNode = lastNode.childNodes[0];
+            } else {
+              anchorNode = lastNode;
+            }
+            if (firstNode.childNodes.length > 0) {
+              focusNode = firstNode.childNodes[0];
+            } else {
+              focusNode = firstNode;
+            }
+            if (lastNode instanceof HTMLElement) {
+              anchorOffset = lastNode.innerHTML.length;
+            } else {
+              // Fallback option
+              anchorOffset = 0;
+            }
+          } else {
+            // This is the read only mode of a firefox table
+            // Right to left
+            if (firstRange.startContainer === focusNode) {
+              anchorNode = lastRange.endContainer;
+              anchorOffset = lastRange.endOffset;
+              focusOffset = firstRange.startOffset;
+            } else {
+              // Left to right
+              anchorNode = firstRange.startContainer;
+              anchorOffset = firstRange.endOffset;
+              focusOffset = lastRange.startOffset;
+            }
+          }
+        } else {
+          anchorNode = domRange.anchorNode;
+          anchorOffset = domRange.anchorOffset;
+          focusNode = domRange.focusNode;
+          focusOffset = domRange.focusOffset;
+        }
+        // COMPAT: There's a bug in chrome that always returns `true` for
+        // `isCollapsed` for a Selection that comes from a ShadowRoot.
+        // (2020/08/08)
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=447523
+        // IsCollapsed might not work in firefox, but this will
+        if (IS_CHROME && hasShadowRoot(anchorNode) || IS_FIREFOX) {
+          isCollapsed = domRange.anchorNode === domRange.focusNode && domRange.anchorOffset === domRange.focusOffset;
+        } else {
+          isCollapsed = domRange.isCollapsed;
+        }
+      } else {
+        anchorNode = domRange.startContainer;
+        anchorOffset = domRange.startOffset;
+        focusNode = domRange.endContainer;
+        focusOffset = domRange.endOffset;
+        isCollapsed = domRange.collapsed;
+      }
+    }
+    if (anchorNode == null || focusNode == null || anchorOffset == null || focusOffset == null) {
+      throw new Error("Cannot resolve a Slate range from DOM range: ".concat(domRange));
+    }
+    // COMPAT: Firefox sometimes includes an extra \n (rendered by TextString
+    // when isTrailing is true) in the focusOffset, resulting in an invalid
+    // Slate point. (2023/11/01)
+    if (IS_FIREFOX && (_focusNode$textConten = focusNode.textContent) !== null && _focusNode$textConten !== void 0 && _focusNode$textConten.endsWith('\n\n') && focusOffset === focusNode.textContent.length) {
+      focusOffset--;
+    }
+    var anchor = DOMEditor.toSlatePoint(editor, [anchorNode, anchorOffset], {
+      exactMatch,
+      suppressThrow
+    });
+    if (!anchor) {
+      return null;
+    }
+    var focusBeforeAnchor = isBefore(anchorNode, focusNode) || anchorNode === focusNode && focusOffset < anchorOffset;
+    var focus = isCollapsed ? anchor : DOMEditor.toSlatePoint(editor, [focusNode, focusOffset], {
+      exactMatch,
+      suppressThrow,
+      searchDirection: focusBeforeAnchor ? 'forward' : 'backward'
+    });
+    if (!focus) {
+      return null;
+    }
+    var range = {
+      anchor: anchor,
+      focus: focus
+    };
+    // if the selection is a hanging range that ends in a void
+    // and the DOM focus is an Element
+    // (meaning that the selection ends before the element)
+    // unhang the range to avoid mistakenly including the void
+    if (slate__WEBPACK_IMPORTED_MODULE_0__.Range.isExpanded(range) && slate__WEBPACK_IMPORTED_MODULE_0__.Range.isForward(range) && isDOMElement(focusNode) && slate__WEBPACK_IMPORTED_MODULE_0__.Editor.void(editor, {
+      at: range.focus,
+      mode: 'highest'
+    })) {
+      range = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.unhangRange(editor, range, {
+        voids: true
+      });
+    }
+    return range;
+  }
+};
+
+/**
+ * Check whether a text diff was applied in a way we can perform the pending action on /
+ * recover the pending selection.
+ */
+function verifyDiffState(editor, textDiff) {
+  var {
+    path,
+    diff
+  } = textDiff;
+  if (!slate__WEBPACK_IMPORTED_MODULE_0__.Editor.hasPath(editor, path)) {
+    return false;
+  }
+  var node = slate__WEBPACK_IMPORTED_MODULE_0__.Node.get(editor, path);
+  if (!slate__WEBPACK_IMPORTED_MODULE_0__.Text.isText(node)) {
+    return false;
+  }
+  if (diff.start !== node.text.length || diff.text.length === 0) {
+    return node.text.slice(diff.start, diff.start + diff.text.length) === diff.text;
+  }
+  var nextPath = slate__WEBPACK_IMPORTED_MODULE_0__.Path.next(path);
+  if (!slate__WEBPACK_IMPORTED_MODULE_0__.Editor.hasPath(editor, nextPath)) {
+    return false;
+  }
+  var nextNode = slate__WEBPACK_IMPORTED_MODULE_0__.Node.get(editor, nextPath);
+  return slate__WEBPACK_IMPORTED_MODULE_0__.Text.isText(nextNode) && nextNode.text.startsWith(diff.text);
+}
+function applyStringDiff(text) {
+  for (var _len = arguments.length, diffs = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    diffs[_key - 1] = arguments[_key];
+  }
+  return diffs.reduce((text, diff) => text.slice(0, diff.start) + diff.text + text.slice(diff.end), text);
+}
+function longestCommonPrefixLength(str, another) {
+  var length = Math.min(str.length, another.length);
+  for (var i = 0; i < length; i++) {
+    if (str.charAt(i) !== another.charAt(i)) {
+      return i;
+    }
+  }
+  return length;
+}
+function longestCommonSuffixLength(str, another, max) {
+  var length = Math.min(str.length, another.length, max);
+  for (var i = 0; i < length; i++) {
+    if (str.charAt(str.length - i - 1) !== another.charAt(another.length - i - 1)) {
+      return i;
+    }
+  }
+  return length;
+}
+/**
+ * Remove redundant changes from the diff so that it spans the minimal possible range
+ */
+function normalizeStringDiff(targetText, diff) {
+  var {
+    start,
+    end,
+    text
+  } = diff;
+  var removedText = targetText.slice(start, end);
+  var prefixLength = longestCommonPrefixLength(removedText, text);
+  var max = Math.min(removedText.length - prefixLength, text.length - prefixLength);
+  var suffixLength = longestCommonSuffixLength(removedText, text, max);
+  var normalized = {
+    start: start + prefixLength,
+    end: end - suffixLength,
+    text: text.slice(prefixLength, text.length - suffixLength)
+  };
+  if (normalized.start === normalized.end && normalized.text.length === 0) {
+    return null;
+  }
+  return normalized;
+}
+/**
+ * Return a string diff that is equivalent to applying b after a spanning the range of
+ * both changes
+ */
+function mergeStringDiffs(targetText, a, b) {
+  var start = Math.min(a.start, b.start);
+  var overlap = Math.max(0, Math.min(a.start + a.text.length, b.end) - b.start);
+  var applied = applyStringDiff(targetText, a, b);
+  var sliceEnd = Math.max(b.start + b.text.length, a.start + a.text.length + (a.start + a.text.length > b.start ? b.text.length : 0) - overlap);
+  var text = applied.slice(start, sliceEnd);
+  var end = Math.max(a.end, b.end - a.text.length + (a.end - a.start));
+  return normalizeStringDiff(targetText, {
+    start,
+    end,
+    text
+  });
+}
+/**
+ * Get the slate range the text diff spans.
+ */
+function targetRange(textDiff) {
+  var {
+    path,
+    diff
+  } = textDiff;
+  return {
+    anchor: {
+      path,
+      offset: diff.start
+    },
+    focus: {
+      path,
+      offset: diff.end
+    }
+  };
+}
+/**
+ * Normalize a 'pending point' a.k.a a point based on the dom state before applying
+ * the pending diffs. Since the pending diffs might have been inserted with different
+ * marks we have to 'walk' the offset from the starting position to ensure we still
+ * have a valid point inside the document
+ */
+function normalizePoint(editor, point) {
+  var {
+    path,
+    offset
+  } = point;
+  if (!slate__WEBPACK_IMPORTED_MODULE_0__.Editor.hasPath(editor, path)) {
+    return null;
+  }
+  var leaf = slate__WEBPACK_IMPORTED_MODULE_0__.Node.get(editor, path);
+  if (!slate__WEBPACK_IMPORTED_MODULE_0__.Text.isText(leaf)) {
+    return null;
+  }
+  var parentBlock = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.above(editor, {
+    match: n => slate__WEBPACK_IMPORTED_MODULE_0__.Element.isElement(n) && slate__WEBPACK_IMPORTED_MODULE_0__.Editor.isBlock(editor, n),
+    at: path
+  });
+  if (!parentBlock) {
+    return null;
+  }
+  while (offset > leaf.text.length) {
+    var entry = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.next(editor, {
+      at: path,
+      match: slate__WEBPACK_IMPORTED_MODULE_0__.Text.isText
+    });
+    if (!entry || !slate__WEBPACK_IMPORTED_MODULE_0__.Path.isDescendant(entry[1], parentBlock[1])) {
+      return null;
+    }
+    offset -= leaf.text.length;
+    leaf = entry[0];
+    path = entry[1];
+  }
+  return {
+    path,
+    offset
+  };
+}
+/**
+ * Normalize a 'pending selection' to ensure it's valid in the current document state.
+ */
+function normalizeRange(editor, range) {
+  var anchor = normalizePoint(editor, range.anchor);
+  if (!anchor) {
+    return null;
+  }
+  if (slate__WEBPACK_IMPORTED_MODULE_0__.Range.isCollapsed(range)) {
+    return {
+      anchor,
+      focus: anchor
+    };
+  }
+  var focus = normalizePoint(editor, range.focus);
+  if (!focus) {
+    return null;
+  }
+  return {
+    anchor,
+    focus
+  };
+}
+function transformPendingPoint(editor, point, op) {
+  var pendingDiffs = EDITOR_TO_PENDING_DIFFS.get(editor);
+  var textDiff = pendingDiffs === null || pendingDiffs === void 0 ? void 0 : pendingDiffs.find(_ref => {
+    var {
+      path
+    } = _ref;
+    return slate__WEBPACK_IMPORTED_MODULE_0__.Path.equals(path, point.path);
+  });
+  if (!textDiff || point.offset <= textDiff.diff.start) {
+    return slate__WEBPACK_IMPORTED_MODULE_0__.Point.transform(point, op, {
+      affinity: 'backward'
+    });
+  }
+  var {
+    diff
+  } = textDiff;
+  // Point references location inside the diff => transform the point based on the location
+  // the diff will be applied to and add the offset inside the diff.
+  if (point.offset <= diff.start + diff.text.length) {
+    var _anchor = {
+      path: point.path,
+      offset: diff.start
+    };
+    var _transformed = slate__WEBPACK_IMPORTED_MODULE_0__.Point.transform(_anchor, op, {
+      affinity: 'backward'
+    });
+    if (!_transformed) {
+      return null;
+    }
+    return {
+      path: _transformed.path,
+      offset: _transformed.offset + point.offset - diff.start
+    };
+  }
+  // Point references location after the diff
+  var anchor = {
+    path: point.path,
+    offset: point.offset - diff.text.length + diff.end - diff.start
+  };
+  var transformed = slate__WEBPACK_IMPORTED_MODULE_0__.Point.transform(anchor, op, {
+    affinity: 'backward'
+  });
+  if (!transformed) {
+    return null;
+  }
+  if (op.type === 'split_node' && slate__WEBPACK_IMPORTED_MODULE_0__.Path.equals(op.path, point.path) && anchor.offset < op.position && diff.start < op.position) {
+    return transformed;
+  }
+  return {
+    path: transformed.path,
+    offset: transformed.offset + diff.text.length - diff.end + diff.start
+  };
+}
+function transformPendingRange(editor, range, op) {
+  var anchor = transformPendingPoint(editor, range.anchor, op);
+  if (!anchor) {
+    return null;
+  }
+  if (slate__WEBPACK_IMPORTED_MODULE_0__.Range.isCollapsed(range)) {
+    return {
+      anchor,
+      focus: anchor
+    };
+  }
+  var focus = transformPendingPoint(editor, range.focus, op);
+  if (!focus) {
+    return null;
+  }
+  return {
+    anchor,
+    focus
+  };
+}
+function transformTextDiff(textDiff, op) {
+  var {
+    path,
+    diff,
+    id
+  } = textDiff;
+  switch (op.type) {
+    case 'insert_text':
+      {
+        if (!slate__WEBPACK_IMPORTED_MODULE_0__.Path.equals(op.path, path) || op.offset >= diff.end) {
+          return textDiff;
+        }
+        if (op.offset <= diff.start) {
+          return {
+            diff: {
+              start: op.text.length + diff.start,
+              end: op.text.length + diff.end,
+              text: diff.text
+            },
+            id,
+            path
+          };
+        }
+        return {
+          diff: {
+            start: diff.start,
+            end: diff.end + op.text.length,
+            text: diff.text
+          },
+          id,
+          path
+        };
+      }
+    case 'remove_text':
+      {
+        if (!slate__WEBPACK_IMPORTED_MODULE_0__.Path.equals(op.path, path) || op.offset >= diff.end) {
+          return textDiff;
+        }
+        if (op.offset + op.text.length <= diff.start) {
+          return {
+            diff: {
+              start: diff.start - op.text.length,
+              end: diff.end - op.text.length,
+              text: diff.text
+            },
+            id,
+            path
+          };
+        }
+        return {
+          diff: {
+            start: diff.start,
+            end: diff.end - op.text.length,
+            text: diff.text
+          },
+          id,
+          path
+        };
+      }
+    case 'split_node':
+      {
+        if (!slate__WEBPACK_IMPORTED_MODULE_0__.Path.equals(op.path, path) || op.position >= diff.end) {
+          return {
+            diff,
+            id,
+            path: slate__WEBPACK_IMPORTED_MODULE_0__.Path.transform(path, op, {
+              affinity: 'backward'
+            })
+          };
+        }
+        if (op.position > diff.start) {
+          return {
+            diff: {
+              start: diff.start,
+              end: Math.min(op.position, diff.end),
+              text: diff.text
+            },
+            id,
+            path
+          };
+        }
+        return {
+          diff: {
+            start: diff.start - op.position,
+            end: diff.end - op.position,
+            text: diff.text
+          },
+          id,
+          path: slate__WEBPACK_IMPORTED_MODULE_0__.Path.transform(path, op, {
+            affinity: 'forward'
+          })
+        };
+      }
+    case 'merge_node':
+      {
+        if (!slate__WEBPACK_IMPORTED_MODULE_0__.Path.equals(op.path, path)) {
+          return {
+            diff,
+            id,
+            path: slate__WEBPACK_IMPORTED_MODULE_0__.Path.transform(path, op)
+          };
+        }
+        return {
+          diff: {
+            start: diff.start + op.position,
+            end: diff.end + op.position,
+            text: diff.text
+          },
+          id,
+          path: slate__WEBPACK_IMPORTED_MODULE_0__.Path.transform(path, op)
+        };
+      }
+  }
+  var newPath = slate__WEBPACK_IMPORTED_MODULE_0__.Path.transform(path, op);
+  if (!newPath) {
+    return null;
+  }
+  return {
+    diff,
+    path: newPath,
+    id
+  };
+}
+
+/**
+ * Utilities for single-line deletion
+ */
+var doRectsIntersect = (rect, compareRect) => {
+  var middle = (compareRect.top + compareRect.bottom) / 2;
+  return rect.top <= middle && rect.bottom >= middle;
+};
+var areRangesSameLine = (editor, range1, range2) => {
+  var rect1 = DOMEditor.toDOMRange(editor, range1).getBoundingClientRect();
+  var rect2 = DOMEditor.toDOMRange(editor, range2).getBoundingClientRect();
+  return doRectsIntersect(rect1, rect2) && doRectsIntersect(rect2, rect1);
+};
+/**
+ * A helper utility that returns the end portion of a `Range`
+ * which is located on a single line.
+ *
+ * @param {Editor} editor The editor object to compare against
+ * @param {Range} parentRange The parent range to compare against
+ * @returns {Range} A valid portion of the parentRange which is one a single line
+ */
+var findCurrentLineRange = (editor, parentRange) => {
+  var parentRangeBoundary = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, slate__WEBPACK_IMPORTED_MODULE_0__.Range.end(parentRange));
+  var positions = Array.from(slate__WEBPACK_IMPORTED_MODULE_0__.Editor.positions(editor, {
+    at: parentRange
+  }));
+  var left = 0;
+  var right = positions.length;
+  var middle = Math.floor(right / 2);
+  if (areRangesSameLine(editor, slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, positions[left]), parentRangeBoundary)) {
+    return slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, positions[left], parentRangeBoundary);
+  }
+  if (positions.length < 2) {
+    return slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, positions[positions.length - 1], parentRangeBoundary);
+  }
+  while (middle !== positions.length && middle !== left) {
+    if (areRangesSameLine(editor, slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, positions[middle]), parentRangeBoundary)) {
+      right = middle;
+    } else {
+      left = middle;
+    }
+    middle = Math.floor((left + right) / 2);
+  }
+  return slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, positions[left], parentRangeBoundary);
+};
+
+function ownKeys$1(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$1(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$1(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$1(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+/**
+ * `withDOM` adds DOM specific behaviors to the editor.
+ *
+ * If you are using TypeScript, you must extend Slate's CustomTypes to use
+ * this plugin.
+ *
+ * See https://docs.slatejs.org/concepts/11-typescript to learn how.
+ */
+var withDOM = function withDOM(editor) {
+  var clipboardFormatKey = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'x-slate-fragment';
+  var e = editor;
+  var {
+    apply,
+    onChange,
+    deleteBackward,
+    addMark,
+    removeMark
+  } = e;
+  // The WeakMap which maps a key to a specific HTMLElement must be scoped to the editor instance to
+  // avoid collisions between editors in the DOM that share the same value.
+  EDITOR_TO_KEY_TO_ELEMENT.set(e, new WeakMap());
+  e.addMark = (key, value) => {
+    var _EDITOR_TO_SCHEDULE_F, _EDITOR_TO_PENDING_DI;
+    (_EDITOR_TO_SCHEDULE_F = EDITOR_TO_SCHEDULE_FLUSH.get(e)) === null || _EDITOR_TO_SCHEDULE_F === void 0 || _EDITOR_TO_SCHEDULE_F();
+    if (!EDITOR_TO_PENDING_INSERTION_MARKS.get(e) && (_EDITOR_TO_PENDING_DI = EDITOR_TO_PENDING_DIFFS.get(e)) !== null && _EDITOR_TO_PENDING_DI !== void 0 && _EDITOR_TO_PENDING_DI.length) {
+      // Ensure the current pending diffs originating from changes before the addMark
+      // are applied with the current formatting
+      EDITOR_TO_PENDING_INSERTION_MARKS.set(e, null);
+    }
+    EDITOR_TO_USER_MARKS.delete(e);
+    addMark(key, value);
+  };
+  e.removeMark = key => {
+    var _EDITOR_TO_PENDING_DI2;
+    if (!EDITOR_TO_PENDING_INSERTION_MARKS.get(e) && (_EDITOR_TO_PENDING_DI2 = EDITOR_TO_PENDING_DIFFS.get(e)) !== null && _EDITOR_TO_PENDING_DI2 !== void 0 && _EDITOR_TO_PENDING_DI2.length) {
+      // Ensure the current pending diffs originating from changes before the addMark
+      // are applied with the current formatting
+      EDITOR_TO_PENDING_INSERTION_MARKS.set(e, null);
+    }
+    EDITOR_TO_USER_MARKS.delete(e);
+    removeMark(key);
+  };
+  e.deleteBackward = unit => {
+    if (unit !== 'line') {
+      return deleteBackward(unit);
+    }
+    if (e.selection && slate__WEBPACK_IMPORTED_MODULE_0__.Range.isCollapsed(e.selection)) {
+      var parentBlockEntry = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.above(e, {
+        match: n => slate__WEBPACK_IMPORTED_MODULE_0__.Element.isElement(n) && slate__WEBPACK_IMPORTED_MODULE_0__.Editor.isBlock(e, n),
+        at: e.selection
+      });
+      if (parentBlockEntry) {
+        var [, parentBlockPath] = parentBlockEntry;
+        var parentElementRange = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(e, parentBlockPath, e.selection.anchor);
+        var currentLineRange = findCurrentLineRange(e, parentElementRange);
+        if (!slate__WEBPACK_IMPORTED_MODULE_0__.Range.isCollapsed(currentLineRange)) {
+          slate__WEBPACK_IMPORTED_MODULE_0__.Transforms.delete(e, {
+            at: currentLineRange
+          });
+        }
+      }
+    }
+  };
+  // This attempts to reset the NODE_TO_KEY entry to the correct value
+  // as apply() changes the object reference and hence invalidates the NODE_TO_KEY entry
+  e.apply = op => {
+    var matches = [];
+    var pathRefMatches = [];
+    var pendingDiffs = EDITOR_TO_PENDING_DIFFS.get(e);
+    if (pendingDiffs !== null && pendingDiffs !== void 0 && pendingDiffs.length) {
+      var transformed = pendingDiffs.map(textDiff => transformTextDiff(textDiff, op)).filter(Boolean);
+      EDITOR_TO_PENDING_DIFFS.set(e, transformed);
+    }
+    var pendingSelection = EDITOR_TO_PENDING_SELECTION.get(e);
+    if (pendingSelection) {
+      EDITOR_TO_PENDING_SELECTION.set(e, transformPendingRange(e, pendingSelection, op));
+    }
+    var pendingAction = EDITOR_TO_PENDING_ACTION.get(e);
+    if (pendingAction !== null && pendingAction !== void 0 && pendingAction.at) {
+      var at = slate__WEBPACK_IMPORTED_MODULE_0__.Point.isPoint(pendingAction === null || pendingAction === void 0 ? void 0 : pendingAction.at) ? transformPendingPoint(e, pendingAction.at, op) : transformPendingRange(e, pendingAction.at, op);
+      EDITOR_TO_PENDING_ACTION.set(e, at ? _objectSpread$1(_objectSpread$1({}, pendingAction), {}, {
+        at
+      }) : null);
+    }
+    switch (op.type) {
+      case 'insert_text':
+      case 'remove_text':
+      case 'set_node':
+      case 'split_node':
+        {
+          matches.push(...getMatches(e, op.path));
+          break;
+        }
+      case 'set_selection':
+        {
+          var _EDITOR_TO_USER_SELEC;
+          // Selection was manually set, don't restore the user selection after the change.
+          (_EDITOR_TO_USER_SELEC = EDITOR_TO_USER_SELECTION.get(e)) === null || _EDITOR_TO_USER_SELEC === void 0 || _EDITOR_TO_USER_SELEC.unref();
+          EDITOR_TO_USER_SELECTION.delete(e);
+          break;
+        }
+      case 'insert_node':
+      case 'remove_node':
+        {
+          matches.push(...getMatches(e, slate__WEBPACK_IMPORTED_MODULE_0__.Path.parent(op.path)));
+          break;
+        }
+      case 'merge_node':
+        {
+          var prevPath = slate__WEBPACK_IMPORTED_MODULE_0__.Path.previous(op.path);
+          matches.push(...getMatches(e, prevPath));
+          break;
+        }
+      case 'move_node':
+        {
+          var commonPath = slate__WEBPACK_IMPORTED_MODULE_0__.Path.common(slate__WEBPACK_IMPORTED_MODULE_0__.Path.parent(op.path), slate__WEBPACK_IMPORTED_MODULE_0__.Path.parent(op.newPath));
+          matches.push(...getMatches(e, commonPath));
+          var changedPath;
+          if (slate__WEBPACK_IMPORTED_MODULE_0__.Path.isBefore(op.path, op.newPath)) {
+            matches.push(...getMatches(e, slate__WEBPACK_IMPORTED_MODULE_0__.Path.parent(op.path)));
+            changedPath = op.newPath;
+          } else {
+            matches.push(...getMatches(e, slate__WEBPACK_IMPORTED_MODULE_0__.Path.parent(op.newPath)));
+            changedPath = op.path;
+          }
+          var changedNode = slate__WEBPACK_IMPORTED_MODULE_0__.Node.get(editor, slate__WEBPACK_IMPORTED_MODULE_0__.Path.parent(changedPath));
+          var changedNodeKey = DOMEditor.findKey(e, changedNode);
+          var changedPathRef = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.pathRef(e, slate__WEBPACK_IMPORTED_MODULE_0__.Path.parent(changedPath));
+          pathRefMatches.push([changedPathRef, changedNodeKey]);
+          break;
+        }
+    }
+    apply(op);
+    switch (op.type) {
+      case 'insert_node':
+      case 'remove_node':
+      case 'merge_node':
+      case 'move_node':
+      case 'split_node':
+      case 'insert_text':
+      case 'remove_text':
+      case 'set_selection':
+        {
+          // FIXME: Rename to something like IS_DOM_EDITOR_DESYNCED
+          // to better reflect reality, see #5792
+          IS_NODE_MAP_DIRTY.set(e, true);
+        }
+    }
+    for (var [path, key] of matches) {
+      var [node] = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.node(e, path);
+      NODE_TO_KEY.set(node, key);
+    }
+    for (var [pathRef, _key] of pathRefMatches) {
+      if (pathRef.current) {
+        var [_node] = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.node(e, pathRef.current);
+        NODE_TO_KEY.set(_node, _key);
+      }
+      pathRef.unref();
+    }
+  };
+  e.setFragmentData = data => {
+    var {
+      selection
+    } = e;
+    if (!selection) {
+      return;
+    }
+    var [start, end] = slate__WEBPACK_IMPORTED_MODULE_0__.Range.edges(selection);
+    var startVoid = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.void(e, {
+      at: start.path
+    });
+    var endVoid = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.void(e, {
+      at: end.path
+    });
+    if (slate__WEBPACK_IMPORTED_MODULE_0__.Range.isCollapsed(selection) && !startVoid) {
+      return;
+    }
+    // Create a fake selection so that we can add a Base64-encoded copy of the
+    // fragment to the HTML, to decode on future pastes.
+    var domRange = DOMEditor.toDOMRange(e, selection);
+    var contents = domRange.cloneContents();
+    var attach = contents.childNodes[0];
+    // Make sure attach is non-empty, since empty nodes will not get copied.
+    contents.childNodes.forEach(node => {
+      if (node.textContent && node.textContent.trim() !== '') {
+        attach = node;
+      }
+    });
+    // COMPAT: If the end node is a void node, we need to move the end of the
+    // range from the void node's spacer span, to the end of the void node's
+    // content, since the spacer is before void's content in the DOM.
+    if (endVoid) {
+      var [voidNode] = endVoid;
+      var r = domRange.cloneRange();
+      var domNode = DOMEditor.toDOMNode(e, voidNode);
+      r.setEndAfter(domNode);
+      contents = r.cloneContents();
+    }
+    // COMPAT: If the start node is a void node, we need to attach the encoded
+    // fragment to the void node's content node instead of the spacer, because
+    // attaching it to empty `<div>/<span>` nodes will end up having it erased by
+    // most browsers. (2018/04/27)
+    if (startVoid) {
+      attach = contents.querySelector('[data-slate-spacer]');
+    }
+    // Remove any zero-width space spans from the cloned DOM so that they don't
+    // show up elsewhere when pasted.
+    Array.from(contents.querySelectorAll('[data-slate-zero-width]')).forEach(zw => {
+      var isNewline = zw.getAttribute('data-slate-zero-width') === 'n';
+      zw.textContent = isNewline ? '\n' : '';
+    });
+    // Set a `data-slate-fragment` attribute on a non-empty node, so it shows up
+    // in the HTML, and can be used for intra-Slate pasting. If it's a text
+    // node, wrap it in a `<span>` so we have something to set an attribute on.
+    if (isDOMText(attach)) {
+      var span = attach.ownerDocument.createElement('span');
+      // COMPAT: In Chrome and Safari, if we don't add the `white-space` style
+      // then leading and trailing spaces will be ignored. (2017/09/21)
+      span.style.whiteSpace = 'pre';
+      span.appendChild(attach);
+      contents.appendChild(span);
+      attach = span;
+    }
+    var fragment = e.getFragment();
+    var string = JSON.stringify(fragment);
+    var encoded = window.btoa(encodeURIComponent(string));
+    attach.setAttribute('data-slate-fragment', encoded);
+    data.setData("application/".concat(clipboardFormatKey), encoded);
+    // Add the content to a <div> so that we can get its inner HTML.
+    var div = contents.ownerDocument.createElement('div');
+    div.appendChild(contents);
+    div.setAttribute('hidden', 'true');
+    contents.ownerDocument.body.appendChild(div);
+    data.setData('text/html', div.innerHTML);
+    data.setData('text/plain', getPlainText(div));
+    contents.ownerDocument.body.removeChild(div);
+    return data;
+  };
+  e.insertData = data => {
+    if (!e.insertFragmentData(data)) {
+      e.insertTextData(data);
+    }
+  };
+  e.insertFragmentData = data => {
+    /**
+     * Checking copied fragment from application/x-slate-fragment or data-slate-fragment
+     */
+    var fragment = data.getData("application/".concat(clipboardFormatKey)) || getSlateFragmentAttribute(data);
+    if (fragment) {
+      var decoded = decodeURIComponent(window.atob(fragment));
+      var parsed = JSON.parse(decoded);
+      e.insertFragment(parsed);
+      return true;
+    }
+    return false;
+  };
+  e.insertTextData = data => {
+    var text = data.getData('text/plain');
+    if (text) {
+      var lines = text.split(/\r\n|\r|\n/);
+      var split = false;
+      for (var line of lines) {
+        if (split) {
+          slate__WEBPACK_IMPORTED_MODULE_0__.Transforms.splitNodes(e, {
+            always: true
+          });
+        }
+        e.insertText(line);
+        split = true;
+      }
+      return true;
+    }
+    return false;
+  };
+  e.onChange = options => {
+    var onContextChange = EDITOR_TO_ON_CHANGE.get(e);
+    if (onContextChange) {
+      onContextChange(options);
+    }
+    onChange(options);
+  };
+  return e;
+};
+var getMatches = (e, path) => {
+  var matches = [];
+  for (var [n, p] of slate__WEBPACK_IMPORTED_MODULE_0__.Editor.levels(e, {
+    at: path
+  })) {
+    var key = DOMEditor.findKey(e, n);
+    matches.push([p, key]);
+  }
+  return matches;
+};
+
+var TRIPLE_CLICK = 3;
+
+/**
+ * Hotkey mappings for each platform.
+ */
+var HOTKEYS = {
+  bold: 'mod+b',
+  compose: ['down', 'left', 'right', 'up', 'backspace', 'enter'],
+  moveBackward: 'left',
+  moveForward: 'right',
+  moveWordBackward: 'ctrl+left',
+  moveWordForward: 'ctrl+right',
+  deleteBackward: 'shift?+backspace',
+  deleteForward: 'shift?+delete',
+  extendBackward: 'shift+left',
+  extendForward: 'shift+right',
+  italic: 'mod+i',
+  insertSoftBreak: 'shift+enter',
+  splitBlock: 'enter',
+  undo: 'mod+z'
+};
+var APPLE_HOTKEYS = {
+  moveLineBackward: 'opt+up',
+  moveLineForward: 'opt+down',
+  moveWordBackward: 'opt+left',
+  moveWordForward: 'opt+right',
+  deleteBackward: ['ctrl+backspace', 'ctrl+h'],
+  deleteForward: ['ctrl+delete', 'ctrl+d'],
+  deleteLineBackward: 'cmd+shift?+backspace',
+  deleteLineForward: ['cmd+shift?+delete', 'ctrl+k'],
+  deleteWordBackward: 'opt+shift?+backspace',
+  deleteWordForward: 'opt+shift?+delete',
+  extendLineBackward: 'opt+shift+up',
+  extendLineForward: 'opt+shift+down',
+  redo: 'cmd+shift+z',
+  transposeCharacter: 'ctrl+t'
+};
+var WINDOWS_HOTKEYS = {
+  deleteWordBackward: 'ctrl+shift?+backspace',
+  deleteWordForward: 'ctrl+shift?+delete',
+  redo: ['ctrl+y', 'ctrl+shift+z']
+};
+/**
+ * Create a platform-aware hotkey checker.
+ */
+var create = key => {
+  var generic = HOTKEYS[key];
+  var apple = APPLE_HOTKEYS[key];
+  var windows = WINDOWS_HOTKEYS[key];
+  var isGeneric = generic && (0,is_hotkey__WEBPACK_IMPORTED_MODULE_1__.isHotkey)(generic);
+  var isApple = apple && (0,is_hotkey__WEBPACK_IMPORTED_MODULE_1__.isHotkey)(apple);
+  var isWindows = windows && (0,is_hotkey__WEBPACK_IMPORTED_MODULE_1__.isHotkey)(windows);
+  return event => {
+    if (isGeneric && isGeneric(event)) return true;
+    if (IS_APPLE && isApple && isApple(event)) return true;
+    if (!IS_APPLE && isWindows && isWindows(event)) return true;
+    return false;
+  };
+};
+/**
+ * Hotkeys.
+ */
+var hotkeys = {
+  isBold: create('bold'),
+  isCompose: create('compose'),
+  isMoveBackward: create('moveBackward'),
+  isMoveForward: create('moveForward'),
+  isDeleteBackward: create('deleteBackward'),
+  isDeleteForward: create('deleteForward'),
+  isDeleteLineBackward: create('deleteLineBackward'),
+  isDeleteLineForward: create('deleteLineForward'),
+  isDeleteWordBackward: create('deleteWordBackward'),
+  isDeleteWordForward: create('deleteWordForward'),
+  isExtendBackward: create('extendBackward'),
+  isExtendForward: create('extendForward'),
+  isExtendLineBackward: create('extendLineBackward'),
+  isExtendLineForward: create('extendLineForward'),
+  isItalic: create('italic'),
+  isMoveLineBackward: create('moveLineBackward'),
+  isMoveLineForward: create('moveLineForward'),
+  isMoveWordBackward: create('moveWordBackward'),
+  isMoveWordForward: create('moveWordForward'),
+  isRedo: create('redo'),
+  isSoftBreak: create('insertSoftBreak'),
+  isSplitBlock: create('splitBlock'),
+  isTransposeCharacter: create('transposeCharacter'),
+  isUndo: create('undo')
+};
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+var _excluded = ["anchor", "focus"],
+  _excluded2 = ["anchor", "focus"];
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var shallowCompare = (obj1, obj2) => Object.keys(obj1).length === Object.keys(obj2).length && Object.keys(obj1).every(key => obj2.hasOwnProperty(key) && obj1[key] === obj2[key]);
+var isDecorationFlagsEqual = (range, other) => {
+  var rangeOwnProps = _objectWithoutProperties(range, _excluded);
+  var otherOwnProps = _objectWithoutProperties(other, _excluded2);
+  return range[PLACEHOLDER_SYMBOL] === other[PLACEHOLDER_SYMBOL] && shallowCompare(rangeOwnProps, otherOwnProps);
+};
+/**
+ * Check if a list of decorator ranges are equal to another.
+ *
+ * PERF: this requires the two lists to also have the ranges inside them in the
+ * same order, but this is an okay constraint for us since decorations are
+ * kept in order, and the odd case where they aren't is okay to re-render for.
+ */
+var isElementDecorationsEqual = (list, another) => {
+  if (list === another) {
+    return true;
+  }
+  if (!list || !another) {
+    return false;
+  }
+  if (list.length !== another.length) {
+    return false;
+  }
+  for (var i = 0; i < list.length; i++) {
+    var range = list[i];
+    var other = another[i];
+    if (!slate__WEBPACK_IMPORTED_MODULE_0__.Range.equals(range, other) || !isDecorationFlagsEqual(range, other)) {
+      return false;
+    }
+  }
+  return true;
+};
+/**
+ * Check if a list of decorator ranges are equal to another.
+ *
+ * PERF: this requires the two lists to also have the ranges inside them in the
+ * same order, but this is an okay constraint for us since decorations are
+ * kept in order, and the odd case where they aren't is okay to re-render for.
+ */
+var isTextDecorationsEqual = (list, another) => {
+  if (list === another) {
+    return true;
+  }
+  if (!list || !another) {
+    return false;
+  }
+  if (list.length !== another.length) {
+    return false;
+  }
+  for (var i = 0; i < list.length; i++) {
+    var range = list[i];
+    var other = another[i];
+    // compare only offsets because paths doesn't matter for text
+    if (range.anchor.offset !== other.anchor.offset || range.focus.offset !== other.focus.offset || !isDecorationFlagsEqual(range, other)) {
+      return false;
+    }
+  }
+  return true;
+};
+/**
+ * Split and group decorations by each child of a node.
+ *
+ * @returns An array with length equal to that of `node.children`. Each index
+ * corresponds to a child of `node`, and the value is an array of decorations
+ * for that child.
+ */
+var splitDecorationsByChild = (editor, node, decorations) => {
+  var decorationsByChild = Array.from(node.children, () => []);
+  if (decorations.length === 0) {
+    return decorationsByChild;
+  }
+  var path = DOMEditor.findPath(editor, node);
+  var level = path.length;
+  var ancestorRange = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, path);
+  var cachedChildRanges = new Array(node.children.length);
+  var getChildRange = index => {
+    var cachedRange = cachedChildRanges[index];
+    if (cachedRange) return cachedRange;
+    var childRange = slate__WEBPACK_IMPORTED_MODULE_0__.Editor.range(editor, [...path, index]);
+    cachedChildRanges[index] = childRange;
+    return childRange;
+  };
+  for (var decoration of decorations) {
+    var decorationRange = slate__WEBPACK_IMPORTED_MODULE_0__.Range.intersection(ancestorRange, decoration);
+    if (!decorationRange) continue;
+    var [startPoint, endPoint] = slate__WEBPACK_IMPORTED_MODULE_0__.Range.edges(decorationRange);
+    var startIndex = startPoint.path[level];
+    var endIndex = endPoint.path[level];
+    for (var i = startIndex; i <= endIndex; i++) {
+      var ds = decorationsByChild[i];
+      if (!ds) continue;
+      var childRange = getChildRange(i);
+      var childDecorationRange = slate__WEBPACK_IMPORTED_MODULE_0__.Range.intersection(childRange, decoration);
+      if (!childDecorationRange) continue;
+      ds.push(_objectSpread(_objectSpread({}, decoration), childDecorationRange));
+    }
+  }
+  return decorationsByChild;
+};
+
+
+//# sourceMappingURL=index.es.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/slate-history/dist/index.es.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/slate-history/dist/index.es.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   HISTORY: () => (/* binding */ HISTORY),
+/* harmony export */   History: () => (/* binding */ History),
+/* harmony export */   HistoryEditor: () => (/* binding */ HistoryEditor),
+/* harmony export */   MERGING: () => (/* binding */ MERGING),
+/* harmony export */   SAVING: () => (/* binding */ SAVING),
+/* harmony export */   SPLITTING_ONCE: () => (/* binding */ SPLITTING_ONCE),
+/* harmony export */   withHistory: () => (/* binding */ withHistory)
+/* harmony export */ });
+/* harmony import */ var is_plain_object__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-plain-object */ "./node_modules/slate-history/node_modules/is-plain-object/dist/is-plain-object.mjs");
+/* harmony import */ var slate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! slate */ "./node_modules/slate/dist/index.es.js");
+
+
+
+// eslint-disable-next-line no-redeclare
+var History = {
+  /**
+   * Check if a value is a `History` object.
+   */
+  isHistory(value) {
+    return (0,is_plain_object__WEBPACK_IMPORTED_MODULE_0__.isPlainObject)(value) && Array.isArray(value.redos) && Array.isArray(value.undos) && (value.redos.length === 0 || slate__WEBPACK_IMPORTED_MODULE_1__.Operation.isOperationList(value.redos[0].operations)) && (value.undos.length === 0 || slate__WEBPACK_IMPORTED_MODULE_1__.Operation.isOperationList(value.undos[0].operations));
+  }
+};
+
+/**
+ * Weakmaps for attaching state to the editor.
+ */
+var HISTORY = new WeakMap();
+var SAVING = new WeakMap();
+var MERGING = new WeakMap();
+var SPLITTING_ONCE = new WeakMap();
+// eslint-disable-next-line no-redeclare
+var HistoryEditor = {
+  /**
+   * Check if a value is a `HistoryEditor` object.
+   */
+  isHistoryEditor(value) {
+    return History.isHistory(value.history) && slate__WEBPACK_IMPORTED_MODULE_1__.Editor.isEditor(value);
+  },
+  /**
+   * Get the merge flag's current value.
+   */
+  isMerging(editor) {
+    return MERGING.get(editor);
+  },
+  /**
+   * Get the splitting once flag's current value.
+   */
+  isSplittingOnce(editor) {
+    return SPLITTING_ONCE.get(editor);
+  },
+  setSplittingOnce(editor, value) {
+    SPLITTING_ONCE.set(editor, value);
+  },
+  /**
+   * Get the saving flag's current value.
+   */
+  isSaving(editor) {
+    return SAVING.get(editor);
+  },
+  /**
+   * Redo to the previous saved state.
+   */
+  redo(editor) {
+    editor.redo();
+  },
+  /**
+   * Undo to the previous saved state.
+   */
+  undo(editor) {
+    editor.undo();
+  },
+  /**
+   * Apply a series of changes inside a synchronous `fn`, These operations will
+   * be merged into the previous history.
+   */
+  withMerging(editor, fn) {
+    var prev = HistoryEditor.isMerging(editor);
+    MERGING.set(editor, true);
+    fn();
+    MERGING.set(editor, prev);
+  },
+  /**
+   * Apply a series of changes inside a synchronous `fn`, ensuring that the first
+   * operation starts a new batch in the history. Subsequent operations will be
+   * merged as usual.
+   */
+  withNewBatch(editor, fn) {
+    var prev = HistoryEditor.isMerging(editor);
+    MERGING.set(editor, true);
+    SPLITTING_ONCE.set(editor, true);
+    fn();
+    MERGING.set(editor, prev);
+    SPLITTING_ONCE.delete(editor);
+  },
+  /**
+   * Apply a series of changes inside a synchronous `fn`, without merging any of
+   * the new operations into previous save point in the history.
+   */
+  withoutMerging(editor, fn) {
+    var prev = HistoryEditor.isMerging(editor);
+    MERGING.set(editor, false);
+    fn();
+    MERGING.set(editor, prev);
+  },
+  /**
+   * Apply a series of changes inside a synchronous `fn`, without saving any of
+   * their operations into the history.
+   */
+  withoutSaving(editor, fn) {
+    var prev = HistoryEditor.isSaving(editor);
+    SAVING.set(editor, false);
+    try {
+      fn();
+    } finally {
+      SAVING.set(editor, prev);
+    }
+  }
+};
+
+/**
+ * The `withHistory` plugin keeps track of the operation history of a Slate
+ * editor as operations are applied to it, using undo and redo stacks.
+ *
+ * If you are using TypeScript, you must extend Slate's CustomTypes to use
+ * this plugin.
+ *
+ * See https://docs.slatejs.org/concepts/11-typescript to learn how.
+ */
+var withHistory = editor => {
+  var e = editor;
+  var {
+    apply
+  } = e;
+  e.history = {
+    undos: [],
+    redos: []
+  };
+  e.redo = () => {
+    var {
+      history
+    } = e;
+    var {
+      redos
+    } = history;
+    if (redos.length > 0) {
+      var batch = redos[redos.length - 1];
+      if (batch.selectionBefore) {
+        slate__WEBPACK_IMPORTED_MODULE_1__.Transforms.setSelection(e, batch.selectionBefore);
+      }
+      HistoryEditor.withoutSaving(e, () => {
+        slate__WEBPACK_IMPORTED_MODULE_1__.Editor.withoutNormalizing(e, () => {
+          for (var op of batch.operations) {
+            e.apply(op);
+          }
+        });
+      });
+      history.redos.pop();
+      e.writeHistory('undos', batch);
+    }
+  };
+  e.undo = () => {
+    var {
+      history
+    } = e;
+    var {
+      undos
+    } = history;
+    if (undos.length > 0) {
+      var batch = undos[undos.length - 1];
+      HistoryEditor.withoutSaving(e, () => {
+        slate__WEBPACK_IMPORTED_MODULE_1__.Editor.withoutNormalizing(e, () => {
+          var inverseOps = batch.operations.map(slate__WEBPACK_IMPORTED_MODULE_1__.Operation.inverse).reverse();
+          for (var op of inverseOps) {
+            e.apply(op);
+          }
+          if (batch.selectionBefore) {
+            slate__WEBPACK_IMPORTED_MODULE_1__.Transforms.setSelection(e, batch.selectionBefore);
+          }
+        });
+      });
+      e.writeHistory('redos', batch);
+      history.undos.pop();
+    }
+  };
+  e.apply = op => {
+    var {
+      operations,
+      history
+    } = e;
+    var {
+      undos
+    } = history;
+    var lastBatch = undos[undos.length - 1];
+    var lastOp = lastBatch && lastBatch.operations[lastBatch.operations.length - 1];
+    var save = HistoryEditor.isSaving(e);
+    var merge = HistoryEditor.isMerging(e);
+    if (save == null) {
+      save = shouldSave(op);
+    }
+    if (save) {
+      if (merge == null) {
+        if (lastBatch == null) {
+          merge = false;
+        } else if (operations.length !== 0) {
+          merge = true;
+        } else {
+          merge = shouldMerge(op, lastOp);
+        }
+      }
+      if (HistoryEditor.isSplittingOnce(e)) {
+        merge = false;
+        HistoryEditor.setSplittingOnce(e, undefined);
+      }
+      if (lastBatch && merge) {
+        lastBatch.operations.push(op);
+      } else {
+        var batch = {
+          operations: [op],
+          selectionBefore: e.selection
+        };
+        e.writeHistory('undos', batch);
+      }
+      while (undos.length > 100) {
+        undos.shift();
+      }
+      history.redos = [];
+    }
+    apply(op);
+  };
+  e.writeHistory = (stack, batch) => {
+    e.history[stack].push(batch);
+  };
+  return e;
+};
+/**
+ * Check whether to merge an operation into the previous operation.
+ */
+var shouldMerge = (op, prev) => {
+  if (prev && op.type === 'insert_text' && prev.type === 'insert_text' && op.offset === prev.offset + prev.text.length && slate__WEBPACK_IMPORTED_MODULE_1__.Path.equals(op.path, prev.path)) {
+    return true;
+  }
+  if (prev && op.type === 'remove_text' && prev.type === 'remove_text' && op.offset + op.text.length === prev.offset && slate__WEBPACK_IMPORTED_MODULE_1__.Path.equals(op.path, prev.path)) {
+    return true;
+  }
+  return false;
+};
+/**
+ * Check whether an operation needs to be saved to the history.
+ */
+var shouldSave = (op, prev) => {
+  if (op.type === 'set_selection') {
+    return false;
+  }
+  return true;
+};
+
+
+//# sourceMappingURL=index.es.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/slate-history/node_modules/is-plain-object/dist/is-plain-object.mjs":
+/*!******************************************************************************************!*\
+  !*** ./node_modules/slate-history/node_modules/is-plain-object/dist/is-plain-object.mjs ***!
+  \******************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isPlainObject: () => (/* binding */ isPlainObject)
+/* harmony export */ });
+/*!
+ * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+function isObject(o) {
+  return Object.prototype.toString.call(o) === '[object Object]';
+}
+
+function isPlainObject(o) {
+  var ctor,prot;
+
+  if (isObject(o) === false) return false;
+
+  // If has modified constructor
+  ctor = o.constructor;
+  if (ctor === undefined) return true;
+
+  // If has modified prototype
+  prot = ctor.prototype;
+  if (isObject(prot) === false) return false;
+
+  // If constructor does not have an Object-specific method
+  if (prot.hasOwnProperty('isPrototypeOf') === false) {
+    return false;
+  }
+
+  // Most likely a plain Object
+  return true;
+}
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/slate-react/dist/index.es.js":
+/*!***************************************************!*\
+  !*** ./node_modules/slate-react/dist/index.es.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DefaultElement: () => (/* binding */ DefaultElement),
+/* harmony export */   DefaultLeaf: () => (/* binding */ DefaultLeaf),
+/* harmony export */   DefaultPlaceholder: () => (/* binding */ DefaultPlaceholder),
+/* harmony export */   DefaultText: () => (/* binding */ DefaultText),
+/* harmony export */   Editable: () => (/* binding */ Editable),
+/* harmony export */   NODE_TO_INDEX: () => (/* reexport safe */ slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_INDEX),
+/* harmony export */   NODE_TO_PARENT: () => (/* reexport safe */ slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_PARENT),
+/* harmony export */   ReactEditor: () => (/* binding */ ReactEditor),
+/* harmony export */   Slate: () => (/* binding */ Slate),
+/* harmony export */   defaultScrollSelectionIntoView: () => (/* binding */ defaultScrollSelectionIntoView),
+/* harmony export */   useComposing: () => (/* binding */ useComposing),
+/* harmony export */   useEditor: () => (/* binding */ useEditor),
+/* harmony export */   useElement: () => (/* binding */ useElement),
+/* harmony export */   useElementIf: () => (/* binding */ useElementIf),
+/* harmony export */   useFocused: () => (/* binding */ useFocused),
+/* harmony export */   useReadOnly: () => (/* binding */ useReadOnly),
+/* harmony export */   useSelected: () => (/* binding */ useSelected),
+/* harmony export */   useSlate: () => (/* binding */ useSlate),
+/* harmony export */   useSlateSelection: () => (/* binding */ useSlateSelection),
+/* harmony export */   useSlateSelector: () => (/* binding */ useSlateSelector),
+/* harmony export */   useSlateStatic: () => (/* binding */ useSlateStatic),
+/* harmony export */   useSlateWithV: () => (/* binding */ useSlateWithV),
+/* harmony export */   withReact: () => (/* binding */ withReact)
+/* harmony export */ });
+/* harmony import */ var direction__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! direction */ "./node_modules/direction/index.js");
+/* harmony import */ var direction__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(direction__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var lodash_debounce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/debounce */ "./node_modules/lodash/debounce.js");
+/* harmony import */ var lodash_debounce__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_debounce__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var lodash_throttle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/throttle */ "./node_modules/lodash/throttle.js");
+/* harmony import */ var lodash_throttle__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_throttle__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var scroll_into_view_if_needed__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! scroll-into-view-if-needed */ "./node_modules/scroll-into-view-if-needed/dist/index.js");
+/* harmony import */ var slate__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! slate */ "./node_modules/slate/dist/index.es.js");
+/* harmony import */ var slate_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! slate-dom */ "./node_modules/slate-dom/dist/index.es.js");
+/* harmony import */ var _juggle_resize_observer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @juggle/resize-observer */ "./node_modules/@juggle/resize-observer/lib/exports/resize-observer.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+
+
+
+
+
+
+
+
+
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+
+function _toPrimitive(input, hint) {
+  if (_typeof(input) !== "object" || input === null) return input;
+  var prim = input[Symbol.toPrimitive];
+  if (prim !== undefined) {
+    var res = prim.call(input, hint || "default");
+    if (_typeof(res) !== "object") return res;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (hint === "string" ? String : Number)(input);
+}
+
+function _toPropertyKey(arg) {
+  var key = _toPrimitive(arg, "string");
+  return _typeof(key) === "symbol" ? key : String(key);
+}
+
+function _defineProperty(obj, key, value) {
+  key = _toPropertyKey(key);
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+
+/**
+ * A React context for sharing the editor object.
+ */
+var EditorContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.createContext)(null);
+/**
+ * Get the current editor object from the React context.
+ */
+var useSlateStatic = () => {
+  var editor = (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(EditorContext);
+  if (!editor) {
+    throw new Error("The `useSlateStatic` hook must be used inside the <Slate> component's context.");
+  }
+  return editor;
+};
+
+// eslint-disable-next-line no-redeclare
+var ReactEditor = slate_dom__WEBPACK_IMPORTED_MODULE_6__.DOMEditor;
+
+function ownKeys$7(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$7(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$7(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$7(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+// https://github.com/facebook/draft-js/blob/main/src/component/handlers/composition/DraftEditorCompositionHandler.js#L41
+// When using keyboard English association function, conpositionEnd triggered too fast, resulting in after `insertText` still maintain association state.
+var RESOLVE_DELAY = 25;
+// Time with no user interaction before the current user action is considered as done.
+var FLUSH_DELAY = 200;
+// Replace with `const debug = console.log` to debug
+var debug = function debug() {};
+// Type guard to check if a value is a DataTransfer
+var isDataTransfer = value => (value === null || value === void 0 ? void 0 : value.constructor.name) === 'DataTransfer';
+function createAndroidInputManager(_ref) {
+  var {
+    editor,
+    scheduleOnDOMSelectionChange,
+    onDOMSelectionChange
+  } = _ref;
+  var flushing = false;
+  var compositionEndTimeoutId = null;
+  var flushTimeoutId = null;
+  var actionTimeoutId = null;
+  var idCounter = 0;
+  var insertPositionHint = false;
+  var applyPendingSelection = () => {
+    var pendingSelection = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_SELECTION.get(editor);
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_SELECTION.delete(editor);
+    if (pendingSelection) {
+      var {
+        selection
+      } = editor;
+      var normalized = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.normalizeRange)(editor, pendingSelection);
+      if (normalized && (!selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(normalized, selection))) {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, normalized);
+      }
+    }
+  };
+  var performAction = () => {
+    var action = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_ACTION.get(editor);
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_ACTION.delete(editor);
+    if (!action) {
+      return;
+    }
+    if (action.at) {
+      var target = slate__WEBPACK_IMPORTED_MODULE_5__.Point.isPoint(action.at) ? (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.normalizePoint)(editor, action.at) : (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.normalizeRange)(editor, action.at);
+      if (!target) {
+        return;
+      }
+      var _targetRange = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.range(editor, target);
+      if (!editor.selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(editor.selection, _targetRange)) {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, target);
+      }
+    }
+    action.run();
+  };
+  var flush = () => {
+    if (flushTimeoutId) {
+      clearTimeout(flushTimeoutId);
+      flushTimeoutId = null;
+    }
+    if (actionTimeoutId) {
+      clearTimeout(actionTimeoutId);
+      actionTimeoutId = null;
+    }
+    if (!hasPendingDiffs() && !hasPendingAction()) {
+      applyPendingSelection();
+      return;
+    }
+    if (!flushing) {
+      flushing = true;
+      setTimeout(() => flushing = false);
+    }
+    if (hasPendingAction()) {
+      flushing = 'action';
+    }
+    var selectionRef = editor.selection && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.rangeRef(editor, editor.selection, {
+      affinity: 'forward'
+    });
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_MARKS.set(editor, editor.marks);
+    debug('flush', slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_ACTION.get(editor), slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.get(editor));
+    var scheduleSelectionChange = hasPendingDiffs();
+    var diff;
+    while (diff = (_EDITOR_TO_PENDING_DI = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.get(editor)) === null || _EDITOR_TO_PENDING_DI === void 0 ? void 0 : _EDITOR_TO_PENDING_DI[0]) {
+      var _EDITOR_TO_PENDING_DI, _EDITOR_TO_PENDING_DI2;
+      var pendingMarks = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_INSERTION_MARKS.get(editor);
+      if (pendingMarks !== undefined) {
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_INSERTION_MARKS.delete(editor);
+        editor.marks = pendingMarks;
+      }
+      if (pendingMarks && insertPositionHint === false) {
+        insertPositionHint = null;
+      }
+      var range = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.targetRange)(diff);
+      if (!editor.selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(editor.selection, range)) {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, range);
+      }
+      if (diff.diff.text) {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertText(editor, diff.diff.text);
+      } else {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor);
+      }
+      // Remove diff only after we have applied it to account for it when transforming
+      // pending ranges.
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.set(editor, (_EDITOR_TO_PENDING_DI2 = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.get(editor)) === null || _EDITOR_TO_PENDING_DI2 === void 0 ? void 0 : _EDITOR_TO_PENDING_DI2.filter(_ref2 => {
+        var {
+          id
+        } = _ref2;
+        return id !== diff.id;
+      }));
+      if (!(0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.verifyDiffState)(editor, diff)) {
+        scheduleSelectionChange = false;
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_ACTION.delete(editor);
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_MARKS.delete(editor);
+        flushing = 'action';
+        // Ensure we don't restore the pending user (dom) selection
+        // since the document and dom state do not match.
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_SELECTION.delete(editor);
+        scheduleOnDOMSelectionChange.cancel();
+        onDOMSelectionChange.cancel();
+        selectionRef === null || selectionRef === void 0 || selectionRef.unref();
+      }
+    }
+    var selection = selectionRef === null || selectionRef === void 0 ? void 0 : selectionRef.unref();
+    if (selection && !slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_SELECTION.get(editor) && (!editor.selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(selection, editor.selection))) {
+      slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, selection);
+    }
+    if (hasPendingAction()) {
+      performAction();
+      return;
+    }
+    // COMPAT: The selectionChange event is fired after the action is performed,
+    // so we have to manually schedule it to ensure we don't 'throw away' the selection
+    // while rendering if we have pending changes.
+    if (scheduleSelectionChange) {
+      scheduleOnDOMSelectionChange();
+    }
+    scheduleOnDOMSelectionChange.flush();
+    onDOMSelectionChange.flush();
+    applyPendingSelection();
+    var userMarks = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_MARKS.get(editor);
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_MARKS.delete(editor);
+    if (userMarks !== undefined) {
+      editor.marks = userMarks;
+      editor.onChange();
+    }
+  };
+  var handleCompositionEnd = _event => {
+    if (compositionEndTimeoutId) {
+      clearTimeout(compositionEndTimeoutId);
+    }
+    compositionEndTimeoutId = setTimeout(() => {
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_COMPOSING.set(editor, false);
+      flush();
+    }, RESOLVE_DELAY);
+  };
+  var handleCompositionStart = _event => {
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_COMPOSING.set(editor, true);
+    if (compositionEndTimeoutId) {
+      clearTimeout(compositionEndTimeoutId);
+      compositionEndTimeoutId = null;
+    }
+  };
+  var updatePlaceholderVisibility = function updatePlaceholderVisibility() {
+    var forceHide = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var placeholderElement = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PLACEHOLDER_ELEMENT.get(editor);
+    if (!placeholderElement) {
+      return;
+    }
+    if (hasPendingDiffs() || forceHide) {
+      placeholderElement.style.display = 'none';
+      return;
+    }
+    placeholderElement.style.removeProperty('display');
+  };
+  var storeDiff = (path, diff) => {
+    var _EDITOR_TO_PENDING_DI3;
+    var pendingDiffs = (_EDITOR_TO_PENDING_DI3 = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.get(editor)) !== null && _EDITOR_TO_PENDING_DI3 !== void 0 ? _EDITOR_TO_PENDING_DI3 : [];
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.set(editor, pendingDiffs);
+    var target = slate__WEBPACK_IMPORTED_MODULE_5__.Node.leaf(editor, path);
+    var idx = pendingDiffs.findIndex(change => slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(change.path, path));
+    if (idx < 0) {
+      var normalized = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.normalizeStringDiff)(target.text, diff);
+      if (normalized) {
+        pendingDiffs.push({
+          path,
+          diff,
+          id: idCounter++
+        });
+      }
+      updatePlaceholderVisibility();
+      return;
+    }
+    var merged = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.mergeStringDiffs)(target.text, pendingDiffs[idx].diff, diff);
+    if (!merged) {
+      pendingDiffs.splice(idx, 1);
+      updatePlaceholderVisibility();
+      return;
+    }
+    pendingDiffs[idx] = _objectSpread$7(_objectSpread$7({}, pendingDiffs[idx]), {}, {
+      diff: merged
+    });
+  };
+  var scheduleAction = function scheduleAction(run) {
+    var {
+      at
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    insertPositionHint = false;
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_SELECTION.delete(editor);
+    scheduleOnDOMSelectionChange.cancel();
+    onDOMSelectionChange.cancel();
+    if (hasPendingAction()) {
+      flush();
+    }
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_ACTION.set(editor, {
+      at,
+      run
+    });
+    // COMPAT: When deleting before a non-contenteditable element chrome only fires a beforeinput,
+    // (no input) and doesn't perform any dom mutations. Without a flush timeout we would never flush
+    // in this case and thus never actually perform the action.
+    actionTimeoutId = setTimeout(flush);
+  };
+  var handleDOMBeforeInput = event => {
+    var _targetRange2;
+    if (flushTimeoutId) {
+      clearTimeout(flushTimeoutId);
+      flushTimeoutId = null;
+    }
+    if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_NODE_MAP_DIRTY.get(editor)) {
+      return;
+    }
+    var {
+      inputType: type
+    } = event;
+    var targetRange = null;
+    var data = event.dataTransfer || event.data || undefined;
+    if (insertPositionHint !== false && type !== 'insertText' && type !== 'insertCompositionText') {
+      insertPositionHint = false;
+    }
+    var [nativeTargetRange] = event.getTargetRanges();
+    if (nativeTargetRange) {
+      targetRange = ReactEditor.toSlateRange(editor, nativeTargetRange, {
+        exactMatch: false,
+        suppressThrow: true
+      });
+    }
+    // COMPAT: SelectionChange event is fired after the action is performed, so we
+    // have to manually get the selection here to ensure it's up-to-date.
+    var window = ReactEditor.getWindow(editor);
+    var domSelection = window.getSelection();
+    if (!targetRange && domSelection) {
+      nativeTargetRange = domSelection;
+      targetRange = ReactEditor.toSlateRange(editor, domSelection, {
+        exactMatch: false,
+        suppressThrow: true
+      });
+    }
+    targetRange = (_targetRange2 = targetRange) !== null && _targetRange2 !== void 0 ? _targetRange2 : editor.selection;
+    if (!targetRange) {
+      return;
+    }
+    // By default, the input manager tries to store text diffs so that we can
+    // defer flushing them at a later point in time. We don't want to flush
+    // for every input event as this can be expensive. However, there are some
+    // scenarios where we cannot safely store the text diff and must instead
+    // schedule an action to let Slate normalize the editor state.
+    var canStoreDiff = true;
+    if (type.startsWith('delete')) {
+      var direction = type.endsWith('Backward') ? 'backward' : 'forward';
+      var [start, end] = slate__WEBPACK_IMPORTED_MODULE_5__.Range.edges(targetRange);
+      var [leaf, path] = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.leaf(editor, start.path);
+      if (slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(targetRange)) {
+        if (leaf.text.length === start.offset && end.offset === 0) {
+          var next = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.next(editor, {
+            at: start.path,
+            match: slate__WEBPACK_IMPORTED_MODULE_5__.Text.isText
+          });
+          if (next && slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(next[1], end.path)) {
+            // when deleting a linebreak, targetRange will span across the break (ie start in the node before and end in the node after)
+            // if the node before is empty, this will look like a hanging range and get unhung later--which will take the break we want to remove out of the range
+            // so to avoid this we collapse the target range to default to single character deletion
+            if (direction === 'backward') {
+              targetRange = {
+                anchor: end,
+                focus: end
+              };
+              start = end;
+              [leaf, path] = next;
+            } else {
+              targetRange = {
+                anchor: start,
+                focus: start
+              };
+              end = start;
+            }
+          }
+        }
+      }
+      var diff = {
+        text: '',
+        start: start.offset,
+        end: end.offset
+      };
+      var pendingDiffs = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.get(editor);
+      var relevantPendingDiffs = pendingDiffs === null || pendingDiffs === void 0 ? void 0 : pendingDiffs.find(change => slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(change.path, path));
+      var diffs = relevantPendingDiffs ? [relevantPendingDiffs.diff, diff] : [diff];
+      var text = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.applyStringDiff)(leaf.text, ...diffs);
+      if (text.length === 0) {
+        // Text leaf will be removed, so we need to schedule an
+        // action to remove it so that Slate can normalize instead
+        // of storing as a diff
+        canStoreDiff = false;
+      }
+      if (slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(targetRange)) {
+        if (canStoreDiff && slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(targetRange.anchor.path, targetRange.focus.path)) {
+          var point = {
+            path: targetRange.anchor.path,
+            offset: start.offset
+          };
+          var range = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.range(editor, point, point);
+          handleUserSelect(range);
+          return storeDiff(targetRange.anchor.path, {
+            text: '',
+            end: end.offset,
+            start: start.offset
+          });
+        }
+        return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+          direction
+        }), {
+          at: targetRange
+        });
+      }
+    }
+    switch (type) {
+      case 'deleteByComposition':
+      case 'deleteByCut':
+      case 'deleteByDrag':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor), {
+            at: targetRange
+          });
+        }
+      case 'deleteContent':
+      case 'deleteContentForward':
+        {
+          var {
+            anchor
+          } = targetRange;
+          if (canStoreDiff && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(targetRange)) {
+            var targetNode = slate__WEBPACK_IMPORTED_MODULE_5__.Node.leaf(editor, anchor.path);
+            if (anchor.offset < targetNode.text.length) {
+              return storeDiff(anchor.path, {
+                text: '',
+                start: anchor.offset,
+                end: anchor.offset + 1
+              });
+            }
+          }
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor), {
+            at: targetRange
+          });
+        }
+      case 'deleteContentBackward':
+        {
+          var _nativeTargetRange;
+          var {
+            anchor: _anchor
+          } = targetRange;
+          // If we have a mismatch between the native and slate selection being collapsed
+          // we are most likely deleting a zero-width placeholder and thus should perform it
+          // as an action to ensure correct behavior (mostly happens with mark placeholders)
+          var nativeCollapsed = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isDOMSelection)(nativeTargetRange) ? nativeTargetRange.isCollapsed : !!((_nativeTargetRange = nativeTargetRange) !== null && _nativeTargetRange !== void 0 && _nativeTargetRange.collapsed);
+          if (canStoreDiff && nativeCollapsed && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(targetRange) && _anchor.offset > 0) {
+            return storeDiff(_anchor.path, {
+              text: '',
+              start: _anchor.offset - 1,
+              end: _anchor.offset
+            });
+          }
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor), {
+            at: targetRange
+          });
+        }
+      case 'deleteEntireSoftLine':
+        {
+          return scheduleAction(() => {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+              unit: 'line'
+            });
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+              unit: 'line'
+            });
+          }, {
+            at: targetRange
+          });
+        }
+      case 'deleteHardLineBackward':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+            unit: 'block'
+          }), {
+            at: targetRange
+          });
+        }
+      case 'deleteSoftLineBackward':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+            unit: 'line'
+          }), {
+            at: targetRange
+          });
+        }
+      case 'deleteHardLineForward':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+            unit: 'block'
+          }), {
+            at: targetRange
+          });
+        }
+      case 'deleteSoftLineForward':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+            unit: 'line'
+          }), {
+            at: targetRange
+          });
+        }
+      case 'deleteWordBackward':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+            unit: 'word'
+          }), {
+            at: targetRange
+          });
+        }
+      case 'deleteWordForward':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+            unit: 'word'
+          }), {
+            at: targetRange
+          });
+        }
+      case 'insertLineBreak':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertSoftBreak(editor), {
+            at: targetRange
+          });
+        }
+      case 'insertParagraph':
+        {
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertBreak(editor), {
+            at: targetRange
+          });
+        }
+      case 'insertCompositionText':
+      case 'deleteCompositionText':
+      case 'insertFromComposition':
+      case 'insertFromDrop':
+      case 'insertFromPaste':
+      case 'insertFromYank':
+      case 'insertReplacementText':
+      case 'insertText':
+        {
+          if (isDataTransfer(data)) {
+            return scheduleAction(() => ReactEditor.insertData(editor, data), {
+              at: targetRange
+            });
+          }
+          var _text = data !== null && data !== void 0 ? data : '';
+          // COMPAT: If we are writing inside a placeholder, the ime inserts the text inside
+          // the placeholder itself and thus includes the zero-width space inside edit events.
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_INSERTION_MARKS.get(editor)) {
+            _text = _text.replace('\uFEFF', '');
+          }
+          // Pastes from the Android clipboard will generate `insertText` events.
+          // If the copied text contains any newlines, Android will append an
+          // extra newline to the end of the copied text.
+          if (type === 'insertText' && /.*\n.*\n$/.test(_text)) {
+            _text = _text.slice(0, -1);
+          }
+          // If the text includes a newline, split it at newlines and paste each component
+          // string, with soft breaks in between each.
+          if (_text.includes('\n')) {
+            return scheduleAction(() => {
+              var parts = _text.split('\n');
+              parts.forEach((line, i) => {
+                if (line) {
+                  slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertText(editor, line);
+                }
+                if (i !== parts.length - 1) {
+                  slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertSoftBreak(editor);
+                }
+              });
+            }, {
+              at: targetRange
+            });
+          }
+          if (slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(targetRange.anchor.path, targetRange.focus.path)) {
+            var [_start, _end] = slate__WEBPACK_IMPORTED_MODULE_5__.Range.edges(targetRange);
+            var _diff = {
+              start: _start.offset,
+              end: _end.offset,
+              text: _text
+            };
+            // COMPAT: Swiftkey has a weird bug where the target range of the 2nd word
+            // inserted after a mark placeholder is inserted with an anchor offset off by 1.
+            // So writing 'some text' will result in 'some ttext'. Luckily all 'normal' insert
+            // text events are fired with the correct target ranges, only the final 'insertComposition'
+            // isn't, so we can adjust the target range start offset if we are confident this is the
+            // swiftkey insert causing the issue.
+            if (_text && insertPositionHint && type === 'insertCompositionText') {
+              var hintPosition = insertPositionHint.start + insertPositionHint.text.search(/\S|$/);
+              var diffPosition = _diff.start + _diff.text.search(/\S|$/);
+              if (diffPosition === hintPosition + 1 && _diff.end === insertPositionHint.start + insertPositionHint.text.length) {
+                _diff.start -= 1;
+                insertPositionHint = null;
+                scheduleFlush();
+              } else {
+                insertPositionHint = false;
+              }
+            } else if (type === 'insertText') {
+              if (insertPositionHint === null) {
+                insertPositionHint = _diff;
+              } else if (insertPositionHint && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(targetRange) && insertPositionHint.end + insertPositionHint.text.length === _start.offset) {
+                insertPositionHint = _objectSpread$7(_objectSpread$7({}, insertPositionHint), {}, {
+                  text: insertPositionHint.text + _text
+                });
+              } else {
+                insertPositionHint = false;
+              }
+            } else {
+              insertPositionHint = false;
+            }
+            if (canStoreDiff) {
+              var currentSelection = editor.selection;
+              storeDiff(_start.path, _diff);
+              if (currentSelection) {
+                var newPoint = {
+                  path: _start.path,
+                  offset: _start.offset + _text.length
+                };
+                scheduleAction(() => {
+                  slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, {
+                    anchor: newPoint,
+                    focus: newPoint
+                  });
+                }, {
+                  at: newPoint
+                });
+              }
+              return;
+            }
+          }
+          return scheduleAction(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertText(editor, _text), {
+            at: targetRange
+          });
+        }
+    }
+  };
+  var hasPendingAction = () => {
+    return !!slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_ACTION.get(editor);
+  };
+  var hasPendingDiffs = () => {
+    var _EDITOR_TO_PENDING_DI4;
+    return !!((_EDITOR_TO_PENDING_DI4 = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_DIFFS.get(editor)) !== null && _EDITOR_TO_PENDING_DI4 !== void 0 && _EDITOR_TO_PENDING_DI4.length);
+  };
+  var hasPendingChanges = () => {
+    return hasPendingAction() || hasPendingDiffs();
+  };
+  var isFlushing = () => {
+    return flushing;
+  };
+  var handleUserSelect = range => {
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_SELECTION.set(editor, range);
+    if (flushTimeoutId) {
+      clearTimeout(flushTimeoutId);
+      flushTimeoutId = null;
+    }
+    var {
+      selection
+    } = editor;
+    if (!range) {
+      return;
+    }
+    var pathChanged = !selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(selection.anchor.path, range.anchor.path);
+    var parentPathChanged = !selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(selection.anchor.path.slice(0, -1), range.anchor.path.slice(0, -1));
+    if (pathChanged && insertPositionHint || parentPathChanged) {
+      insertPositionHint = false;
+    }
+    if (pathChanged || hasPendingDiffs()) {
+      flushTimeoutId = setTimeout(flush, FLUSH_DELAY);
+    }
+  };
+  var handleInput = () => {
+    if (hasPendingAction() || !hasPendingDiffs()) {
+      flush();
+    }
+  };
+  var handleKeyDown = _ => {
+    // COMPAT: Swiftkey closes the keyboard when typing inside a empty node
+    // directly next to a non-contenteditable element (= the placeholder).
+    // The only event fired soon enough for us to allow hiding the placeholder
+    // without swiftkey picking it up is the keydown event, so we have to hide it
+    // here. See https://github.com/ianstormtaylor/slate/pull/4988#issuecomment-1201050535
+    if (!hasPendingDiffs()) {
+      updatePlaceholderVisibility(true);
+      setTimeout(updatePlaceholderVisibility);
+    }
+  };
+  var scheduleFlush = () => {
+    if (!hasPendingAction()) {
+      actionTimeoutId = setTimeout(flush);
+    }
+  };
+  var handleDomMutations = mutations => {
+    if (hasPendingDiffs() || hasPendingAction()) {
+      return;
+    }
+    if (mutations.some(mutation => (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isTrackedMutation)(editor, mutation, mutations))) {
+      var _EDITOR_TO_FORCE_REND;
+      // Cause a re-render to restore the dom state if we encounter tracked mutations without
+      // a corresponding pending action.
+      (_EDITOR_TO_FORCE_REND = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_FORCE_RENDER.get(editor)) === null || _EDITOR_TO_FORCE_REND === void 0 || _EDITOR_TO_FORCE_REND();
+    }
+  };
+  return {
+    flush,
+    scheduleFlush,
+    hasPendingDiffs,
+    hasPendingAction,
+    hasPendingChanges,
+    isFlushing,
+    handleUserSelect,
+    handleCompositionEnd,
+    handleCompositionStart,
+    handleDOMBeforeInput,
+    handleKeyDown,
+    handleDomMutations,
+    handleInput
+  };
+}
+
+function useIsMounted() {
+  var isMountedRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(false);
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+  return isMountedRef.current;
+}
+
+/**
+ * Prevent warning on SSR by falling back to useEffect when DOM isn't available
+ */
+var useIsomorphicLayoutEffect = slate_dom__WEBPACK_IMPORTED_MODULE_6__.CAN_USE_DOM ? react__WEBPACK_IMPORTED_MODULE_3__.useLayoutEffect : react__WEBPACK_IMPORTED_MODULE_3__.useEffect;
+
+function useMutationObserver(node, callback, options) {
+  var [mutationObserver] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(() => new MutationObserver(callback));
+  useIsomorphicLayoutEffect(() => {
+    // Discard mutations caused during render phase. This works due to react calling
+    // useLayoutEffect synchronously after the render phase before the next tick.
+    mutationObserver.takeRecords();
+  });
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    if (!node.current) {
+      throw new Error('Failed to attach MutationObserver, `node` is undefined');
+    }
+    mutationObserver.observe(node.current, options);
+    return () => mutationObserver.disconnect();
+  }, [mutationObserver, node, options]);
+}
+
+var _excluded$2 = ["node"];
+function ownKeys$6(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$6(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$6(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$6(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var MUTATION_OBSERVER_CONFIG$1 = {
+  subtree: true,
+  childList: true,
+  characterData: true
+};
+var useAndroidInputManager = !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID ? () => null : _ref => {
+  var {
+      node
+    } = _ref,
+    options = _objectWithoutProperties(_ref, _excluded$2);
+  if (!slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID) {
+    return null;
+  }
+  var editor = useSlateStatic();
+  var isMounted = useIsMounted();
+  var [inputManager] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(() => createAndroidInputManager(_objectSpread$6({
+    editor
+  }, options)));
+  useMutationObserver(node, inputManager.handleDomMutations, MUTATION_OBSERVER_CONFIG$1);
+  slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_SCHEDULE_FLUSH.set(editor, inputManager.scheduleFlush);
+  if (isMounted) {
+    inputManager.flush();
+  }
+  return inputManager;
+};
+
+function ownKeys$5(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$5(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$5(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$5(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+/**
+ * Leaf content strings.
+ */
+var String$1 = props => {
+  var {
+    isLast,
+    leaf,
+    parent,
+    text
+  } = props;
+  var editor = useSlateStatic();
+  var path = ReactEditor.findPath(editor, text);
+  var parentPath = slate__WEBPACK_IMPORTED_MODULE_5__.Path.parent(path);
+  var isMarkPlaceholder = Boolean(leaf[slate_dom__WEBPACK_IMPORTED_MODULE_6__.MARK_PLACEHOLDER_SYMBOL]);
+  // COMPAT: Render text inside void nodes with a zero-width space.
+  // So the node can contain selection but the text is not visible.
+  if (editor.isVoid(parent)) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(ZeroWidthString, {
+      length: slate__WEBPACK_IMPORTED_MODULE_5__.Node.string(parent).length
+    });
+  }
+  // COMPAT: If this is the last text node in an empty block, render a zero-
+  // width space that will convert into a line break when copying and pasting
+  // to support expected plain text.
+  if (leaf.text === '' && parent.children[parent.children.length - 1] === text && !editor.isInline(parent) && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.string(editor, parentPath) === '') {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(ZeroWidthString, {
+      isLineBreak: true,
+      isMarkPlaceholder: isMarkPlaceholder
+    });
+  }
+  // COMPAT: If the text is empty, it's because it's on the edge of an inline
+  // node, so we render a zero-width space so that the selection can be
+  // inserted next to it still.
+  if (leaf.text === '') {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(ZeroWidthString, {
+      isMarkPlaceholder: isMarkPlaceholder
+    });
+  }
+  // COMPAT: Browsers will collapse trailing new lines at the end of blocks,
+  // so we need to add an extra trailing new lines to prevent that.
+  if (isLast && leaf.text.slice(-1) === '\n') {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(TextString, {
+      isTrailing: true,
+      text: leaf.text
+    });
+  }
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(TextString, {
+    text: leaf.text
+  });
+};
+/**
+ * Leaf strings with text in them.
+ */
+var TextString = props => {
+  var {
+    text,
+    isTrailing = false
+  } = props;
+  var ref = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  var getTextContent = () => {
+    return "".concat(text !== null && text !== void 0 ? text : '').concat(isTrailing ? '\n' : '');
+  };
+  var [initialText] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(getTextContent);
+  // This is the actual text rendering boundary where we interface with the DOM
+  // The text is not rendered as part of the virtual DOM, as since we handle basic character insertions natively,
+  // updating the DOM is not a one way dataflow anymore. What we need here is not reconciliation and diffing
+  // with previous version of the virtual DOM, but rather diffing with the actual DOM element, and replace the DOM <span> content
+  // exactly if and only if its current content does not match our current virtual DOM.
+  // Otherwise the DOM TextNode would always be replaced by React as the user types, which interferes with native text features,
+  // eg makes native spellcheck opt out from checking the text node.
+  // useLayoutEffect: updating our span before browser paint
+  useIsomorphicLayoutEffect(() => {
+    // null coalescing text to make sure we're not outputing "null" as a string in the extreme case it is nullish at runtime
+    var textWithTrailing = getTextContent();
+    if (ref.current && ref.current.textContent !== textWithTrailing) {
+      ref.current.textContent = textWithTrailing;
+    }
+    // intentionally not specifying dependencies, so that this effect runs on every render
+    // as this effectively replaces "specifying the text in the virtual DOM under the <span> below" on each render
+  });
+  // We intentionally render a memoized <span> that only receives the initial text content when the component is mounted.
+  // We defer to the layout effect above to update the `textContent` of the span element when needed.
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(MemoizedText$1, {
+    ref: ref
+  }, initialText);
+};
+var MemoizedText$1 = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.memo)( /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.forwardRef)((props, ref) => {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("span", {
+    "data-slate-string": true,
+    ref: ref
+  }, props.children);
+}));
+/**
+ * Leaf strings without text, render as zero-width strings.
+ */
+var ZeroWidthString = props => {
+  var {
+    length = 0,
+    isLineBreak = false,
+    isMarkPlaceholder = false
+  } = props;
+  var attributes = {
+    'data-slate-zero-width': isLineBreak ? 'n' : 'z',
+    'data-slate-length': length
+  };
+  if (isMarkPlaceholder) {
+    attributes['data-slate-mark-placeholder'] = true;
+  }
+  // FIXME: Inserting the \uFEFF on iOS breaks capitalization at the start of an
+  // empty editor (https://github.com/ianstormtaylor/slate/issues/5199).
+  //
+  // However, not inserting the \uFEFF on iOS causes the editor to crash when
+  // inserting any text using an IME at the start of a block. This appears to
+  // be because accepting an IME suggestion when at the start of a block (no
+  // preceding \uFEFF) removes one or more DOM elements that `toSlateRange`
+  // depends on. (https://github.com/ianstormtaylor/slate/issues/5703)
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("span", _objectSpread$5({}, attributes), !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID || !isLineBreak ? '\uFEFF' : null, isLineBreak ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("br", null) : null);
+};
+
+function ownKeys$4(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$4(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$4(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$4(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+// Delay the placeholder on Android to prevent the keyboard from closing.
+// (https://github.com/ianstormtaylor/slate/pull/5368)
+var PLACEHOLDER_DELAY = slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID ? 300 : 0;
+function disconnectPlaceholderResizeObserver(placeholderResizeObserver, releaseObserver) {
+  if (placeholderResizeObserver.current) {
+    placeholderResizeObserver.current.disconnect();
+    if (releaseObserver) {
+      placeholderResizeObserver.current = null;
+    }
+  }
+}
+function clearTimeoutRef(timeoutRef) {
+  if (timeoutRef.current) {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = null;
+  }
+}
+var defaultRenderLeaf = props => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(DefaultLeaf, _objectSpread$4({}, props));
+/**
+ * Individual leaves in a text node with unique formatting.
+ */
+var Leaf = props => {
+  var {
+    leaf,
+    isLast,
+    text,
+    parent,
+    renderPlaceholder,
+    renderLeaf = defaultRenderLeaf,
+    leafPosition
+  } = props;
+  var editor = useSlateStatic();
+  var placeholderResizeObserver = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  var placeholderRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  var [showPlaceholder, setShowPlaceholder] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(false);
+  var showPlaceholderTimeoutRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  var callbackPlaceholderRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(placeholderEl => {
+    disconnectPlaceholderResizeObserver(placeholderResizeObserver, placeholderEl == null);
+    if (placeholderEl == null) {
+      var _leaf$onPlaceholderRe;
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PLACEHOLDER_ELEMENT.delete(editor);
+      (_leaf$onPlaceholderRe = leaf.onPlaceholderResize) === null || _leaf$onPlaceholderRe === void 0 || _leaf$onPlaceholderRe.call(leaf, null);
+    } else {
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PLACEHOLDER_ELEMENT.set(editor, placeholderEl);
+      if (!placeholderResizeObserver.current) {
+        // Create a new observer and observe the placeholder element.
+        var ResizeObserver$1 = window.ResizeObserver || _juggle_resize_observer__WEBPACK_IMPORTED_MODULE_7__.ResizeObserver;
+        placeholderResizeObserver.current = new ResizeObserver$1(() => {
+          var _leaf$onPlaceholderRe2;
+          (_leaf$onPlaceholderRe2 = leaf.onPlaceholderResize) === null || _leaf$onPlaceholderRe2 === void 0 || _leaf$onPlaceholderRe2.call(leaf, placeholderEl);
+        });
+      }
+      placeholderResizeObserver.current.observe(placeholderEl);
+      placeholderRef.current = placeholderEl;
+    }
+  }, [placeholderRef, leaf, editor]);
+  var children = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(String$1, {
+    isLast: isLast,
+    leaf: leaf,
+    parent: parent,
+    text: text
+  });
+  var leafIsPlaceholder = Boolean(leaf[slate_dom__WEBPACK_IMPORTED_MODULE_6__.PLACEHOLDER_SYMBOL]);
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    if (leafIsPlaceholder) {
+      if (!showPlaceholderTimeoutRef.current) {
+        // Delay the placeholder, so it will not render in a selection
+        showPlaceholderTimeoutRef.current = setTimeout(() => {
+          setShowPlaceholder(true);
+          showPlaceholderTimeoutRef.current = null;
+        }, PLACEHOLDER_DELAY);
+      }
+    } else {
+      clearTimeoutRef(showPlaceholderTimeoutRef);
+      setShowPlaceholder(false);
+    }
+    return () => clearTimeoutRef(showPlaceholderTimeoutRef);
+  }, [leafIsPlaceholder, setShowPlaceholder]);
+  if (leafIsPlaceholder && showPlaceholder) {
+    var placeholderProps = {
+      children: leaf.placeholder,
+      attributes: {
+        'data-slate-placeholder': true,
+        style: {
+          position: 'absolute',
+          top: 0,
+          pointerEvents: 'none',
+          width: '100%',
+          maxWidth: '100%',
+          display: 'block',
+          opacity: '0.333',
+          userSelect: 'none',
+          textDecoration: 'none',
+          // Fixes https://github.com/udecode/plate/issues/2315
+          WebkitUserModify: slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WEBKIT ? 'inherit' : undefined
+        },
+        contentEditable: false,
+        ref: callbackPlaceholderRef
+      }
+    };
+    children = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null, children, renderPlaceholder(placeholderProps));
+  }
+  // COMPAT: Having the `data-` attributes on these leaf elements ensures that
+  // in certain misbehaving browsers they aren't weirdly cloned/destroyed by
+  // contenteditable behaviors. (2019/05/08)
+  var attributes = {
+    'data-slate-leaf': true
+  };
+  return renderLeaf({
+    attributes,
+    children,
+    leaf,
+    text,
+    leafPosition
+  });
+};
+var MemoizedLeaf = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().memo(Leaf, (prev, next) => {
+  return next.parent === prev.parent && next.isLast === prev.isLast && next.renderLeaf === prev.renderLeaf && next.renderPlaceholder === prev.renderPlaceholder && next.text === prev.text && slate__WEBPACK_IMPORTED_MODULE_5__.Text.equals(next.leaf, prev.leaf) && next.leaf[slate_dom__WEBPACK_IMPORTED_MODULE_6__.PLACEHOLDER_SYMBOL] === prev.leaf[slate_dom__WEBPACK_IMPORTED_MODULE_6__.PLACEHOLDER_SYMBOL];
+});
+var DefaultLeaf = props => {
+  var {
+    attributes,
+    children
+  } = props;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("span", _objectSpread$4({}, attributes), children);
+};
+
+/**
+ * Create a selector that updates when an `update` function is called, and
+ * which only causes the component to render when the result of `selector`
+ * differs from the previous result according to `equalityFn`.
+ *
+ * If `selector` is memoized using `useCallback`, then it will only be called
+ * when it changes or when `update` is called. Otherwise, `selector` will be
+ * called every time the component renders.
+ *
+ * @example
+ * const [state, update] = useGenericSelector(selector, equalityFn)
+ *
+ * useIsomorphicLayoutEffect(() => {
+ *   return addEventListener(update)
+ * }, [addEventListener, update])
+ *
+ * return state
+ */
+function useGenericSelector(selector, equalityFn) {
+  var [, forceRender] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useReducer)(s => s + 1, 0);
+  var latestSubscriptionCallbackError = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)();
+  var latestSelector = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(() => null);
+  var latestSelectedState = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  var selectedState;
+  try {
+    if (selector !== latestSelector.current || latestSubscriptionCallbackError.current) {
+      var selectorResult = selector();
+      if (equalityFn(latestSelectedState.current, selectorResult)) {
+        selectedState = latestSelectedState.current;
+      } else {
+        selectedState = selectorResult;
+      }
+    } else {
+      selectedState = latestSelectedState.current;
+    }
+  } catch (err) {
+    if (latestSubscriptionCallbackError.current && isError(err)) {
+      err.message += "\nThe error may be correlated with this previous error:\n".concat(latestSubscriptionCallbackError.current.stack, "\n\n");
+    }
+    throw err;
+  }
+  latestSelector.current = selector;
+  latestSelectedState.current = selectedState;
+  latestSubscriptionCallbackError.current = undefined;
+  var update = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(() => {
+    try {
+      var newSelectedState = latestSelector.current();
+      if (equalityFn(latestSelectedState.current, newSelectedState)) {
+        return;
+      }
+      latestSelectedState.current = newSelectedState;
+    } catch (err) {
+      // we ignore all errors here, since when the component
+      // is re-rendered, the selectors are called again, and
+      // will throw again, if neither props nor store state
+      // changed
+      if (err instanceof Error) {
+        latestSubscriptionCallbackError.current = err;
+      } else {
+        latestSubscriptionCallbackError.current = new Error(String(err));
+      }
+    }
+    forceRender();
+    // don't rerender on equalityFn change since we want to be able to define it inline
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return [selectedState, update];
+}
+function isError(error) {
+  return error instanceof Error;
+}
+
+/**
+ * A React context for sharing the `decorate` prop of the editable and
+ * subscribing to changes on this prop.
+ */
+var DecorateContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.createContext)({});
+var useDecorations = (node, parentDecorations) => {
+  var editor = useSlateStatic();
+  var {
+    decorate,
+    addEventListener
+  } = (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(DecorateContext);
+  // Not memoized since we want nodes to be decorated on each render
+  var selector = () => {
+    var path = ReactEditor.findPath(editor, node);
+    return decorate([node, path]);
+  };
+  var equalityFn = slate__WEBPACK_IMPORTED_MODULE_5__.Text.isText(node) ? slate_dom__WEBPACK_IMPORTED_MODULE_6__.isTextDecorationsEqual : slate_dom__WEBPACK_IMPORTED_MODULE_6__.isElementDecorationsEqual;
+  var [decorations, update] = useGenericSelector(selector, equalityFn);
+  useIsomorphicLayoutEffect(() => {
+    var unsubscribe = addEventListener(update);
+    update();
+    return unsubscribe;
+  }, [addEventListener, update]);
+  return (0,react__WEBPACK_IMPORTED_MODULE_3__.useMemo)(() => [...decorations, ...parentDecorations], [decorations, parentDecorations]);
+};
+var useDecorateContext = decorateProp => {
+  var eventListeners = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(new Set());
+  var latestDecorate = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(decorateProp);
+  useIsomorphicLayoutEffect(() => {
+    latestDecorate.current = decorateProp;
+    eventListeners.current.forEach(listener => listener());
+  }, [decorateProp]);
+  var decorate = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(entry => latestDecorate.current(entry), []);
+  var addEventListener = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(callback => {
+    eventListeners.current.add(callback);
+    return () => {
+      eventListeners.current.delete(callback);
+    };
+  }, []);
+  return (0,react__WEBPACK_IMPORTED_MODULE_3__.useMemo)(() => ({
+    decorate,
+    addEventListener
+  }), [decorate, addEventListener]);
+};
+
+function ownKeys$3(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$3(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$3(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$3(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var defaultRenderText = props => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(DefaultText, _objectSpread$3({}, props));
+/**
+ * Text.
+ */
+var Text = props => {
+  var {
+    decorations: parentDecorations,
+    isLast,
+    parent,
+    renderPlaceholder,
+    renderLeaf,
+    renderText = defaultRenderText,
+    text
+  } = props;
+  var editor = useSlateStatic();
+  var ref = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  var decorations = useDecorations(text, parentDecorations);
+  var decoratedLeaves = slate__WEBPACK_IMPORTED_MODULE_5__.Text.decorations(text, decorations);
+  var key = ReactEditor.findKey(editor, text);
+  var children = [];
+  for (var i = 0; i < decoratedLeaves.length; i++) {
+    var {
+      leaf,
+      position
+    } = decoratedLeaves[i];
+    children.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(MemoizedLeaf, {
+      isLast: isLast && i === decoratedLeaves.length - 1,
+      key: "".concat(key.id, "-").concat(i),
+      renderPlaceholder: renderPlaceholder,
+      leaf: leaf,
+      leafPosition: position,
+      text: text,
+      parent: parent,
+      renderLeaf: renderLeaf
+    }));
+  }
+  // Update element-related weak maps with the DOM element ref.
+  var callbackRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(span => {
+    var KEY_TO_ELEMENT = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_KEY_TO_ELEMENT.get(editor);
+    if (span) {
+      KEY_TO_ELEMENT === null || KEY_TO_ELEMENT === void 0 || KEY_TO_ELEMENT.set(key, span);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_ELEMENT.set(text, span);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.ELEMENT_TO_NODE.set(span, text);
+    } else {
+      KEY_TO_ELEMENT === null || KEY_TO_ELEMENT === void 0 || KEY_TO_ELEMENT.delete(key);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_ELEMENT.delete(text);
+      if (ref.current) {
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.ELEMENT_TO_NODE.delete(ref.current);
+      }
+    }
+    ref.current = span;
+  }, [ref, editor, key, text]);
+  var attributes = {
+    'data-slate-node': 'text',
+    ref: callbackRef
+  };
+  return renderText({
+    text,
+    children,
+    attributes
+  });
+};
+var MemoizedText = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().memo(Text, (prev, next) => {
+  return next.parent === prev.parent && next.isLast === prev.isLast && next.renderText === prev.renderText && next.renderLeaf === prev.renderLeaf && next.renderPlaceholder === prev.renderPlaceholder && next.text === prev.text && (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isTextDecorationsEqual)(next.decorations, prev.decorations);
+});
+var DefaultText = props => {
+  var {
+    attributes,
+    children
+  } = props;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("span", _objectSpread$3({}, attributes), children);
+};
+
+function ownKeys$2(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$2(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$2(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$2(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var defaultRenderElement = props => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(DefaultElement, _objectSpread$2({}, props));
+/**
+ * Element.
+ */
+var Element = props => {
+  var {
+    decorations: parentDecorations,
+    element,
+    renderElement = defaultRenderElement,
+    renderChunk,
+    renderPlaceholder,
+    renderLeaf,
+    renderText
+  } = props;
+  var editor = useSlateStatic();
+  var readOnly = useReadOnly();
+  var isInline = editor.isInline(element);
+  var decorations = useDecorations(element, parentDecorations);
+  var key = ReactEditor.findKey(editor, element);
+  var ref = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(ref => {
+    // Update element-related weak maps with the DOM element ref.
+    var KEY_TO_ELEMENT = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_KEY_TO_ELEMENT.get(editor);
+    if (ref) {
+      KEY_TO_ELEMENT === null || KEY_TO_ELEMENT === void 0 || KEY_TO_ELEMENT.set(key, ref);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_ELEMENT.set(element, ref);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.ELEMENT_TO_NODE.set(ref, element);
+    } else {
+      KEY_TO_ELEMENT === null || KEY_TO_ELEMENT === void 0 || KEY_TO_ELEMENT.delete(key);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_ELEMENT.delete(element);
+    }
+  }, [editor, key, element]);
+  var children = useChildren({
+    decorations,
+    node: element,
+    renderElement,
+    renderChunk,
+    renderPlaceholder,
+    renderLeaf,
+    renderText
+  });
+  // Attributes that the developer must mix into the element in their
+  // custom node renderer component.
+  var attributes = {
+    'data-slate-node': 'element',
+    ref
+  };
+  if (isInline) {
+    attributes['data-slate-inline'] = true;
+  }
+  // If it's a block node with inline children, add the proper `dir` attribute
+  // for text direction.
+  if (!isInline && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.hasInlines(editor, element)) {
+    var text = slate__WEBPACK_IMPORTED_MODULE_5__.Node.string(element);
+    var dir = direction__WEBPACK_IMPORTED_MODULE_0___default()(text);
+    if (dir === 'rtl') {
+      attributes.dir = dir;
+    }
+  }
+  // If it's a void node, wrap the children in extra void-specific elements.
+  if (slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isVoid(editor, element)) {
+    attributes['data-slate-void'] = true;
+    if (!readOnly && isInline) {
+      attributes.contentEditable = false;
+    }
+    var Tag = isInline ? 'span' : 'div';
+    var [[_text]] = slate__WEBPACK_IMPORTED_MODULE_5__.Node.texts(element);
+    children = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(Tag, {
+      "data-slate-spacer": true,
+      style: {
+        height: '0',
+        color: 'transparent',
+        outline: 'none',
+        position: 'absolute'
+      }
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(MemoizedText, {
+      renderPlaceholder: renderPlaceholder,
+      decorations: [],
+      isLast: false,
+      parent: element,
+      text: _text
+    }));
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_INDEX.set(_text, 0);
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_PARENT.set(_text, element);
+  }
+  return renderElement({
+    attributes,
+    children,
+    element
+  });
+};
+var MemoizedElement = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().memo(Element, (prev, next) => {
+  return prev.element === next.element && prev.renderElement === next.renderElement && prev.renderChunk === next.renderChunk && prev.renderText === next.renderText && prev.renderLeaf === next.renderLeaf && prev.renderPlaceholder === next.renderPlaceholder && (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isElementDecorationsEqual)(prev.decorations, next.decorations);
+});
+/**
+ * The default element renderer.
+ */
+var DefaultElement = props => {
+  var {
+    attributes,
+    children,
+    element
+  } = props;
+  var editor = useSlateStatic();
+  var Tag = editor.isInline(element) ? 'span' : 'div';
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(Tag, _objectSpread$2(_objectSpread$2({}, attributes), {}, {
+    style: {
+      position: 'relative'
+    }
+  }), children);
+};
+
+/**
+ * Traverse and modify a chunk tree
+ */
+class ChunkTreeHelper {
+  constructor(chunkTree, _ref) {
+    var {
+      chunkSize,
+      debug
+    } = _ref;
+    /**
+     * The root of the chunk tree
+     */
+    _defineProperty(this, "root", void 0);
+    /**
+     * The ideal size of a chunk
+     */
+    _defineProperty(this, "chunkSize", void 0);
+    /**
+     * Whether debug mode is enabled
+     *
+     * If enabled, the pointer state will be checked for internal consistency
+     * after each mutating operation.
+     */
+    _defineProperty(this, "debug", void 0);
+    /**
+     * Whether the traversal has reached the end of the chunk tree
+     *
+     * When this is true, the pointerChunk and pointerIndex point to the last
+     * top-level node in the chunk tree, although pointerNode returns null.
+     */
+    _defineProperty(this, "reachedEnd", void 0);
+    /**
+     * The chunk containing the current node
+     */
+    _defineProperty(this, "pointerChunk", void 0);
+    /**
+     * The index of the current node within pointerChunk
+     *
+     * Can be -1 to indicate that the pointer is before the start of the tree.
+     */
+    _defineProperty(this, "pointerIndex", void 0);
+    /**
+     * Similar to a Slate path; tracks the path of pointerChunk relative to the
+     * root.
+     *
+     * Used to move the pointer from the current chunk to the parent chunk more
+     * efficiently.
+     */
+    _defineProperty(this, "pointerIndexStack", void 0);
+    /**
+     * Indexing the current chunk's children has a slight time cost, which adds up
+     * when traversing very large trees, so the current node is cached.
+     *
+     * A value of undefined means that the current node is not cached. This
+     * property must be set to undefined whenever the pointer is moved, unless
+     * the pointer is guaranteed to point to the same node that it did previously.
+     */
+    _defineProperty(this, "cachedPointerNode", void 0);
+    this.root = chunkTree;
+    this.chunkSize = chunkSize;
+    // istanbul ignore next
+    this.debug = debug !== null && debug !== void 0 ? debug : false;
+    this.pointerChunk = chunkTree;
+    this.pointerIndex = -1;
+    this.pointerIndexStack = [];
+    this.reachedEnd = false;
+    this.validateState();
+  }
+  /**
+   * Move the pointer to the next leaf in the chunk tree
+   */
+  readLeaf() {
+    // istanbul ignore next
+    if (this.reachedEnd) return null;
+    // Get the next sibling or aunt node
+    while (true) {
+      if (this.pointerIndex + 1 < this.pointerSiblings.length) {
+        this.pointerIndex++;
+        this.cachedPointerNode = undefined;
+        break;
+      } else if (this.pointerChunk.type === 'root') {
+        this.reachedEnd = true;
+        return null;
+      } else {
+        this.exitChunk();
+      }
+    }
+    this.validateState();
+    // If the next sibling or aunt is a chunk, descend into it
+    this.enterChunkUntilLeaf(false);
+    return this.pointerNode;
+  }
+  /**
+   * Move the pointer to the previous leaf in the chunk tree
+   */
+  returnToPreviousLeaf() {
+    // If we were at the end of the tree, descend into the end of the last
+    // chunk in the tree
+    if (this.reachedEnd) {
+      this.reachedEnd = false;
+      this.enterChunkUntilLeaf(true);
+      return;
+    }
+    // Get the previous sibling or aunt node
+    while (true) {
+      if (this.pointerIndex >= 1) {
+        this.pointerIndex--;
+        this.cachedPointerNode = undefined;
+        break;
+      } else if (this.pointerChunk.type === 'root') {
+        this.pointerIndex = -1;
+        return;
+      } else {
+        this.exitChunk();
+      }
+    }
+    this.validateState();
+    // If the previous sibling or aunt is a chunk, descend into it
+    this.enterChunkUntilLeaf(true);
+  }
+  /**
+   * Insert leaves before the current leaf, leaving the pointer unchanged
+   */
+  insertBefore(leaves) {
+    this.returnToPreviousLeaf();
+    this.insertAfter(leaves);
+    this.readLeaf();
+  }
+  /**
+   * Insert leaves after the current leaf, leaving the pointer on the last
+   * inserted leaf
+   *
+   * The insertion algorithm first checks for any chunk we're currently at the
+   * end of that can receive additional leaves. Next, it tries to insert leaves
+   * at the starts of any subsequent chunks.
+   *
+   * Any remaining leaves are passed to rawInsertAfter to be chunked and
+   * inserted at the highest possible level.
+   */
+  insertAfter(leaves) {
+    // istanbul ignore next
+    if (leaves.length === 0) return;
+    var beforeDepth = 0;
+    var afterDepth = 0;
+    // While at the end of a chunk, insert any leaves that will fit, and then
+    // exit the chunk
+    while (this.pointerChunk.type === 'chunk' && this.pointerIndex === this.pointerSiblings.length - 1) {
+      var remainingCapacity = this.chunkSize - this.pointerSiblings.length;
+      var toInsertCount = Math.min(remainingCapacity, leaves.length);
+      if (toInsertCount > 0) {
+        var leavesToInsert = leaves.splice(0, toInsertCount);
+        this.rawInsertAfter(leavesToInsert, beforeDepth);
+      }
+      this.exitChunk();
+      beforeDepth++;
+    }
+    if (leaves.length === 0) return;
+    // Save the pointer so that we can come back here after inserting leaves
+    // into the starts of subsequent blocks
+    var rawInsertPointer = this.savePointer();
+    // If leaves are inserted into the start of a subsequent block, then we
+    // eventually need to restore the pointer to the last such inserted leaf
+    var finalPointer = null;
+    // Move the pointer into the chunk containing the next leaf, if it exists
+    if (this.readLeaf()) {
+      // While at the start of a chunk, insert any leaves that will fit, and
+      // then exit the chunk
+      while (this.pointerChunk.type === 'chunk' && this.pointerIndex === 0) {
+        var _remainingCapacity = this.chunkSize - this.pointerSiblings.length;
+        var _toInsertCount = Math.min(_remainingCapacity, leaves.length);
+        if (_toInsertCount > 0) {
+          var _leavesToInsert = leaves.splice(-_toInsertCount, _toInsertCount);
+          // Insert the leaves at the start of the chunk
+          this.pointerIndex = -1;
+          this.cachedPointerNode = undefined;
+          this.rawInsertAfter(_leavesToInsert, afterDepth);
+          // If this is the first batch of insertions at the start of a
+          // subsequent chunk, set the final pointer to the last inserted leaf
+          if (!finalPointer) {
+            finalPointer = this.savePointer();
+          }
+        }
+        this.exitChunk();
+        afterDepth++;
+      }
+    }
+    this.restorePointer(rawInsertPointer);
+    // If there are leaves left to insert, insert them between the end of the
+    // previous chunk and the start of the first subsequent chunk, or wherever
+    // the pointer ended up after the first batch of insertions
+    var minDepth = Math.max(beforeDepth, afterDepth);
+    this.rawInsertAfter(leaves, minDepth);
+    if (finalPointer) {
+      this.restorePointer(finalPointer);
+    }
+    this.validateState();
+  }
+  /**
+   * Remove the current node and decrement the pointer, deleting any ancestor
+   * chunk that becomes empty as a result
+   */
+  remove() {
+    this.pointerSiblings.splice(this.pointerIndex--, 1);
+    this.cachedPointerNode = undefined;
+    if (this.pointerSiblings.length === 0 && this.pointerChunk.type === 'chunk') {
+      this.exitChunk();
+      this.remove();
+    } else {
+      this.invalidateChunk();
+    }
+    this.validateState();
+  }
+  /**
+   * Add the current chunk and all ancestor chunks to the list of modified
+   * chunks
+   */
+  invalidateChunk() {
+    for (var c = this.pointerChunk; c.type === 'chunk'; c = c.parent) {
+      this.root.modifiedChunks.add(c);
+    }
+  }
+  /**
+   * Whether the pointer is at the start of the tree
+   */
+  get atStart() {
+    return this.pointerChunk.type === 'root' && this.pointerIndex === -1;
+  }
+  /**
+   * The siblings of the current node
+   */
+  get pointerSiblings() {
+    return this.pointerChunk.children;
+  }
+  /**
+   * Get the current node (uncached)
+   *
+   * If the pointer is at the start or end of the document, returns null.
+   *
+   * Usually, the current node is a chunk leaf, although it can be a chunk
+   * while insertions are in progress.
+   */
+  getPointerNode() {
+    if (this.reachedEnd || this.pointerIndex === -1) {
+      return null;
+    }
+    return this.pointerSiblings[this.pointerIndex];
+  }
+  /**
+   * Cached getter for the current node
+   */
+  get pointerNode() {
+    if (this.cachedPointerNode !== undefined) return this.cachedPointerNode;
+    var pointerNode = this.getPointerNode();
+    this.cachedPointerNode = pointerNode;
+    return pointerNode;
+  }
+  /**
+   * Get the path of a chunk relative to the root, returning null if the chunk
+   * is not connected to the root
+   */
+  getChunkPath(chunk) {
+    var path = [];
+    for (var c = chunk; c.type === 'chunk'; c = c.parent) {
+      var index = c.parent.children.indexOf(c);
+      // istanbul ignore next
+      if (index === -1) {
+        return null;
+      }
+      path.unshift(index);
+    }
+    return path;
+  }
+  /**
+   * Save the current pointer to be restored later
+   */
+  savePointer() {
+    if (this.atStart) return 'start';
+    // istanbul ignore next
+    if (!this.pointerNode) {
+      throw new Error('Cannot save pointer when pointerNode is null');
+    }
+    return {
+      chunk: this.pointerChunk,
+      node: this.pointerNode
+    };
+  }
+  /**
+   * Restore the pointer to a previous state
+   */
+  restorePointer(savedPointer) {
+    if (savedPointer === 'start') {
+      this.pointerChunk = this.root;
+      this.pointerIndex = -1;
+      this.pointerIndexStack = [];
+      this.reachedEnd = false;
+      this.cachedPointerNode = undefined;
+      return;
+    }
+    // Since nodes may have been inserted or removed prior to the saved
+    // pointer since it was saved, the index and index stack must be
+    // recomputed. This is slow, but this is fine since restoring a pointer is
+    // not a frequent operation.
+    var {
+      chunk,
+      node
+    } = savedPointer;
+    var index = chunk.children.indexOf(node);
+    // istanbul ignore next
+    if (index === -1) {
+      throw new Error('Cannot restore point because saved node is no longer in saved chunk');
+    }
+    var indexStack = this.getChunkPath(chunk);
+    // istanbul ignore next
+    if (!indexStack) {
+      throw new Error('Cannot restore point because saved chunk is no longer connected to root');
+    }
+    this.pointerChunk = chunk;
+    this.pointerIndex = index;
+    this.pointerIndexStack = indexStack;
+    this.reachedEnd = false;
+    this.cachedPointerNode = node;
+    this.validateState();
+  }
+  /**
+   * Assuming the current node is a chunk, move the pointer into that chunk
+   *
+   * @param end If true, place the pointer on the last node of the chunk.
+   * Otherwise, place the pointer on the first node.
+   */
+  enterChunk(end) {
+    var _this$pointerNode;
+    // istanbul ignore next
+    if (((_this$pointerNode = this.pointerNode) === null || _this$pointerNode === void 0 ? void 0 : _this$pointerNode.type) !== 'chunk') {
+      throw new Error('Cannot enter non-chunk');
+    }
+    this.pointerIndexStack.push(this.pointerIndex);
+    this.pointerChunk = this.pointerNode;
+    this.pointerIndex = end ? this.pointerSiblings.length - 1 : 0;
+    this.cachedPointerNode = undefined;
+    this.validateState();
+    // istanbul ignore next
+    if (this.pointerChunk.children.length === 0) {
+      throw new Error('Cannot enter empty chunk');
+    }
+  }
+  /**
+   * Assuming the current node is a chunk, move the pointer into that chunk
+   * repeatedly until the current node is a leaf
+   *
+   * @param end If true, place the pointer on the last node of the chunk.
+   * Otherwise, place the pointer on the first node.
+   */
+  enterChunkUntilLeaf(end) {
+    while (((_this$pointerNode2 = this.pointerNode) === null || _this$pointerNode2 === void 0 ? void 0 : _this$pointerNode2.type) === 'chunk') {
+      var _this$pointerNode2;
+      this.enterChunk(end);
+    }
+  }
+  /**
+   * Move the pointer to the parent chunk
+   */
+  exitChunk() {
+    // istanbul ignore next
+    if (this.pointerChunk.type === 'root') {
+      throw new Error('Cannot exit root');
+    }
+    var previousPointerChunk = this.pointerChunk;
+    this.pointerChunk = previousPointerChunk.parent;
+    this.pointerIndex = this.pointerIndexStack.pop();
+    this.cachedPointerNode = undefined;
+    this.validateState();
+  }
+  /**
+   * Insert leaves immediately after the current node, leaving the pointer on
+   * the last inserted leaf
+   *
+   * Leaves are chunked according to the number of nodes already in the parent
+   * plus the number of nodes being inserted, or the minimum depth if larger
+   */
+  rawInsertAfter(leaves, minDepth) {
+    if (leaves.length === 0) return;
+    var groupIntoChunks = (leaves, parent, perChunk) => {
+      if (perChunk === 1) return leaves;
+      var chunks = [];
+      for (var i = 0; i < this.chunkSize; i++) {
+        var chunkNodes = leaves.slice(i * perChunk, (i + 1) * perChunk);
+        if (chunkNodes.length === 0) break;
+        var chunk = {
+          type: 'chunk',
+          key: new slate_dom__WEBPACK_IMPORTED_MODULE_6__.Key(),
+          parent,
+          children: []
+        };
+        chunk.children = groupIntoChunks(chunkNodes, chunk, perChunk / this.chunkSize);
+        chunks.push(chunk);
+      }
+      return chunks;
+    };
+    // Determine the chunking depth based on the number of existing nodes in
+    // the chunk and the number of nodes being inserted
+    var newTotal = this.pointerSiblings.length + leaves.length;
+    var depthForTotal = 0;
+    for (var i = this.chunkSize; i < newTotal; i *= this.chunkSize) {
+      depthForTotal++;
+    }
+    // A depth of 0 means no chunking
+    var depth = Math.max(depthForTotal, minDepth);
+    var perTopLevelChunk = Math.pow(this.chunkSize, depth);
+    var chunks = groupIntoChunks(leaves, this.pointerChunk, perTopLevelChunk);
+    this.pointerSiblings.splice(this.pointerIndex + 1, 0, ...chunks);
+    this.pointerIndex += chunks.length;
+    this.cachedPointerNode = undefined;
+    this.invalidateChunk();
+    this.validateState();
+  }
+  /**
+   * If debug mode is enabled, ensure that the state is internally consistent
+   */
+  // istanbul ignore next
+  validateState() {
+    if (!this.debug) return;
+    var validateDescendant = node => {
+      if (node.type === 'chunk') {
+        var {
+          parent,
+          children
+        } = node;
+        if (!parent.children.includes(node)) {
+          throw new Error("Debug: Chunk ".concat(node.key.id, " has an incorrect parent property"));
+        }
+        children.forEach(validateDescendant);
+      }
+    };
+    this.root.children.forEach(validateDescendant);
+    if (this.cachedPointerNode !== undefined && this.cachedPointerNode !== this.getPointerNode()) {
+      throw new Error('Debug: The cached pointer is incorrect and has not been invalidated');
+    }
+    var actualIndexStack = this.getChunkPath(this.pointerChunk);
+    if (!actualIndexStack) {
+      throw new Error('Debug: The pointer chunk is not connected to the root');
+    }
+    if (!slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(this.pointerIndexStack, actualIndexStack)) {
+      throw new Error("Debug: The cached index stack [".concat(this.pointerIndexStack.join(', '), "] does not match the path of the pointer chunk [").concat(actualIndexStack.join(', '), "]"));
+    }
+  }
+}
+
+/**
+ * Traverse an array of children, providing helpers useful for reconciling the
+ * children array with a chunk tree
+ */
+class ChildrenHelper {
+  constructor(editor, children) {
+    _defineProperty(this, "editor", void 0);
+    _defineProperty(this, "children", void 0);
+    /**
+     * Sparse array of Slate node keys, each index corresponding to an index in
+     * the children array
+     *
+     * Fetching the key for a Slate node is expensive, so we cache them here.
+     */
+    _defineProperty(this, "cachedKeys", void 0);
+    /**
+     * The index of the next node to be read in the children array
+     */
+    _defineProperty(this, "pointerIndex", void 0);
+    this.editor = editor;
+    this.children = children;
+    this.cachedKeys = new Array(children.length);
+    this.pointerIndex = 0;
+  }
+  /**
+   * Read a given number of nodes, advancing the pointer by that amount
+   */
+  read(n) {
+    // PERF: If only one child was requested (the most common case), use array
+    // indexing instead of slice
+    if (n === 1) {
+      return [this.children[this.pointerIndex++]];
+    }
+    var slicedChildren = this.remaining(n);
+    this.pointerIndex += n;
+    return slicedChildren;
+  }
+  /**
+   * Get the remaining children without advancing the pointer
+   *
+   * @param [maxChildren] Limit the number of children returned.
+   */
+  remaining(maxChildren) {
+    if (maxChildren === undefined) {
+      return this.children.slice(this.pointerIndex);
+    }
+    return this.children.slice(this.pointerIndex, this.pointerIndex + maxChildren);
+  }
+  /**
+   * Whether all children have been read
+   */
+  get reachedEnd() {
+    return this.pointerIndex >= this.children.length;
+  }
+  /**
+   * Determine whether a node with a given key appears in the unread part of the
+   * children array, and return its index relative to the current pointer if so
+   *
+   * Searching for the node object itself using indexOf is most efficient, but
+   * will fail to locate nodes that have been modified. In this case, nodes
+   * should be identified by their keys instead.
+   *
+   * Searching an array of keys using indexOf is very inefficient since fetching
+   * the keys for all children in advance is very slow. Insead, if the node
+   * search fails to return a value, fetch the keys of each remaining child one
+   * by one and compare it to the known key.
+   */
+  lookAhead(node, key) {
+    var elementResult = this.children.indexOf(node, this.pointerIndex);
+    if (elementResult > -1) return elementResult - this.pointerIndex;
+    for (var i = this.pointerIndex; i < this.children.length; i++) {
+      var candidateNode = this.children[i];
+      var candidateKey = this.findKey(candidateNode, i);
+      if (candidateKey === key) return i - this.pointerIndex;
+    }
+    return -1;
+  }
+  /**
+   * Convert an array of Slate nodes to an array of chunk leaves, each
+   * containing the node and its key
+   */
+  toChunkLeaves(nodes, startIndex) {
+    return nodes.map((node, i) => ({
+      type: 'leaf',
+      node,
+      key: this.findKey(node, startIndex + i),
+      index: startIndex + i
+    }));
+  }
+  /**
+   * Get the key for a Slate node, cached using the node's index
+   */
+  findKey(node, index) {
+    var cachedKey = this.cachedKeys[index];
+    if (cachedKey) return cachedKey;
+    var key = ReactEditor.findKey(this.editor, node);
+    this.cachedKeys[index] = key;
+    return key;
+  }
+}
+
+/**
+ * Update the chunk tree to match the children array, inserting, removing and
+ * updating differing nodes
+ */
+var reconcileChildren = (editor, _ref) => {
+  var {
+    chunkTree,
+    children,
+    chunkSize,
+    rerenderChildren = [],
+    onInsert,
+    onUpdate,
+    onIndexChange,
+    debug
+  } = _ref;
+  chunkTree.modifiedChunks.clear();
+  var chunkTreeHelper = new ChunkTreeHelper(chunkTree, {
+    chunkSize,
+    debug
+  });
+  var childrenHelper = new ChildrenHelper(editor, children);
+  var treeLeaf;
+  // Read leaves from the tree one by one, each one representing a single Slate
+  // node. Each leaf from the tree is compared to the current node in the
+  // children array to determine whether nodes have been inserted, removed or
+  // updated.
+  var _loop = function _loop() {
+    // Check where the tree node appears in the children array. In the most
+    // common case (where no insertions or removals have occurred), this will be
+    // 0. If the node has been removed, this will be -1. If new nodes have been
+    // inserted before the node, or if the node has been moved to a later
+    // position in the same children array, this will be a positive number.
+    var lookAhead = childrenHelper.lookAhead(treeLeaf.node, treeLeaf.key);
+    // If the node was moved, we want to remove it and insert it later, rather
+    // then re-inserting all intermediate nodes before it.
+    var wasMoved = lookAhead > 0 && chunkTree.movedNodeKeys.has(treeLeaf.key);
+    // If the tree leaf was moved or removed, remove it
+    if (lookAhead === -1 || wasMoved) {
+      chunkTreeHelper.remove();
+      return 1; // continue
+    }
+    // Get the matching Slate node and any nodes that may have been inserted
+    // prior to it. Insert these into the chunk tree.
+    var insertedChildrenStartIndex = childrenHelper.pointerIndex;
+    var insertedChildren = childrenHelper.read(lookAhead + 1);
+    var matchingChild = insertedChildren.pop();
+    if (insertedChildren.length) {
+      var _leavesToInsert = childrenHelper.toChunkLeaves(insertedChildren, insertedChildrenStartIndex);
+      chunkTreeHelper.insertBefore(_leavesToInsert);
+      insertedChildren.forEach((node, relativeIndex) => {
+        onInsert === null || onInsert === void 0 || onInsert(node, insertedChildrenStartIndex + relativeIndex);
+      });
+    }
+    var matchingChildIndex = childrenHelper.pointerIndex - 1;
+    // Make sure the chunk tree contains the most recent version of the Slate
+    // node
+    if (treeLeaf.node !== matchingChild) {
+      treeLeaf.node = matchingChild;
+      chunkTreeHelper.invalidateChunk();
+      onUpdate === null || onUpdate === void 0 || onUpdate(matchingChild, matchingChildIndex);
+    }
+    // Update the index if it has changed
+    if (treeLeaf.index !== matchingChildIndex) {
+      treeLeaf.index = matchingChildIndex;
+      onIndexChange === null || onIndexChange === void 0 || onIndexChange(matchingChild, matchingChildIndex);
+    }
+    // Manually invalidate chunks containing specific children that we want to
+    // re-render
+    if (rerenderChildren.includes(matchingChildIndex)) {
+      chunkTreeHelper.invalidateChunk();
+    }
+  };
+  while (treeLeaf = chunkTreeHelper.readLeaf()) {
+    if (_loop()) continue;
+  }
+  // If there are still Slate nodes remaining from the children array that were
+  // not matched to nodes in the tree, insert them at the end of the tree
+  if (!childrenHelper.reachedEnd) {
+    var remainingChildren = childrenHelper.remaining();
+    var leavesToInsert = childrenHelper.toChunkLeaves(remainingChildren, childrenHelper.pointerIndex);
+    // Move the pointer back to the final leaf in the tree, or the start of the
+    // tree if the tree is currently empty
+    chunkTreeHelper.returnToPreviousLeaf();
+    chunkTreeHelper.insertAfter(leavesToInsert);
+    remainingChildren.forEach((node, relativeIndex) => {
+      onInsert === null || onInsert === void 0 || onInsert(node, childrenHelper.pointerIndex + relativeIndex);
+    });
+  }
+  chunkTree.movedNodeKeys.clear();
+};
+
+function ownKeys$1(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$1(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$1(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$1(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var KEY_TO_CHUNK_TREE = new WeakMap();
+/**
+ * Get or create the chunk tree for a Slate node
+ *
+ * If the reconcile option is provided, the chunk tree will be updated to
+ * match the current children of the node. The children are chunked
+ * automatically using the given chunk size.
+ */
+var getChunkTreeForNode = function getChunkTreeForNode(editor, node) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var key = ReactEditor.findKey(editor, node);
+  var chunkTree = KEY_TO_CHUNK_TREE.get(key);
+  if (!chunkTree) {
+    chunkTree = {
+      type: 'root',
+      movedNodeKeys: new Set(),
+      modifiedChunks: new Set(),
+      children: []
+    };
+    KEY_TO_CHUNK_TREE.set(key, chunkTree);
+  }
+  if (options.reconcile) {
+    reconcileChildren(editor, _objectSpread$1({
+      chunkTree,
+      children: node.children
+    }, options.reconcile));
+  }
+  return chunkTree;
+};
+
+var defaultRenderChunk = _ref => {
+  var {
+    children
+  } = _ref;
+  return children;
+};
+var ChunkAncestor = props => {
+  var {
+    root,
+    ancestor,
+    renderElement,
+    renderChunk = defaultRenderChunk
+  } = props;
+  return ancestor.children.map(chunkNode => {
+    if (chunkNode.type === 'chunk') {
+      var key = chunkNode.key.id;
+      var renderedChunk = renderChunk({
+        highest: ancestor === root,
+        lowest: chunkNode.children.some(c => c.type === 'leaf'),
+        attributes: {
+          'data-slate-chunk': true
+        },
+        children: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(MemoizedChunk, {
+          root: root,
+          ancestor: chunkNode,
+          renderElement: renderElement,
+          renderChunk: renderChunk
+        })
+      });
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(react__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+        key: key
+      }, renderedChunk);
+    }
+    // Only blocks containing no inlines are chunked
+    var element = chunkNode.node;
+    return renderElement(element, chunkNode.index, chunkNode.key);
+  });
+};
+var ChunkTree = ChunkAncestor;
+var MemoizedChunk = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().memo(ChunkAncestor, (prev, next) => prev.root === next.root && prev.renderElement === next.renderElement && prev.renderChunk === next.renderChunk && !next.root.modifiedChunks.has(next.ancestor));
+
+var ElementContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.createContext)(null);
+/**
+ * Get the current element.
+ */
+var useElement = () => {
+  var context = (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(ElementContext);
+  if (!context) {
+    throw new Error('The `useElement` hook must be used inside `renderElement`.');
+  }
+  return context;
+};
+/**
+ * Get the current element, or return null if not inside `renderElement`.
+ */
+var useElementIf = () => (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(ElementContext);
+
+/**
+ * Children.
+ */
+var useChildren = props => {
+  var {
+    decorations,
+    node,
+    renderElement,
+    renderChunk,
+    renderPlaceholder,
+    renderText,
+    renderLeaf
+  } = props;
+  var editor = useSlateStatic();
+  slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_NODE_MAP_DIRTY.set(editor, false);
+  var isEditor = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isEditor(node);
+  var isBlock = !isEditor && slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(node) && !editor.isInline(node);
+  var isLeafBlock = isBlock && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.hasInlines(editor, node);
+  var chunkSize = isLeafBlock ? null : editor.getChunkSize(node);
+  var chunking = !!chunkSize;
+  var {
+    decorationsByChild,
+    childrenToRedecorate
+  } = useDecorationsByChild(editor, node, decorations);
+  // Update the index and parent of each child.
+  // PERF: If chunking is enabled, this is done while traversing the chunk tree
+  // instead to eliminate unnecessary weak map operations.
+  if (!chunking) {
+    node.children.forEach((n, i) => {
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_INDEX.set(n, i);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_PARENT.set(n, node);
+    });
+  }
+  var renderElementComponent = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)((n, i, cachedKey) => {
+    var key = cachedKey !== null && cachedKey !== void 0 ? cachedKey : ReactEditor.findKey(editor, n);
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(ElementContext.Provider, {
+      key: "provider-".concat(key.id),
+      value: n
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(MemoizedElement, {
+      decorations: decorationsByChild[i],
+      element: n,
+      key: key.id,
+      renderElement: renderElement,
+      renderChunk: renderChunk,
+      renderPlaceholder: renderPlaceholder,
+      renderLeaf: renderLeaf,
+      renderText: renderText
+    }));
+  }, [editor, decorationsByChild, renderElement, renderChunk, renderPlaceholder, renderLeaf, renderText]);
+  var renderTextComponent = (n, i) => {
+    var key = ReactEditor.findKey(editor, n);
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(MemoizedText, {
+      decorations: decorationsByChild[i],
+      key: key.id,
+      isLast: i === node.children.length - 1,
+      parent: node,
+      renderPlaceholder: renderPlaceholder,
+      renderLeaf: renderLeaf,
+      renderText: renderText,
+      text: n
+    });
+  };
+  if (!chunking) {
+    return node.children.map((n, i) => slate__WEBPACK_IMPORTED_MODULE_5__.Text.isText(n) ? renderTextComponent(n, i) : renderElementComponent(n, i));
+  }
+  var chunkTree = getChunkTreeForNode(editor, node, {
+    reconcile: {
+      chunkSize,
+      rerenderChildren: childrenToRedecorate,
+      onInsert: (n, i) => {
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_INDEX.set(n, i);
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_PARENT.set(n, node);
+      },
+      onUpdate: (n, i) => {
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_INDEX.set(n, i);
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_PARENT.set(n, node);
+      },
+      onIndexChange: (n, i) => {
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_INDEX.set(n, i);
+      }
+    }
+  });
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(ChunkTree, {
+    root: chunkTree,
+    ancestor: chunkTree,
+    renderElement: renderElementComponent,
+    renderChunk: renderChunk
+  });
+};
+var useDecorationsByChild = (editor, node, decorations) => {
+  var decorationsByChild = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.splitDecorationsByChild)(editor, node, decorations);
+  // The value we return is a mutable array of `DecoratedRange[]` arrays. This
+  // lets us avoid passing an immutable array of decorations for each child into
+  // `ChunkTree` using props. Each `DecoratedRange[]` is only updated if the
+  // decorations at that index have changed, which speeds up the equality check
+  // for the `decorations` prop in the memoized `Element` and `Text` components.
+  var mutableDecorationsByChild = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(decorationsByChild).current;
+  // Track the list of child indices whose decorations have changed, so that we
+  // can tell the chunk tree to re-render these children.
+  var childrenToRedecorate = [];
+  // Resize the mutable array to match the latest result
+  mutableDecorationsByChild.length = decorationsByChild.length;
+  for (var i = 0; i < decorationsByChild.length; i++) {
+    var _mutableDecorationsBy;
+    var _decorations = decorationsByChild[i];
+    var previousDecorations = (_mutableDecorationsBy = mutableDecorationsByChild[i]) !== null && _mutableDecorationsBy !== void 0 ? _mutableDecorationsBy : null;
+    if (!(0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isElementDecorationsEqual)(previousDecorations, _decorations)) {
+      mutableDecorationsByChild[i] = _decorations;
+      childrenToRedecorate.push(i);
+    }
+  }
+  return {
+    decorationsByChild: mutableDecorationsByChild,
+    childrenToRedecorate
+  };
+};
+
+/**
+ * A React context for sharing the `readOnly` state of the editor.
+ */
+var ReadOnlyContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.createContext)(false);
+/**
+ * Get the current `readOnly` state of the editor.
+ */
+var useReadOnly = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(ReadOnlyContext);
+};
+
+/**
+ * A React context for sharing the editor selector context in a way to control
+ * re-renders.
+ */
+var SlateSelectorContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.createContext)({});
+var refEquality = (a, b) => a === b;
+/**
+ * Use redux style selectors to prevent re-rendering on every keystroke.
+ *
+ * Bear in mind re-rendering can only prevented if the returned value is a value
+ * type or for reference types (e.g. objects and arrays) add a custom equality
+ * function.
+ *
+ * If `selector` is memoized using `useCallback`, then it will only be called
+ * when it or the editor state changes. Otherwise, `selector` will be called
+ * every time the component renders.
+ *
+ * @example
+ * const isSelectionActive = useSlateSelector(editor => Boolean(editor.selection))
+ */
+function useSlateSelector(selector) {
+  var equalityFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : refEquality;
+  var {
+    deferred
+  } = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var context = (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(SlateSelectorContext);
+  if (!context) {
+    throw new Error("The `useSlateSelector` hook must be used inside the <Slate> component's context.");
+  }
+  var {
+    addEventListener
+  } = context;
+  var editor = useSlateStatic();
+  var genericSelector = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(() => selector(editor), [editor, selector]);
+  var [selectedState, update] = useGenericSelector(genericSelector, equalityFn);
+  useIsomorphicLayoutEffect(() => {
+    var unsubscribe = addEventListener(update, {
+      deferred
+    });
+    update();
+    return unsubscribe;
+  }, [addEventListener, update, deferred]);
+  return selectedState;
+}
+/**
+ * Create selector context with editor updating on every editor change
+ */
+function useSelectorContext() {
+  var eventListeners = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(new Set());
+  var deferredEventListeners = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(new Set());
+  var onChange = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(() => {
+    eventListeners.current.forEach(listener => listener());
+  }, []);
+  var flushDeferred = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(() => {
+    deferredEventListeners.current.forEach(listener => listener());
+    deferredEventListeners.current.clear();
+  }, []);
+  var addEventListener = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(function (callbackProp) {
+    var {
+      deferred = false
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var callback = deferred ? () => deferredEventListeners.current.add(callbackProp) : callbackProp;
+    eventListeners.current.add(callback);
+    return () => {
+      eventListeners.current.delete(callback);
+    };
+  }, []);
+  var selectorContext = (0,react__WEBPACK_IMPORTED_MODULE_3__.useMemo)(() => ({
+    addEventListener,
+    flushDeferred
+  }), [addEventListener, flushDeferred]);
+  return {
+    selectorContext,
+    onChange
+  };
+}
+function useFlushDeferredSelectorsOnRender() {
+  var {
+    flushDeferred
+  } = (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(SlateSelectorContext);
+  useIsomorphicLayoutEffect(flushDeferred);
+}
+
+/**
+ * Get the current editor object and re-render whenever it changes.
+ */
+var useSlate = () => {
+  var {
+    addEventListener
+  } = (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(SlateSelectorContext);
+  var [, forceRender] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useReducer)(s => s + 1, 0);
+  if (!addEventListener) {
+    throw new Error("The `useSlate` hook must be used inside the <Slate> component's context.");
+  }
+  useIsomorphicLayoutEffect(() => addEventListener(forceRender), [addEventListener]);
+  return useSlateStatic();
+};
+var EDITOR_TO_V = new WeakMap();
+var getEditorVersionRef = editor => {
+  var v = EDITOR_TO_V.get(editor);
+  if (v) {
+    return v;
+  }
+  v = {
+    current: 0
+  };
+  EDITOR_TO_V.set(editor, v);
+  // Register the `onChange` handler exactly once per editor
+  var {
+    onChange
+  } = editor;
+  editor.onChange = options => {
+    v.current++;
+    onChange(options);
+  };
+  return v;
+};
+/**
+ * Get the current editor object and its version, which increments on every
+ * change.
+ *
+ * @deprecated The `v` counter is no longer used except for this hook, and may
+ * be removed in a future version.
+ */
+var useSlateWithV = () => {
+  var editor = useSlate();
+  var vRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useMemo)(() => getEditorVersionRef(editor), [editor]);
+  return {
+    editor,
+    v: vRef.current
+  };
+};
+
+function useTrackUserInput() {
+  var editor = useSlateStatic();
+  var receivedUserInput = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(false);
+  var animationFrameIdRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(0);
+  var onUserInput = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(() => {
+    if (receivedUserInput.current) {
+      return;
+    }
+    receivedUserInput.current = true;
+    var window = ReactEditor.getWindow(editor);
+    window.cancelAnimationFrame(animationFrameIdRef.current);
+    animationFrameIdRef.current = window.requestAnimationFrame(() => {
+      receivedUserInput.current = false;
+    });
+  }, [editor]);
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => () => cancelAnimationFrame(animationFrameIdRef.current), []);
+  return {
+    receivedUserInput,
+    onUserInput
+  };
+}
+
+var createRestoreDomManager = (editor, receivedUserInput) => {
+  var bufferedMutations = [];
+  var clear = () => {
+    bufferedMutations = [];
+  };
+  var registerMutations = mutations => {
+    if (!receivedUserInput.current) {
+      return;
+    }
+    var trackedMutations = mutations.filter(mutation => (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isTrackedMutation)(editor, mutation, mutations));
+    bufferedMutations.push(...trackedMutations);
+  };
+  function restoreDOM() {
+    if (bufferedMutations.length > 0) {
+      bufferedMutations.reverse().forEach(mutation => {
+        if (mutation.type === 'characterData') {
+          // We don't want to restore the DOM for characterData mutations
+          // because this interrupts the composition.
+          return;
+        }
+        mutation.removedNodes.forEach(node => {
+          mutation.target.insertBefore(node, mutation.nextSibling);
+        });
+        mutation.addedNodes.forEach(node => {
+          mutation.target.removeChild(node);
+        });
+      });
+      // Clear buffered mutations to ensure we don't undo them twice
+      clear();
+    }
+  }
+  return {
+    registerMutations,
+    restoreDOM,
+    clear
+  };
+};
+
+var MUTATION_OBSERVER_CONFIG = {
+  subtree: true,
+  childList: true,
+  characterData: true,
+  characterDataOldValue: true
+};
+// We have to use a class component here since we rely on `getSnapshotBeforeUpdate` which has no FC equivalent
+// to run code synchronously immediately before react commits the component update to the DOM.
+class RestoreDOMComponent extends react__WEBPACK_IMPORTED_MODULE_3__.Component {
+  constructor() {
+    super(...arguments);
+    _defineProperty(this, "context", null);
+    _defineProperty(this, "manager", null);
+    _defineProperty(this, "mutationObserver", null);
+  }
+  observe() {
+    var _this$mutationObserve;
+    var {
+      node
+    } = this.props;
+    if (!node.current) {
+      throw new Error('Failed to attach MutationObserver, `node` is undefined');
+    }
+    (_this$mutationObserve = this.mutationObserver) === null || _this$mutationObserve === void 0 || _this$mutationObserve.observe(node.current, MUTATION_OBSERVER_CONFIG);
+  }
+  componentDidMount() {
+    var {
+      receivedUserInput
+    } = this.props;
+    var editor = this.context;
+    this.manager = createRestoreDomManager(editor, receivedUserInput);
+    this.mutationObserver = new MutationObserver(this.manager.registerMutations);
+    this.observe();
+  }
+  getSnapshotBeforeUpdate() {
+    var _this$mutationObserve2, _this$mutationObserve3, _this$manager2;
+    var pendingMutations = (_this$mutationObserve2 = this.mutationObserver) === null || _this$mutationObserve2 === void 0 ? void 0 : _this$mutationObserve2.takeRecords();
+    if (pendingMutations !== null && pendingMutations !== void 0 && pendingMutations.length) {
+      var _this$manager;
+      (_this$manager = this.manager) === null || _this$manager === void 0 || _this$manager.registerMutations(pendingMutations);
+    }
+    (_this$mutationObserve3 = this.mutationObserver) === null || _this$mutationObserve3 === void 0 || _this$mutationObserve3.disconnect();
+    (_this$manager2 = this.manager) === null || _this$manager2 === void 0 || _this$manager2.restoreDOM();
+    return null;
+  }
+  componentDidUpdate() {
+    var _this$manager3;
+    (_this$manager3 = this.manager) === null || _this$manager3 === void 0 || _this$manager3.clear();
+    this.observe();
+  }
+  componentWillUnmount() {
+    var _this$mutationObserve4;
+    (_this$mutationObserve4 = this.mutationObserver) === null || _this$mutationObserve4 === void 0 || _this$mutationObserve4.disconnect();
+  }
+  render() {
+    return this.props.children;
+  }
+}
+_defineProperty(RestoreDOMComponent, "contextType", EditorContext);
+var RestoreDOM = slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID ? RestoreDOMComponent : _ref => {
+  var {
+    children
+  } = _ref;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null, children);
+};
+
+/**
+ * A React context for sharing the `composing` state of the editor.
+ */
+var ComposingContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.createContext)(false);
+/**
+ * Get the current `composing` state of the editor.
+ */
+var useComposing = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(ComposingContext);
+};
+
+var _excluded$1 = ["autoFocus", "decorate", "onDOMBeforeInput", "placeholder", "readOnly", "renderElement", "renderChunk", "renderLeaf", "renderText", "renderPlaceholder", "scrollSelectionIntoView", "style", "as", "disableDefaultStyles"],
+  _excluded2 = ["text"];
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var Children = props => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null, useChildren(props));
+/**
+ * Editable.
+ */
+var Editable = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.forwardRef)((props, forwardedRef) => {
+  var defaultRenderPlaceholder = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(props => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(DefaultPlaceholder, _objectSpread({}, props)), []);
+  var {
+      autoFocus,
+      decorate = defaultDecorate,
+      onDOMBeforeInput: propsOnDOMBeforeInput,
+      placeholder,
+      readOnly = false,
+      renderElement,
+      renderChunk,
+      renderLeaf,
+      renderText,
+      renderPlaceholder = defaultRenderPlaceholder,
+      scrollSelectionIntoView = defaultScrollSelectionIntoView,
+      style: userStyle = {},
+      as: Component = 'div',
+      disableDefaultStyles = false
+    } = props,
+    attributes = _objectWithoutProperties(props, _excluded$1);
+  var editor = useSlate();
+  // Rerender editor when composition status changed
+  var [isComposing, setIsComposing] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(false);
+  var ref = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  var deferredOperations = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)([]);
+  var [placeholderHeight, setPlaceholderHeight] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)();
+  var processing = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)(false);
+  var {
+    onUserInput,
+    receivedUserInput
+  } = useTrackUserInput();
+  var [, forceRender] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useReducer)(s => s + 1, 0);
+  slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_FORCE_RENDER.set(editor, forceRender);
+  // Update internal state on each render.
+  slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_READ_ONLY.set(editor, readOnly);
+  // Keep track of some state for the event handler logic.
+  var state = (0,react__WEBPACK_IMPORTED_MODULE_3__.useMemo)(() => ({
+    isDraggingInternally: false,
+    isUpdatingSelection: false,
+    latestElement: null,
+    hasMarkPlaceholder: false
+  }), []);
+  // The autoFocus TextareaHTMLAttribute doesn't do anything on a div, so it
+  // needs to be manually focused.
+  //
+  // If this stops working in Firefox, make sure nothing is causing this
+  // component to re-render during the initial mount. If the DOM selection is
+  // set by `useIsomorphicLayoutEffect` before `onDOMSelectionChange` updates
+  // `editor.selection`, the DOM selection can be removed accidentally.
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    if (ref.current && autoFocus) {
+      ref.current.focus();
+    }
+  }, [autoFocus]);
+  /**
+   * The AndroidInputManager object has a cyclical dependency on onDOMSelectionChange
+   *
+   * It is defined as a reference to simplify hook dependencies and clarify that
+   * it needs to be initialized.
+   */
+  var androidInputManagerRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useRef)();
+  // Listen on the native `selectionchange` event to be able to update any time
+  // the selection changes. This is required because React's `onSelect` is leaky
+  // and non-standard so it doesn't fire until after a selection has been
+  // released. This causes issues in situations where another change happens
+  // while a selection is being dragged.
+  var onDOMSelectionChange = (0,react__WEBPACK_IMPORTED_MODULE_3__.useMemo)(() => lodash_throttle__WEBPACK_IMPORTED_MODULE_2___default()(() => {
+    if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_NODE_MAP_DIRTY.get(editor)) {
+      onDOMSelectionChange();
+      return;
+    }
+    var el = ReactEditor.toDOMNode(editor, editor);
+    var root = el.getRootNode();
+    if (!processing.current && slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WEBKIT && root instanceof ShadowRoot) {
+      processing.current = true;
+      var active = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.getActiveElement)();
+      if (active) {
+        document.execCommand('indent');
+      } else {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.deselect(editor);
+      }
+      processing.current = false;
+      return;
+    }
+    var androidInputManager = androidInputManagerRef.current;
+    if ((slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID || !ReactEditor.isComposing(editor)) && (!state.isUpdatingSelection || androidInputManager !== null && androidInputManager !== void 0 && androidInputManager.isFlushing()) && !state.isDraggingInternally) {
+      var _root = ReactEditor.findDocumentOrShadowRoot(editor);
+      var {
+        activeElement
+      } = _root;
+      var _el = ReactEditor.toDOMNode(editor, editor);
+      var domSelection = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.getSelection)(_root);
+      if (activeElement === _el) {
+        state.latestElement = activeElement;
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_FOCUSED.set(editor, true);
+      } else {
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_FOCUSED.delete(editor);
+      }
+      if (!domSelection) {
+        return slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.deselect(editor);
+      }
+      var {
+        anchorNode,
+        focusNode
+      } = domSelection;
+      var anchorNodeSelectable = ReactEditor.hasEditableTarget(editor, anchorNode) || ReactEditor.isTargetInsideNonReadonlyVoid(editor, anchorNode);
+      var focusNodeInEditor = ReactEditor.hasTarget(editor, focusNode);
+      if (anchorNodeSelectable && focusNodeInEditor) {
+        var range = ReactEditor.toSlateRange(editor, domSelection, {
+          exactMatch: false,
+          suppressThrow: true
+        });
+        if (range) {
+          if (!ReactEditor.isComposing(editor) && !(androidInputManager !== null && androidInputManager !== void 0 && androidInputManager.hasPendingChanges()) && !(androidInputManager !== null && androidInputManager !== void 0 && androidInputManager.isFlushing())) {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, range);
+          } else {
+            androidInputManager === null || androidInputManager === void 0 || androidInputManager.handleUserSelect(range);
+          }
+        }
+      }
+      // Deselect the editor if the dom selection is not selectable in readonly mode
+      if (readOnly && (!anchorNodeSelectable || !focusNodeInEditor)) {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.deselect(editor);
+      }
+    }
+  }, 100), [editor, readOnly, state]);
+  var scheduleOnDOMSelectionChange = (0,react__WEBPACK_IMPORTED_MODULE_3__.useMemo)(() => lodash_debounce__WEBPACK_IMPORTED_MODULE_1___default()(onDOMSelectionChange, 0), [onDOMSelectionChange]);
+  androidInputManagerRef.current = useAndroidInputManager({
+    node: ref,
+    onDOMSelectionChange,
+    scheduleOnDOMSelectionChange
+  });
+  useIsomorphicLayoutEffect(() => {
+    var _androidInputManagerR, _androidInputManagerR2;
+    // Update element-related weak maps with the DOM element ref.
+    var window;
+    if (ref.current && (window = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.getDefaultView)(ref.current))) {
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_WINDOW.set(editor, window);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_ELEMENT.set(editor, ref.current);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_ELEMENT.set(editor, ref.current);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.ELEMENT_TO_NODE.set(ref.current, editor);
+    } else {
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_ELEMENT.delete(editor);
+    }
+    // Make sure the DOM selection state is in sync.
+    var {
+      selection
+    } = editor;
+    var root = ReactEditor.findDocumentOrShadowRoot(editor);
+    var domSelection = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.getSelection)(root);
+    if (!domSelection || !ReactEditor.isFocused(editor) || (_androidInputManagerR = androidInputManagerRef.current) !== null && _androidInputManagerR !== void 0 && _androidInputManagerR.hasPendingAction()) {
+      return;
+    }
+    var setDomSelection = forceChange => {
+      var hasDomSelection = domSelection.type !== 'None';
+      // If the DOM selection is properly unset, we're done.
+      if (!selection && !hasDomSelection) {
+        return;
+      }
+      // Get anchorNode and focusNode
+      var focusNode = domSelection.focusNode;
+      var anchorNode;
+      // COMPAT: In firefox the normal selection way does not work
+      // (https://github.com/ianstormtaylor/slate/pull/5486#issue-1820720223)
+      if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_FIREFOX && domSelection.rangeCount > 1) {
+        var firstRange = domSelection.getRangeAt(0);
+        var lastRange = domSelection.getRangeAt(domSelection.rangeCount - 1);
+        // Right to left
+        if (firstRange.startContainer === focusNode) {
+          anchorNode = lastRange.endContainer;
+        } else {
+          // Left to right
+          anchorNode = firstRange.startContainer;
+        }
+      } else {
+        anchorNode = domSelection.anchorNode;
+      }
+      // verify that the dom selection is in the editor
+      var editorElement = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_ELEMENT.get(editor);
+      var hasDomSelectionInEditor = false;
+      if (editorElement.contains(anchorNode) && editorElement.contains(focusNode)) {
+        hasDomSelectionInEditor = true;
+      }
+      // If the DOM selection is in the editor and the editor selection is already correct, we're done.
+      if (hasDomSelection && hasDomSelectionInEditor && selection && !forceChange) {
+        var slateRange = ReactEditor.toSlateRange(editor, domSelection, {
+          exactMatch: true,
+          // domSelection is not necessarily a valid Slate range
+          // (e.g. when clicking on contentEditable:false element)
+          suppressThrow: true
+        });
+        if (slateRange && slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(slateRange, selection)) {
+          var _anchorNode;
+          if (!state.hasMarkPlaceholder) {
+            return;
+          }
+          // Ensure selection is inside the mark placeholder
+          if ((_anchorNode = anchorNode) !== null && _anchorNode !== void 0 && (_anchorNode = _anchorNode.parentElement) !== null && _anchorNode !== void 0 && _anchorNode.hasAttribute('data-slate-mark-placeholder')) {
+            return;
+          }
+        }
+      }
+      // when <Editable/> is being controlled through external value
+      // then its children might just change - DOM responds to it on its own
+      // but Slate's value is not being updated through any operation
+      // and thus it doesn't transform selection on its own
+      if (selection && !ReactEditor.hasRange(editor, selection)) {
+        editor.selection = ReactEditor.toSlateRange(editor, domSelection, {
+          exactMatch: false,
+          suppressThrow: true
+        });
+        return;
+      }
+      // Otherwise the DOM selection is out of sync, so update it.
+      state.isUpdatingSelection = true;
+      var newDomRange = null;
+      try {
+        newDomRange = selection && ReactEditor.toDOMRange(editor, selection);
+      } catch (e) {
+        // Ignore, dom and state might be out of sync
+      }
+      if (newDomRange) {
+        if (ReactEditor.isComposing(editor) && !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID) {
+          domSelection.collapseToEnd();
+        } else if (slate__WEBPACK_IMPORTED_MODULE_5__.Range.isBackward(selection)) {
+          domSelection.setBaseAndExtent(newDomRange.endContainer, newDomRange.endOffset, newDomRange.startContainer, newDomRange.startOffset);
+        } else {
+          domSelection.setBaseAndExtent(newDomRange.startContainer, newDomRange.startOffset, newDomRange.endContainer, newDomRange.endOffset);
+        }
+        scrollSelectionIntoView(editor, newDomRange);
+      } else {
+        domSelection.removeAllRanges();
+      }
+      return newDomRange;
+    };
+    // In firefox if there is more then 1 range and we call setDomSelection we remove the ability to select more cells in a table
+    if (domSelection.rangeCount <= 1) {
+      setDomSelection();
+    }
+    var ensureSelection = ((_androidInputManagerR2 = androidInputManagerRef.current) === null || _androidInputManagerR2 === void 0 ? void 0 : _androidInputManagerR2.isFlushing()) === 'action';
+    if (!slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID || !ensureSelection) {
+      setTimeout(() => {
+        state.isUpdatingSelection = false;
+      });
+      return;
+    }
+    var timeoutId = null;
+    var animationFrameId = requestAnimationFrame(() => {
+      if (ensureSelection) {
+        var ensureDomSelection = forceChange => {
+          try {
+            var el = ReactEditor.toDOMNode(editor, editor);
+            el.focus();
+            setDomSelection(forceChange);
+          } catch (e) {
+            // Ignore, dom and state might be out of sync
+          }
+        };
+        // Compat: Android IMEs try to force their selection by manually re-applying it even after we set it.
+        // This essentially would make setting the slate selection during an update meaningless, so we force it
+        // again here. We can't only do it in the setTimeout after the animation frame since that would cause a
+        // visible flicker.
+        ensureDomSelection();
+        timeoutId = setTimeout(() => {
+          // COMPAT: While setting the selection in an animation frame visually correctly sets the selection,
+          // it doesn't update GBoards spellchecker state. We have to manually trigger a selection change after
+          // the animation frame to ensure it displays the correct state.
+          ensureDomSelection(true);
+          state.isUpdatingSelection = false;
+        });
+      }
+    });
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  });
+  // Listen on the native `beforeinput` event to get real "Level 2" events. This
+  // is required because React's `beforeinput` is fake and never really attaches
+  // to the real event sadly. (2019/11/01)
+  // https://github.com/facebook/react/issues/11211
+  var onDOMBeforeInput = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+    handleNativeHistoryEvents(editor, event);
+    var el = ReactEditor.toDOMNode(editor, editor);
+    var root = el.getRootNode();
+    if (processing !== null && processing !== void 0 && processing.current && slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WEBKIT && root instanceof ShadowRoot) {
+      var ranges = event.getTargetRanges();
+      var range = ranges[0];
+      var newRange = new window.Range();
+      newRange.setStart(range.startContainer, range.startOffset);
+      newRange.setEnd(range.endContainer, range.endOffset);
+      // Translate the DOM Range into a Slate Range
+      var slateRange = ReactEditor.toSlateRange(editor, newRange, {
+        exactMatch: false,
+        suppressThrow: false
+      });
+      slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, slateRange);
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+    onUserInput();
+    if (!readOnly && ReactEditor.hasEditableTarget(editor, event.target) && !isDOMEventHandled(event, propsOnDOMBeforeInput)) {
+      var _EDITOR_TO_USER_SELEC;
+      // COMPAT: BeforeInput events aren't cancelable on android, so we have to handle them differently using the android input manager.
+      if (androidInputManagerRef.current) {
+        return androidInputManagerRef.current.handleDOMBeforeInput(event);
+      }
+      // Some IMEs/Chrome extensions like e.g. Grammarly set the selection immediately before
+      // triggering a `beforeinput` expecting the change to be applied to the immediately before
+      // set selection.
+      scheduleOnDOMSelectionChange.flush();
+      onDOMSelectionChange.flush();
+      var {
+        selection
+      } = editor;
+      var {
+        inputType: type
+      } = event;
+      var data = event.dataTransfer || event.data || undefined;
+      var isCompositionChange = type === 'insertCompositionText' || type === 'deleteCompositionText';
+      // COMPAT: use composition change events as a hint to where we should insert
+      // composition text if we aren't composing to work around https://github.com/ianstormtaylor/slate/issues/5038
+      if (isCompositionChange && ReactEditor.isComposing(editor)) {
+        return;
+      }
+      var native = false;
+      if (type === 'insertText' && selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(selection) &&
+      // Only use native character insertion for single characters a-z or space for now.
+      // Long-press events (hold a + press 4 = ä) to choose a special character otherwise
+      // causes duplicate inserts.
+      event.data && event.data.length === 1 && /[a-z ]/i.test(event.data) &&
+      // Chrome has issues correctly editing the start of nodes: https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
+      // When there is an inline element, e.g. a link, and you select
+      // right after it (the start of the next node).
+      selection.anchor.offset !== 0) {
+        native = true;
+        // Skip native if there are marks, as
+        // `insertText` will insert a node, not just text.
+        if (editor.marks) {
+          native = false;
+        }
+        // If the NODE_MAP is dirty, we can't trust the selection anchor (eg ReactEditor.toDOMPoint)
+        if (!slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_NODE_MAP_DIRTY.get(editor)) {
+          var _node$parentElement, _window$getComputedSt;
+          // Chrome also has issues correctly editing the end of anchor elements: https://bugs.chromium.org/p/chromium/issues/detail?id=1259100
+          // Therefore we don't allow native events to insert text at the end of anchor nodes.
+          var {
+            anchor
+          } = selection;
+          var [node, offset] = ReactEditor.toDOMPoint(editor, anchor);
+          var anchorNode = (_node$parentElement = node.parentElement) === null || _node$parentElement === void 0 ? void 0 : _node$parentElement.closest('a');
+          var _window = ReactEditor.getWindow(editor);
+          if (native && anchorNode && ReactEditor.hasDOMNode(editor, anchorNode)) {
+            var _lastText$textContent;
+            // Find the last text node inside the anchor.
+            var lastText = _window === null || _window === void 0 ? void 0 : _window.document.createTreeWalker(anchorNode, NodeFilter.SHOW_TEXT).lastChild();
+            if (lastText === node && ((_lastText$textContent = lastText.textContent) === null || _lastText$textContent === void 0 ? void 0 : _lastText$textContent.length) === offset) {
+              native = false;
+            }
+          }
+          // Chrome has issues with the presence of tab characters inside elements with whiteSpace = 'pre'
+          // causing abnormal insert behavior: https://bugs.chromium.org/p/chromium/issues/detail?id=1219139
+          if (native && node.parentElement && (_window === null || _window === void 0 || (_window$getComputedSt = _window.getComputedStyle(node.parentElement)) === null || _window$getComputedSt === void 0 ? void 0 : _window$getComputedSt.whiteSpace) === 'pre') {
+            var block = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.above(editor, {
+              at: anchor.path,
+              match: n => slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(n) && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isBlock(editor, n)
+            });
+            if (block && slate__WEBPACK_IMPORTED_MODULE_5__.Node.string(block[0]).includes('\t')) {
+              native = false;
+            }
+          }
+        }
+      }
+      // COMPAT: For the deleting forward/backward input types we don't want
+      // to change the selection because it is the range that will be deleted,
+      // and those commands determine that for themselves.
+      // If the NODE_MAP is dirty, we can't trust the selection anchor (eg ReactEditor.toDOMPoint via ReactEditor.toSlateRange)
+      if ((!type.startsWith('delete') || type.startsWith('deleteBy')) && !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_NODE_MAP_DIRTY.get(editor)) {
+        var [targetRange] = event.getTargetRanges();
+        if (targetRange) {
+          var _range = ReactEditor.toSlateRange(editor, targetRange, {
+            exactMatch: false,
+            suppressThrow: false
+          });
+          if (!selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(selection, _range)) {
+            native = false;
+            var selectionRef = !isCompositionChange && editor.selection && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.rangeRef(editor, editor.selection);
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, _range);
+            if (selectionRef) {
+              slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_SELECTION.set(editor, selectionRef);
+            }
+          }
+        }
+      }
+      // Composition change types occur while a user is composing text and can't be
+      // cancelled. Let them through and wait for the composition to end.
+      if (isCompositionChange) {
+        return;
+      }
+      if (!native) {
+        event.preventDefault();
+      }
+      // COMPAT: If the selection is expanded, even if the command seems like
+      // a delete forward/backward command it should delete the selection.
+      if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection) && type.startsWith('delete')) {
+        var direction = type.endsWith('Backward') ? 'backward' : 'forward';
+        slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+          direction
+        });
+        return;
+      }
+      switch (type) {
+        case 'deleteByComposition':
+        case 'deleteByCut':
+        case 'deleteByDrag':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor);
+            break;
+          }
+        case 'deleteContent':
+        case 'deleteContentForward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor);
+            break;
+          }
+        case 'deleteContentBackward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor);
+            break;
+          }
+        case 'deleteEntireSoftLine':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+              unit: 'line'
+            });
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+              unit: 'line'
+            });
+            break;
+          }
+        case 'deleteHardLineBackward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+              unit: 'block'
+            });
+            break;
+          }
+        case 'deleteSoftLineBackward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+              unit: 'line'
+            });
+            break;
+          }
+        case 'deleteHardLineForward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+              unit: 'block'
+            });
+            break;
+          }
+        case 'deleteSoftLineForward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+              unit: 'line'
+            });
+            break;
+          }
+        case 'deleteWordBackward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+              unit: 'word'
+            });
+            break;
+          }
+        case 'deleteWordForward':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+              unit: 'word'
+            });
+            break;
+          }
+        case 'insertLineBreak':
+          slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertSoftBreak(editor);
+          break;
+        case 'insertParagraph':
+          {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertBreak(editor);
+            break;
+          }
+        case 'insertFromComposition':
+        case 'insertFromDrop':
+        case 'insertFromPaste':
+        case 'insertFromYank':
+        case 'insertReplacementText':
+        case 'insertText':
+          {
+            if (type === 'insertFromComposition') {
+              // COMPAT: in Safari, `compositionend` is dispatched after the
+              // `beforeinput` for "insertFromComposition". But if we wait for it
+              // then we will abort because we're still composing and the selection
+              // won't be updated properly.
+              // https://www.w3.org/TR/input-events-2/
+              if (ReactEditor.isComposing(editor)) {
+                setIsComposing(false);
+                slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_COMPOSING.set(editor, false);
+              }
+            }
+            // use a weak comparison instead of 'instanceof' to allow
+            // programmatic access of paste events coming from external windows
+            // like cypress where cy.window does not work realibly
+            if ((data === null || data === void 0 ? void 0 : data.constructor.name) === 'DataTransfer') {
+              ReactEditor.insertData(editor, data);
+            } else if (typeof data === 'string') {
+              // Only insertText operations use the native functionality, for now.
+              // Potentially expand to single character deletes, as well.
+              if (native) {
+                deferredOperations.current.push(() => slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertText(editor, data));
+              } else {
+                slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertText(editor, data);
+              }
+            }
+            break;
+          }
+      }
+      // Restore the actual user section if nothing manually set it.
+      var toRestore = (_EDITOR_TO_USER_SELEC = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_SELECTION.get(editor)) === null || _EDITOR_TO_USER_SELEC === void 0 ? void 0 : _EDITOR_TO_USER_SELEC.unref();
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_SELECTION.delete(editor);
+      if (toRestore && (!editor.selection || !slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(editor.selection, toRestore))) {
+        slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, toRestore);
+      }
+    }
+  }, [editor, onDOMSelectionChange, onUserInput, propsOnDOMBeforeInput, readOnly, scheduleOnDOMSelectionChange]);
+  var callbackRef = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(node => {
+    if (node == null) {
+      onDOMSelectionChange.cancel();
+      scheduleOnDOMSelectionChange.cancel();
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_ELEMENT.delete(editor);
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.NODE_TO_ELEMENT.delete(editor);
+      if (ref.current && slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT) {
+        // @ts-ignore The `beforeinput` event isn't recognized.
+        ref.current.removeEventListener('beforeinput', onDOMBeforeInput);
+      }
+    } else {
+      // Attach a native DOM event handler for `beforeinput` events, because React's
+      // built-in `onBeforeInput` is actually a leaky polyfill that doesn't expose
+      // real `beforeinput` events sadly... (2019/11/04)
+      // https://github.com/facebook/react/issues/11211
+      if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT) {
+        // @ts-ignore The `beforeinput` event isn't recognized.
+        node.addEventListener('beforeinput', onDOMBeforeInput);
+      }
+    }
+    ref.current = node;
+    if (typeof forwardedRef === 'function') {
+      forwardedRef(node);
+    } else if (forwardedRef) {
+      forwardedRef.current = node;
+    }
+  }, [onDOMSelectionChange, scheduleOnDOMSelectionChange, editor, onDOMBeforeInput, forwardedRef]);
+  useIsomorphicLayoutEffect(() => {
+    var window = ReactEditor.getWindow(editor);
+    // COMPAT: In Chrome, `selectionchange` events can fire when <input> and
+    // <textarea> elements are appended to the DOM, causing
+    // `editor.selection` to be overwritten in some circumstances.
+    // (2025/01/16) https://issues.chromium.org/issues/389368412
+    var onSelectionChange = _ref => {
+      var {
+        target
+      } = _ref;
+      var targetElement = target instanceof HTMLElement ? target : null;
+      var targetTagName = targetElement === null || targetElement === void 0 ? void 0 : targetElement.tagName;
+      if (targetTagName === 'INPUT' || targetTagName === 'TEXTAREA') {
+        return;
+      }
+      scheduleOnDOMSelectionChange();
+    };
+    // Attach a native DOM event handler for `selectionchange`, because React's
+    // built-in `onSelect` handler doesn't fire for all selection changes. It's
+    // a leaky polyfill that only fires on keypresses or clicks. Instead, we
+    // want to fire for any change to the selection inside the editor.
+    // (2019/11/04) https://github.com/facebook/react/issues/5785
+    window.document.addEventListener('selectionchange', onSelectionChange);
+    // Listen for dragend and drop globally. In Firefox, if a drop handler
+    // initiates an operation that causes the originally dragged element to
+    // unmount, that element will not emit a dragend event. (2024/06/21)
+    var stoppedDragging = () => {
+      state.isDraggingInternally = false;
+    };
+    window.document.addEventListener('dragend', stoppedDragging);
+    window.document.addEventListener('drop', stoppedDragging);
+    return () => {
+      window.document.removeEventListener('selectionchange', onSelectionChange);
+      window.document.removeEventListener('dragend', stoppedDragging);
+      window.document.removeEventListener('drop', stoppedDragging);
+    };
+  }, [scheduleOnDOMSelectionChange, state]);
+  var decorations = decorate([editor, []]);
+  var decorateContext = useDecorateContext(decorate);
+  var showPlaceholder = placeholder && editor.children.length === 1 && Array.from(slate__WEBPACK_IMPORTED_MODULE_5__.Node.texts(editor)).length === 1 && slate__WEBPACK_IMPORTED_MODULE_5__.Node.string(editor) === '' && !isComposing;
+  var placeHolderResizeHandler = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(placeholderEl => {
+    if (placeholderEl && showPlaceholder) {
+      var _placeholderEl$getBou;
+      setPlaceholderHeight((_placeholderEl$getBou = placeholderEl.getBoundingClientRect()) === null || _placeholderEl$getBou === void 0 ? void 0 : _placeholderEl$getBou.height);
+    } else {
+      setPlaceholderHeight(undefined);
+    }
+  }, [showPlaceholder]);
+  if (showPlaceholder) {
+    var start = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.start(editor, []);
+    decorations.push({
+      [slate_dom__WEBPACK_IMPORTED_MODULE_6__.PLACEHOLDER_SYMBOL]: true,
+      placeholder,
+      onPlaceholderResize: placeHolderResizeHandler,
+      anchor: start,
+      focus: start
+    });
+  }
+  var {
+    marks
+  } = editor;
+  state.hasMarkPlaceholder = false;
+  if (editor.selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(editor.selection) && marks) {
+    var {
+      anchor
+    } = editor.selection;
+    var leaf = slate__WEBPACK_IMPORTED_MODULE_5__.Node.leaf(editor, anchor.path);
+    var rest = _objectWithoutProperties(leaf, _excluded2);
+    // While marks isn't a 'complete' text, we can still use loose Text.equals
+    // here which only compares marks anyway.
+    if (!slate__WEBPACK_IMPORTED_MODULE_5__.Text.equals(leaf, marks, {
+      loose: true
+    })) {
+      state.hasMarkPlaceholder = true;
+      var unset = Object.fromEntries(Object.keys(rest).map(mark => [mark, null]));
+      decorations.push(_objectSpread(_objectSpread(_objectSpread({
+        [slate_dom__WEBPACK_IMPORTED_MODULE_6__.MARK_PLACEHOLDER_SYMBOL]: true
+      }, unset), marks), {}, {
+        anchor,
+        focus: anchor
+      }));
+    }
+  }
+  // Update EDITOR_TO_MARK_PLACEHOLDER_MARKS in setTimeout useEffect to ensure we don't set it
+  // before we receive the composition end event.
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    setTimeout(() => {
+      var {
+        selection
+      } = editor;
+      if (selection) {
+        var {
+          anchor: _anchor
+        } = selection;
+        var _text = slate__WEBPACK_IMPORTED_MODULE_5__.Node.leaf(editor, _anchor.path);
+        // While marks isn't a 'complete' text, we can still use loose Text.equals
+        // here which only compares marks anyway.
+        if (marks && !slate__WEBPACK_IMPORTED_MODULE_5__.Text.equals(_text, marks, {
+          loose: true
+        })) {
+          slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_INSERTION_MARKS.set(editor, marks);
+          return;
+        }
+      }
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_INSERTION_MARKS.delete(editor);
+    });
+  });
+  useFlushDeferredSelectorsOnRender();
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(ReadOnlyContext.Provider, {
+    value: readOnly
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(ComposingContext.Provider, {
+    value: isComposing
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(DecorateContext.Provider, {
+    value: decorateContext
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(RestoreDOM, {
+    node: ref,
+    receivedUserInput: receivedUserInput
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(Component, _objectSpread(_objectSpread({
+    role: readOnly ? undefined : 'textbox',
+    "aria-multiline": readOnly ? undefined : true
+  }, attributes), {}, {
+    // COMPAT: Certain browsers don't support the `beforeinput` event, so we'd
+    // have to use hacks to make these replacement-based features work.
+    // For SSR situations HAS_BEFORE_INPUT_SUPPORT is false and results in prop
+    // mismatch warning app moves to browser. Pass-through consumer props when
+    // not CAN_USE_DOM (SSR) and default to falsy value
+    spellCheck: slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT || !slate_dom__WEBPACK_IMPORTED_MODULE_6__.CAN_USE_DOM ? attributes.spellCheck : false,
+    autoCorrect: slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT || !slate_dom__WEBPACK_IMPORTED_MODULE_6__.CAN_USE_DOM ? attributes.autoCorrect : 'false',
+    autoCapitalize: slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT || !slate_dom__WEBPACK_IMPORTED_MODULE_6__.CAN_USE_DOM ? attributes.autoCapitalize : 'false',
+    "data-slate-editor": true,
+    "data-slate-node": "value",
+    // explicitly set this
+    contentEditable: !readOnly,
+    // in some cases, a decoration needs access to the range / selection to decorate a text node,
+    // then you will select the whole text node when you select part the of text
+    // this magic zIndex="-1" will fix it
+    zindex: -1,
+    suppressContentEditableWarning: true,
+    ref: callbackRef,
+    style: _objectSpread(_objectSpread({}, disableDefaultStyles ? {} : _objectSpread({
+      // Allow positioning relative to the editable element.
+      position: 'relative',
+      // Preserve adjacent whitespace and new lines.
+      whiteSpace: 'pre-wrap',
+      // Allow words to break if they are too long.
+      wordWrap: 'break-word'
+    }, placeholderHeight ? {
+      minHeight: placeholderHeight
+    } : {})), userStyle),
+    onBeforeInput: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      // COMPAT: Certain browsers don't support the `beforeinput` event, so we
+      // fall back to React's leaky polyfill instead just for it. It
+      // only works for the `insertText` input type.
+      if (!slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT && !readOnly && !isEventHandled(event, attributes.onBeforeInput) && ReactEditor.hasSelectableTarget(editor, event.target)) {
+        event.preventDefault();
+        if (!ReactEditor.isComposing(editor)) {
+          var _text2 = event.data;
+          slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertText(editor, _text2);
+        }
+      }
+    }, [attributes.onBeforeInput, editor, readOnly]),
+    onInput: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (isEventHandled(event, attributes.onInput)) {
+        return;
+      }
+      if (androidInputManagerRef.current) {
+        androidInputManagerRef.current.handleInput();
+        return;
+      }
+      // Flush native operations, as native events will have propogated
+      // and we can correctly compare DOM text values in components
+      // to stop rendering, so that browser functions like autocorrect
+      // and spellcheck work as expected.
+      for (var op of deferredOperations.current) {
+        op();
+      }
+      deferredOperations.current = [];
+      // COMPAT: Since `beforeinput` doesn't fully `preventDefault`,
+      // there's a chance that content might be placed in the browser's undo stack.
+      // This means undo can be triggered even when the div is not focused,
+      // and it only triggers the input event for the node. (2024/10/09)
+      if (!ReactEditor.isFocused(editor)) {
+        handleNativeHistoryEvents(editor, event.nativeEvent);
+      }
+    }, [attributes.onInput, editor]),
+    onBlur: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (readOnly || state.isUpdatingSelection || !ReactEditor.hasSelectableTarget(editor, event.target) || isEventHandled(event, attributes.onBlur)) {
+        return;
+      }
+      // COMPAT: If the current `activeElement` is still the previous
+      // one, this is due to the window being blurred when the tab
+      // itself becomes unfocused, so we want to abort early to allow to
+      // editor to stay focused when the tab becomes focused again.
+      var root = ReactEditor.findDocumentOrShadowRoot(editor);
+      if (state.latestElement === root.activeElement) {
+        return;
+      }
+      var {
+        relatedTarget
+      } = event;
+      var el = ReactEditor.toDOMNode(editor, editor);
+      // COMPAT: The event should be ignored if the focus is returning
+      // to the editor from an embedded editable element (eg. an <input>
+      // element inside a void node).
+      if (relatedTarget === el) {
+        return;
+      }
+      // COMPAT: The event should be ignored if the focus is moving from
+      // the editor to inside a void node's spacer element.
+      if ((0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isDOMElement)(relatedTarget) && relatedTarget.hasAttribute('data-slate-spacer')) {
+        return;
+      }
+      // COMPAT: The event should be ignored if the focus is moving to a
+      // non- editable section of an element that isn't a void node (eg.
+      // a list item of the check list example).
+      if (relatedTarget != null && (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isDOMNode)(relatedTarget) && ReactEditor.hasDOMNode(editor, relatedTarget)) {
+        var node = ReactEditor.toSlateNode(editor, relatedTarget);
+        if (slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(node) && !editor.isVoid(node)) {
+          return;
+        }
+      }
+      // COMPAT: Safari doesn't always remove the selection even if the content-
+      // editable element no longer has focus. Refer to:
+      // https://stackoverflow.com/questions/12353247/force-contenteditable-div-to-stop-accepting-input-after-it-loses-focus-under-web
+      if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WEBKIT) {
+        var domSelection = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.getSelection)(root);
+        domSelection === null || domSelection === void 0 || domSelection.removeAllRanges();
+      }
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_FOCUSED.delete(editor);
+    }, [readOnly, state.isUpdatingSelection, state.latestElement, editor, attributes.onBlur]),
+    onClick: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (ReactEditor.hasTarget(editor, event.target) && !isEventHandled(event, attributes.onClick) && (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isDOMNode)(event.target)) {
+        var node = ReactEditor.toSlateNode(editor, event.target);
+        var path = ReactEditor.findPath(editor, node);
+        // At this time, the Slate document may be arbitrarily different,
+        // because onClick handlers can change the document before we get here.
+        // Therefore we must check that this path actually exists,
+        // and that it still refers to the same node.
+        if (!slate__WEBPACK_IMPORTED_MODULE_5__.Editor.hasPath(editor, path) || slate__WEBPACK_IMPORTED_MODULE_5__.Node.get(editor, path) !== node) {
+          return;
+        }
+        if (event.detail === slate_dom__WEBPACK_IMPORTED_MODULE_6__.TRIPLE_CLICK && path.length >= 1) {
+          var blockPath = path;
+          if (!(slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(node) && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isBlock(editor, node))) {
+            var _block$;
+            var block = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.above(editor, {
+              match: n => slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(n) && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isBlock(editor, n),
+              at: path
+            });
+            blockPath = (_block$ = block === null || block === void 0 ? void 0 : block[1]) !== null && _block$ !== void 0 ? _block$ : path.slice(0, 1);
+          }
+          var range = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.range(editor, blockPath);
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, range);
+          return;
+        }
+        if (readOnly) {
+          return;
+        }
+        var _start = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.start(editor, path);
+        var end = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.end(editor, path);
+        var startVoid = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.void(editor, {
+          at: _start
+        });
+        var endVoid = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.void(editor, {
+          at: end
+        });
+        if (startVoid && endVoid && slate__WEBPACK_IMPORTED_MODULE_5__.Path.equals(startVoid[1], endVoid[1])) {
+          var _range2 = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.range(editor, _start);
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, _range2);
+        }
+      }
+    }, [editor, attributes.onClick, readOnly]),
+    onCompositionEnd: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (ReactEditor.hasSelectableTarget(editor, event.target)) {
+        var _androidInputManagerR3;
+        if (ReactEditor.isComposing(editor)) {
+          Promise.resolve().then(() => {
+            setIsComposing(false);
+            slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_COMPOSING.set(editor, false);
+          });
+        }
+        (_androidInputManagerR3 = androidInputManagerRef.current) === null || _androidInputManagerR3 === void 0 || _androidInputManagerR3.handleCompositionEnd(event);
+        if (isEventHandled(event, attributes.onCompositionEnd) || slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID) {
+          return;
+        }
+        // COMPAT: In Chrome, `beforeinput` events for compositions
+        // aren't correct and never fire the "insertFromComposition"
+        // type that we need. So instead, insert whenever a composition
+        // ends since it will already have been committed to the DOM.
+        if (!slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WEBKIT && !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_FIREFOX_LEGACY && !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_IOS && !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WECHATBROWSER && !slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_UC_MOBILE && event.data) {
+          var placeholderMarks = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_INSERTION_MARKS.get(editor);
+          slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_INSERTION_MARKS.delete(editor);
+          // Ensure we insert text with the marks the user was actually seeing
+          if (placeholderMarks !== undefined) {
+            slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_MARKS.set(editor, editor.marks);
+            editor.marks = placeholderMarks;
+          }
+          slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertText(editor, event.data);
+          var userMarks = slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_MARKS.get(editor);
+          slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_USER_MARKS.delete(editor);
+          if (userMarks !== undefined) {
+            editor.marks = userMarks;
+          }
+        }
+      }
+    }, [attributes.onCompositionEnd, editor]),
+    onCompositionUpdate: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (ReactEditor.hasSelectableTarget(editor, event.target) && !isEventHandled(event, attributes.onCompositionUpdate)) {
+        if (!ReactEditor.isComposing(editor)) {
+          setIsComposing(true);
+          slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_COMPOSING.set(editor, true);
+        }
+      }
+    }, [attributes.onCompositionUpdate, editor]),
+    onCompositionStart: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (ReactEditor.hasSelectableTarget(editor, event.target)) {
+        var _androidInputManagerR4;
+        (_androidInputManagerR4 = androidInputManagerRef.current) === null || _androidInputManagerR4 === void 0 || _androidInputManagerR4.handleCompositionStart(event);
+        if (isEventHandled(event, attributes.onCompositionStart) || slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID) {
+          return;
+        }
+        setIsComposing(true);
+        var {
+          selection
+        } = editor;
+        if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+          slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor);
+          return;
+        }
+      }
+    }, [attributes.onCompositionStart, editor]),
+    onCopy: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (ReactEditor.hasSelectableTarget(editor, event.target) && !isEventHandled(event, attributes.onCopy) && !isDOMEventTargetInput(event)) {
+        event.preventDefault();
+        ReactEditor.setFragmentData(editor, event.clipboardData, 'copy');
+      }
+    }, [attributes.onCopy, editor]),
+    onCut: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (!readOnly && ReactEditor.hasSelectableTarget(editor, event.target) && !isEventHandled(event, attributes.onCut) && !isDOMEventTargetInput(event)) {
+        event.preventDefault();
+        ReactEditor.setFragmentData(editor, event.clipboardData, 'cut');
+        var {
+          selection
+        } = editor;
+        if (selection) {
+          if (slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor);
+          } else {
+            var node = slate__WEBPACK_IMPORTED_MODULE_5__.Node.parent(editor, selection.anchor.path);
+            if (slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isVoid(editor, node)) {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.delete(editor);
+            }
+          }
+        }
+      }
+    }, [readOnly, editor, attributes.onCut]),
+    onDragOver: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (ReactEditor.hasTarget(editor, event.target) && !isEventHandled(event, attributes.onDragOver)) {
+        // Only when the target is void, call `preventDefault` to signal
+        // that drops are allowed. Editable content is droppable by
+        // default, and calling `preventDefault` hides the cursor.
+        var node = ReactEditor.toSlateNode(editor, event.target);
+        if (slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(node) && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isVoid(editor, node)) {
+          event.preventDefault();
+        }
+      }
+    }, [attributes.onDragOver, editor]),
+    onDragStart: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (!readOnly && ReactEditor.hasTarget(editor, event.target) && !isEventHandled(event, attributes.onDragStart)) {
+        var node = ReactEditor.toSlateNode(editor, event.target);
+        var path = ReactEditor.findPath(editor, node);
+        var voidMatch = slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(node) && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isVoid(editor, node) || slate__WEBPACK_IMPORTED_MODULE_5__.Editor.void(editor, {
+          at: path,
+          voids: true
+        });
+        // If starting a drag on a void node, make sure it is selected
+        // so that it shows up in the selection's fragment.
+        if (voidMatch) {
+          var range = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.range(editor, path);
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, range);
+        }
+        state.isDraggingInternally = true;
+        ReactEditor.setFragmentData(editor, event.dataTransfer, 'drag');
+      }
+    }, [readOnly, editor, attributes.onDragStart, state]),
+    onDrop: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (!readOnly && ReactEditor.hasTarget(editor, event.target) && !isEventHandled(event, attributes.onDrop)) {
+        event.preventDefault();
+        // Keep a reference to the dragged range before updating selection
+        var draggedRange = editor.selection;
+        // Find the range where the drop happened
+        var range = ReactEditor.findEventRange(editor, event);
+        var data = event.dataTransfer;
+        slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.select(editor, range);
+        if (state.isDraggingInternally) {
+          if (draggedRange && !slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(draggedRange, range) && !slate__WEBPACK_IMPORTED_MODULE_5__.Editor.void(editor, {
+            at: range,
+            voids: true
+          })) {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.delete(editor, {
+              at: draggedRange
+            });
+          }
+        }
+        ReactEditor.insertData(editor, data);
+        // When dragging from another source into the editor, it's possible
+        // that the current editor does not have focus.
+        if (!ReactEditor.isFocused(editor)) {
+          ReactEditor.focus(editor);
+        }
+      }
+    }, [readOnly, editor, attributes.onDrop, state]),
+    onDragEnd: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (!readOnly && state.isDraggingInternally && attributes.onDragEnd && ReactEditor.hasTarget(editor, event.target)) {
+        attributes.onDragEnd(event);
+      }
+    }, [readOnly, state, attributes, editor]),
+    onFocus: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (!readOnly && !state.isUpdatingSelection && ReactEditor.hasEditableTarget(editor, event.target) && !isEventHandled(event, attributes.onFocus)) {
+        var el = ReactEditor.toDOMNode(editor, editor);
+        var root = ReactEditor.findDocumentOrShadowRoot(editor);
+        state.latestElement = root.activeElement;
+        // COMPAT: If the editor has nested editable elements, the focus
+        // can go to them. In Firefox, this must be prevented because it
+        // results in issues with keyboard navigation. (2017/03/30)
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_FIREFOX && event.target !== el) {
+          el.focus();
+          return;
+        }
+        slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_FOCUSED.set(editor, true);
+      }
+    }, [readOnly, state, editor, attributes.onFocus]),
+    onKeyDown: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (!readOnly && ReactEditor.hasEditableTarget(editor, event.target)) {
+        var _androidInputManagerR5;
+        (_androidInputManagerR5 = androidInputManagerRef.current) === null || _androidInputManagerR5 === void 0 || _androidInputManagerR5.handleKeyDown(event);
+        var {
+          nativeEvent
+        } = event;
+        // COMPAT: The composition end event isn't fired reliably in all browsers,
+        // so we sometimes might end up stuck in a composition state even though we
+        // aren't composing any more.
+        if (ReactEditor.isComposing(editor) && nativeEvent.isComposing === false) {
+          slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_COMPOSING.set(editor, false);
+          setIsComposing(false);
+        }
+        if (isEventHandled(event, attributes.onKeyDown) || ReactEditor.isComposing(editor)) {
+          return;
+        }
+        var {
+          selection
+        } = editor;
+        var element = editor.children[selection !== null ? selection.focus.path[0] : 0];
+        var isRTL = direction__WEBPACK_IMPORTED_MODULE_0___default()(slate__WEBPACK_IMPORTED_MODULE_5__.Node.string(element)) === 'rtl';
+        // COMPAT: Since we prevent the default behavior on
+        // `beforeinput` events, the browser doesn't think there's ever
+        // any history stack to undo or redo, so we have to manage these
+        // hotkeys ourselves. (2019/11/06)
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isRedo(nativeEvent)) {
+          event.preventDefault();
+          var maybeHistoryEditor = editor;
+          if (typeof maybeHistoryEditor.redo === 'function') {
+            maybeHistoryEditor.redo();
+          }
+          return;
+        }
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isUndo(nativeEvent)) {
+          event.preventDefault();
+          var _maybeHistoryEditor = editor;
+          if (typeof _maybeHistoryEditor.undo === 'function') {
+            _maybeHistoryEditor.undo();
+          }
+          return;
+        }
+        // COMPAT: Certain browsers don't handle the selection updates
+        // properly. In Chrome, the selection isn't properly extended.
+        // And in Firefox, the selection isn't properly collapsed.
+        // (2017/10/17)
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isMoveLineBackward(nativeEvent)) {
+          event.preventDefault();
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+            unit: 'line',
+            reverse: true
+          });
+          return;
+        }
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isMoveLineForward(nativeEvent)) {
+          event.preventDefault();
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+            unit: 'line'
+          });
+          return;
+        }
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isExtendLineBackward(nativeEvent)) {
+          event.preventDefault();
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+            unit: 'line',
+            edge: 'focus',
+            reverse: true
+          });
+          return;
+        }
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isExtendLineForward(nativeEvent)) {
+          event.preventDefault();
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+            unit: 'line',
+            edge: 'focus'
+          });
+          return;
+        }
+        // COMPAT: If a void node is selected, or a zero-width text node
+        // adjacent to an inline is selected, we need to handle these
+        // hotkeys manually because browsers won't be able to skip over
+        // the void node with the zero-width space not being an empty
+        // string.
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isMoveBackward(nativeEvent)) {
+          event.preventDefault();
+          if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(selection)) {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+              reverse: !isRTL
+            });
+          } else {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.collapse(editor, {
+              edge: isRTL ? 'end' : 'start'
+            });
+          }
+          return;
+        }
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isMoveForward(nativeEvent)) {
+          event.preventDefault();
+          if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(selection)) {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+              reverse: isRTL
+            });
+          } else {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.collapse(editor, {
+              edge: isRTL ? 'start' : 'end'
+            });
+          }
+          return;
+        }
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isMoveWordBackward(nativeEvent)) {
+          event.preventDefault();
+          if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.collapse(editor, {
+              edge: 'focus'
+            });
+          }
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+            unit: 'word',
+            reverse: !isRTL
+          });
+          return;
+        }
+        if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isMoveWordForward(nativeEvent)) {
+          event.preventDefault();
+          if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+            slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.collapse(editor, {
+              edge: 'focus'
+            });
+          }
+          slate__WEBPACK_IMPORTED_MODULE_5__.Transforms.move(editor, {
+            unit: 'word',
+            reverse: isRTL
+          });
+          return;
+        }
+        // COMPAT: Certain browsers don't support the `beforeinput` event, so we
+        // fall back to guessing at the input intention for hotkeys.
+        // COMPAT: In iOS, some of these hotkeys are handled in the
+        if (!slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT) {
+          // We don't have a core behavior for these, but they change the
+          // DOM if we don't prevent them, so we have to.
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isBold(nativeEvent) || slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isItalic(nativeEvent) || slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isTransposeCharacter(nativeEvent)) {
+            event.preventDefault();
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isSoftBreak(nativeEvent)) {
+            event.preventDefault();
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertSoftBreak(editor);
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isSplitBlock(nativeEvent)) {
+            event.preventDefault();
+            slate__WEBPACK_IMPORTED_MODULE_5__.Editor.insertBreak(editor);
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteBackward(nativeEvent)) {
+            event.preventDefault();
+            if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+                direction: 'backward'
+              });
+            } else {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor);
+            }
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteForward(nativeEvent)) {
+            event.preventDefault();
+            if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+                direction: 'forward'
+              });
+            } else {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor);
+            }
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteLineBackward(nativeEvent)) {
+            event.preventDefault();
+            if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+                direction: 'backward'
+              });
+            } else {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+                unit: 'line'
+              });
+            }
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteLineForward(nativeEvent)) {
+            event.preventDefault();
+            if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+                direction: 'forward'
+              });
+            } else {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+                unit: 'line'
+              });
+            }
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteWordBackward(nativeEvent)) {
+            event.preventDefault();
+            if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+                direction: 'backward'
+              });
+            } else {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+                unit: 'word'
+              });
+            }
+            return;
+          }
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteWordForward(nativeEvent)) {
+            event.preventDefault();
+            if (selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isExpanded(selection)) {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteFragment(editor, {
+                direction: 'forward'
+              });
+            } else {
+              slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteForward(editor, {
+                unit: 'word'
+              });
+            }
+            return;
+          }
+        } else {
+          if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_CHROME || slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WEBKIT) {
+            // COMPAT: Chrome and Safari support `beforeinput` event but do not fire
+            // an event when deleting backwards in a selected void inline node
+            if (selection && (slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteBackward(nativeEvent) || slate_dom__WEBPACK_IMPORTED_MODULE_6__.Hotkeys.isDeleteForward(nativeEvent)) && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(selection)) {
+              var currentNode = slate__WEBPACK_IMPORTED_MODULE_5__.Node.parent(editor, selection.anchor.path);
+              if (slate__WEBPACK_IMPORTED_MODULE_5__.Element.isElement(currentNode) && slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isVoid(editor, currentNode) && (slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isInline(editor, currentNode) || slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isBlock(editor, currentNode))) {
+                event.preventDefault();
+                slate__WEBPACK_IMPORTED_MODULE_5__.Editor.deleteBackward(editor, {
+                  unit: 'block'
+                });
+                return;
+              }
+            }
+          }
+        }
+      }
+    }, [readOnly, editor, attributes.onKeyDown]),
+    onPaste: (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(event => {
+      if (!readOnly && ReactEditor.hasEditableTarget(editor, event.target) && !isEventHandled(event, attributes.onPaste)) {
+        // COMPAT: Certain browsers don't support the `beforeinput` event, so we
+        // fall back to React's `onPaste` here instead.
+        // COMPAT: Firefox, Chrome and Safari don't emit `beforeinput` events
+        // when "paste without formatting" is used, so fallback. (2020/02/20)
+        // COMPAT: Safari InputEvents generated by pasting won't include
+        // application/x-slate-fragment items, so use the
+        // ClipboardEvent here. (2023/03/15)
+        if (!slate_dom__WEBPACK_IMPORTED_MODULE_6__.HAS_BEFORE_INPUT_SUPPORT || (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isPlainTextOnlyPaste)(event.nativeEvent) || slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_WEBKIT) {
+          event.preventDefault();
+          ReactEditor.insertData(editor, event.clipboardData);
+        }
+      }
+    }, [readOnly, editor, attributes.onPaste])
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(Children, {
+    decorations: decorations,
+    node: editor,
+    renderElement: renderElement,
+    renderChunk: renderChunk,
+    renderPlaceholder: renderPlaceholder,
+    renderLeaf: renderLeaf,
+    renderText: renderText
+  }))))));
+});
+/**
+ * The default placeholder element
+ */
+var DefaultPlaceholder = _ref2 => {
+  var {
+    attributes,
+    children
+  } = _ref2;
+  return (
+    /*#__PURE__*/
+    // COMPAT: Artificially add a line-break to the end on the placeholder element
+    // to prevent Android IMEs to pick up its content in autocorrect and to auto-capitalize the first letter
+    react__WEBPACK_IMPORTED_MODULE_3___default().createElement("span", _objectSpread({}, attributes), children, slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("br", null))
+  );
+};
+/**
+ * A default memoized decorate function.
+ */
+var defaultDecorate = () => [];
+/**
+ * A default implement to scroll dom range into view.
+ */
+var defaultScrollSelectionIntoView = (editor, domRange) => {
+  // This was affecting the selection of multiple blocks and dragging behavior,
+  // so enabled only if the selection has been collapsed.
+  if (domRange.getBoundingClientRect && (!editor.selection || editor.selection && slate__WEBPACK_IMPORTED_MODULE_5__.Range.isCollapsed(editor.selection))) {
+    var leafEl = domRange.startContainer.parentElement;
+    // COMPAT: In Chrome, domRange.getBoundingClientRect() can return zero dimensions for valid ranges (e.g. line breaks).
+    // When this happens, do not scroll like most editors do.
+    var domRect = domRange.getBoundingClientRect();
+    var isZeroDimensionRect = domRect.width === 0 && domRect.height === 0 && domRect.x === 0 && domRect.y === 0;
+    if (isZeroDimensionRect) {
+      var leafRect = leafEl.getBoundingClientRect();
+      var leafHasDimensions = leafRect.width > 0 || leafRect.height > 0;
+      if (leafHasDimensions) {
+        return;
+      }
+    }
+    // Default behavior: use domRange's getBoundingClientRect
+    leafEl.getBoundingClientRect = domRange.getBoundingClientRect.bind(domRange);
+    (0,scroll_into_view_if_needed__WEBPACK_IMPORTED_MODULE_4__["default"])(leafEl, {
+      scrollMode: 'if-needed'
+    });
+    // @ts-expect-error an unorthodox delete D:
+    delete leafEl.getBoundingClientRect;
+  }
+};
+/**
+ * Check if an event is overrided by a handler.
+ */
+var isEventHandled = (event, handler) => {
+  if (!handler) {
+    return false;
+  }
+  // The custom event handler may return a boolean to specify whether the event
+  // shall be treated as being handled or not.
+  var shouldTreatEventAsHandled = handler(event);
+  if (shouldTreatEventAsHandled != null) {
+    return shouldTreatEventAsHandled;
+  }
+  return event.isDefaultPrevented() || event.isPropagationStopped();
+};
+/**
+ * Check if the event's target is an input element
+ */
+var isDOMEventTargetInput = event => {
+  return (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.isDOMNode)(event.target) && (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement);
+};
+/**
+ * Check if a DOM event is overrided by a handler.
+ */
+var isDOMEventHandled = (event, handler) => {
+  if (!handler) {
+    return false;
+  }
+  // The custom event handler may return a boolean to specify whether the event
+  // shall be treated as being handled or not.
+  var shouldTreatEventAsHandled = handler(event);
+  if (shouldTreatEventAsHandled != null) {
+    return shouldTreatEventAsHandled;
+  }
+  return event.defaultPrevented;
+};
+var handleNativeHistoryEvents = (editor, event) => {
+  var maybeHistoryEditor = editor;
+  if (event.inputType === 'historyUndo' && typeof maybeHistoryEditor.undo === 'function') {
+    maybeHistoryEditor.undo();
+    return;
+  }
+  if (event.inputType === 'historyRedo' && typeof maybeHistoryEditor.redo === 'function') {
+    maybeHistoryEditor.redo();
+    return;
+  }
+};
+
+/**
+ * A React context for sharing the `focused` state of the editor.
+ */
+var FocusedContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_3__.createContext)(false);
+/**
+ * Get the current `focused` state of the editor.
+ */
+var useFocused = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(FocusedContext);
+};
+
+var REACT_MAJOR_VERSION = parseInt(react__WEBPACK_IMPORTED_MODULE_3___default().version.split('.')[0], 10);
+
+var _excluded = ["editor", "children", "onChange", "onSelectionChange", "onValueChange", "initialValue"];
+/**
+ * A wrapper around the provider to handle `onChange` events, because the editor
+ * is a mutable singleton so it won't ever register as "changed" otherwise.
+ */
+var Slate = props => {
+  var {
+      editor,
+      children,
+      onChange,
+      onSelectionChange,
+      onValueChange,
+      initialValue
+    } = props,
+    rest = _objectWithoutProperties(props, _excluded);
+  // Run once on first mount, but before `useEffect` or render
+  react__WEBPACK_IMPORTED_MODULE_3___default().useState(() => {
+    if (!slate__WEBPACK_IMPORTED_MODULE_5__.Node.isNodeList(initialValue)) {
+      throw new Error("[Slate] initialValue is invalid! Expected a list of elements but got: ".concat(slate__WEBPACK_IMPORTED_MODULE_5__.Scrubber.stringify(initialValue)));
+    }
+    if (!slate__WEBPACK_IMPORTED_MODULE_5__.Editor.isEditor(editor)) {
+      throw new Error("[Slate] editor is invalid! You passed: ".concat(slate__WEBPACK_IMPORTED_MODULE_5__.Scrubber.stringify(editor)));
+    }
+    editor.children = initialValue;
+    Object.assign(editor, rest);
+  });
+  var {
+    selectorContext,
+    onChange: handleSelectorChange
+  } = useSelectorContext();
+  var onContextChange = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(options => {
+    var _options$operation;
+    if (onChange) {
+      onChange(editor.children);
+    }
+    switch (options === null || options === void 0 || (_options$operation = options.operation) === null || _options$operation === void 0 ? void 0 : _options$operation.type) {
+      case 'set_selection':
+        onSelectionChange === null || onSelectionChange === void 0 || onSelectionChange(editor.selection);
+        break;
+      default:
+        onValueChange === null || onValueChange === void 0 || onValueChange(editor.children);
+    }
+    handleSelectorChange();
+  }, [editor, handleSelectorChange, onChange, onSelectionChange, onValueChange]);
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_ON_CHANGE.set(editor, onContextChange);
+    return () => {
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_ON_CHANGE.set(editor, () => {});
+    };
+  }, [editor, onContextChange]);
+  var [isFocused, setIsFocused] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(ReactEditor.isFocused(editor));
+  (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    setIsFocused(ReactEditor.isFocused(editor));
+  }, [editor]);
+  useIsomorphicLayoutEffect(() => {
+    var fn = () => setIsFocused(ReactEditor.isFocused(editor));
+    if (REACT_MAJOR_VERSION >= 17) {
+      // In React >= 17 onFocus and onBlur listen to the focusin and focusout events during the bubbling phase.
+      // Therefore in order for <Editable />'s handlers to run first, which is necessary for ReactEditor.isFocused(editor)
+      // to return the correct value, we have to listen to the focusin and focusout events without useCapture here.
+      document.addEventListener('focusin', fn);
+      document.addEventListener('focusout', fn);
+      return () => {
+        document.removeEventListener('focusin', fn);
+        document.removeEventListener('focusout', fn);
+      };
+    } else {
+      document.addEventListener('focus', fn, true);
+      document.addEventListener('blur', fn, true);
+      return () => {
+        document.removeEventListener('focus', fn, true);
+        document.removeEventListener('blur', fn, true);
+      };
+    }
+  }, []);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(SlateSelectorContext.Provider, {
+    value: selectorContext
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(EditorContext.Provider, {
+    value: editor
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(FocusedContext.Provider, {
+    value: isFocused
+  }, children)));
+};
+
+/**
+ * Get the current editor object from the React context.
+ * @deprecated Use useSlateStatic instead.
+ */
+var useEditor = () => {
+  var editor = (0,react__WEBPACK_IMPORTED_MODULE_3__.useContext)(EditorContext);
+  if (!editor) {
+    throw new Error("The `useEditor` hook must be used inside the <Slate> component's context.");
+  }
+  return editor;
+};
+
+/**
+ * Get the current `selected` state of an element.
+ */
+var useSelected = () => {
+  var element = useElementIf();
+  // Breaking the rules of hooks is fine here since `!element` will remain true
+  // or false for the entire lifetime of the component this hook is called from.
+  // TODO: Decide if we want to throw an error instead when calling
+  // `useSelected` outside of an element (potentially a breaking change).
+  if (!element) return false;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  var selector = (0,react__WEBPACK_IMPORTED_MODULE_3__.useCallback)(editor => {
+    if (!editor.selection) return false;
+    var path = ReactEditor.findPath(editor, element);
+    var range = slate__WEBPACK_IMPORTED_MODULE_5__.Editor.range(editor, path);
+    return !!slate__WEBPACK_IMPORTED_MODULE_5__.Range.intersection(range, editor.selection);
+  }, [element]);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useSlateSelector(selector, undefined, {
+    // Defer the selector until after `Editable` has rendered so that the path
+    // will be accurate.
+    deferred: true
+  });
+};
+
+/**
+ * Get the current slate selection.
+ * Only triggers a rerender when the selection actually changes
+ */
+var useSlateSelection = () => {
+  return useSlateSelector(editor => editor.selection, isSelectionEqual);
+};
+var isSelectionEqual = (a, b) => {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  return slate__WEBPACK_IMPORTED_MODULE_5__.Range.equals(a, b);
+};
+
+/**
+ * `withReact` adds React and DOM specific behaviors to the editor.
+ *
+ * If you are using TypeScript, you must extend Slate's CustomTypes to use
+ * this plugin.
+ *
+ * See https://docs.slatejs.org/concepts/11-typescript to learn how.
+ */
+var withReact = function withReact(editor) {
+  var clipboardFormatKey = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'x-slate-fragment';
+  var e = editor;
+  e = (0,slate_dom__WEBPACK_IMPORTED_MODULE_6__.withDOM)(e, clipboardFormatKey);
+  var {
+    onChange,
+    apply,
+    insertText
+  } = e;
+  e.getChunkSize = () => null;
+  if (slate_dom__WEBPACK_IMPORTED_MODULE_6__.IS_ANDROID) {
+    e.insertText = (text, options) => {
+      // COMPAT: Android devices, specifically Samsung devices, experience cursor jumping.
+      // This issue occurs when the ⁠insertText function is called immediately after typing.
+      // The problem arises because typing schedules a selection change.
+      // However, this selection change is only executed after the ⁠insertText function.
+      // As a result, the already obsolete selection is applied, leading to incorrect
+      // final cursor position.
+      slate_dom__WEBPACK_IMPORTED_MODULE_6__.EDITOR_TO_PENDING_SELECTION.delete(e);
+      return insertText(text, options);
+    };
+  }
+  e.onChange = options => {
+    // COMPAT: React < 18 doesn't batch `setState` hook calls, which means
+    // that the children and selection can get out of sync for one render
+    // pass. So we have to use this unstable API to ensure it batches them.
+    // (2019/12/03)
+    // https://github.com/facebook/react/issues/14259#issuecomment-439702367
+    var maybeBatchUpdates = REACT_MAJOR_VERSION < 18 ? react_dom__WEBPACK_IMPORTED_MODULE_8__.unstable_batchedUpdates : callback => callback();
+    maybeBatchUpdates(() => {
+      onChange(options);
+    });
+  };
+  // On move_node, if the chunking optimization is enabled for the parent of the
+  // node being moved, add the moved node to the movedNodeKeys set of the
+  // parent's chunk tree.
+  e.apply = operation => {
+    if (operation.type === 'move_node') {
+      var parent = slate__WEBPACK_IMPORTED_MODULE_5__.Node.parent(e, operation.path);
+      var chunking = !!e.getChunkSize(parent);
+      if (chunking) {
+        var node = slate__WEBPACK_IMPORTED_MODULE_5__.Node.get(e, operation.path);
+        var chunkTree = getChunkTreeForNode(e, parent);
+        var key = ReactEditor.findKey(e, node);
+        chunkTree.movedNodeKeys.add(key);
+      }
+    }
+    apply(operation);
+  };
+  return e;
+};
+
+
+//# sourceMappingURL=index.es.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/slate/dist/index.es.js":
+/*!*********************************************!*\
+  !*** ./node_modules/slate/dist/index.es.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Editor: () => (/* binding */ Editor),
+/* harmony export */   Element: () => (/* binding */ Element),
+/* harmony export */   Location: () => (/* binding */ Location),
+/* harmony export */   Node: () => (/* binding */ Node),
+/* harmony export */   Operation: () => (/* binding */ Operation),
+/* harmony export */   Path: () => (/* binding */ Path),
+/* harmony export */   PathRef: () => (/* binding */ PathRef),
+/* harmony export */   Point: () => (/* binding */ Point),
+/* harmony export */   PointRef: () => (/* binding */ PointRef),
+/* harmony export */   Range: () => (/* binding */ Range),
+/* harmony export */   RangeRef: () => (/* binding */ RangeRef),
+/* harmony export */   Scrubber: () => (/* binding */ Scrubber),
+/* harmony export */   Span: () => (/* binding */ Span),
+/* harmony export */   Text: () => (/* binding */ Text),
+/* harmony export */   Transforms: () => (/* binding */ Transforms),
+/* harmony export */   above: () => (/* binding */ above),
+/* harmony export */   addMark: () => (/* binding */ addMark),
+/* harmony export */   after: () => (/* binding */ after),
+/* harmony export */   apply: () => (/* binding */ apply),
+/* harmony export */   before: () => (/* binding */ before),
+/* harmony export */   collapse: () => (/* binding */ collapse),
+/* harmony export */   createEditor: () => (/* binding */ createEditor),
+/* harmony export */   deleteBackward: () => (/* binding */ deleteBackward),
+/* harmony export */   deleteForward: () => (/* binding */ deleteForward),
+/* harmony export */   deleteFragment: () => (/* binding */ deleteFragment),
+/* harmony export */   deleteText: () => (/* binding */ deleteText),
+/* harmony export */   deselect: () => (/* binding */ deselect),
+/* harmony export */   edges: () => (/* binding */ edges),
+/* harmony export */   elementReadOnly: () => (/* binding */ elementReadOnly),
+/* harmony export */   end: () => (/* binding */ end),
+/* harmony export */   first: () => (/* binding */ first),
+/* harmony export */   fragment: () => (/* binding */ fragment),
+/* harmony export */   getDirtyPaths: () => (/* binding */ getDirtyPaths),
+/* harmony export */   getFragment: () => (/* binding */ getFragment),
+/* harmony export */   getVoid: () => (/* binding */ getVoid),
+/* harmony export */   hasBlocks: () => (/* binding */ hasBlocks),
+/* harmony export */   hasInlines: () => (/* binding */ hasInlines),
+/* harmony export */   hasPath: () => (/* binding */ hasPath),
+/* harmony export */   hasTexts: () => (/* binding */ hasTexts),
+/* harmony export */   insertBreak: () => (/* binding */ insertBreak),
+/* harmony export */   insertFragment: () => (/* binding */ insertFragment),
+/* harmony export */   insertNode: () => (/* binding */ insertNode),
+/* harmony export */   insertNodes: () => (/* binding */ insertNodes),
+/* harmony export */   insertSoftBreak: () => (/* binding */ insertSoftBreak),
+/* harmony export */   insertText: () => (/* binding */ insertText),
+/* harmony export */   isBlock: () => (/* binding */ isBlock),
+/* harmony export */   isEdge: () => (/* binding */ isEdge),
+/* harmony export */   isEditor: () => (/* binding */ isEditor),
+/* harmony export */   isEmpty: () => (/* binding */ isEmpty),
+/* harmony export */   isEnd: () => (/* binding */ isEnd),
+/* harmony export */   isNormalizing: () => (/* binding */ isNormalizing),
+/* harmony export */   isObject: () => (/* binding */ isObject),
+/* harmony export */   isStart: () => (/* binding */ isStart),
+/* harmony export */   last: () => (/* binding */ last),
+/* harmony export */   leaf: () => (/* binding */ leaf),
+/* harmony export */   levels: () => (/* binding */ levels),
+/* harmony export */   liftNodes: () => (/* binding */ liftNodes),
+/* harmony export */   marks: () => (/* binding */ marks),
+/* harmony export */   mergeNodes: () => (/* binding */ mergeNodes),
+/* harmony export */   move: () => (/* binding */ move),
+/* harmony export */   moveNodes: () => (/* binding */ moveNodes),
+/* harmony export */   next: () => (/* binding */ next),
+/* harmony export */   node: () => (/* binding */ node),
+/* harmony export */   nodes: () => (/* binding */ nodes),
+/* harmony export */   normalize: () => (/* binding */ normalize),
+/* harmony export */   normalizeNode: () => (/* binding */ normalizeNode),
+/* harmony export */   parent: () => (/* binding */ parent),
+/* harmony export */   path: () => (/* binding */ path),
+/* harmony export */   pathRef: () => (/* binding */ pathRef),
+/* harmony export */   pathRefs: () => (/* binding */ pathRefs),
+/* harmony export */   point: () => (/* binding */ point),
+/* harmony export */   pointRef: () => (/* binding */ pointRef),
+/* harmony export */   pointRefs: () => (/* binding */ pointRefs),
+/* harmony export */   positions: () => (/* binding */ positions),
+/* harmony export */   previous: () => (/* binding */ previous),
+/* harmony export */   range: () => (/* binding */ range),
+/* harmony export */   rangeRef: () => (/* binding */ rangeRef),
+/* harmony export */   rangeRefs: () => (/* binding */ rangeRefs),
+/* harmony export */   removeMark: () => (/* binding */ removeMark),
+/* harmony export */   removeNodes: () => (/* binding */ removeNodes),
+/* harmony export */   select: () => (/* binding */ select),
+/* harmony export */   setNodes: () => (/* binding */ setNodes),
+/* harmony export */   setNormalizing: () => (/* binding */ setNormalizing),
+/* harmony export */   setPoint: () => (/* binding */ setPoint),
+/* harmony export */   setSelection: () => (/* binding */ setSelection),
+/* harmony export */   shouldMergeNodesRemovePrevNode: () => (/* binding */ shouldMergeNodesRemovePrevNode),
+/* harmony export */   shouldNormalize: () => (/* binding */ shouldNormalize),
+/* harmony export */   splitNodes: () => (/* binding */ splitNodes),
+/* harmony export */   start: () => (/* binding */ start),
+/* harmony export */   string: () => (/* binding */ string),
+/* harmony export */   unhangRange: () => (/* binding */ unhangRange),
+/* harmony export */   unsetNodes: () => (/* binding */ unsetNodes),
+/* harmony export */   unwrapNodes: () => (/* binding */ unwrapNodes),
+/* harmony export */   withoutNormalizing: () => (/* binding */ withoutNormalizing),
+/* harmony export */   wrapNodes: () => (/* binding */ wrapNodes)
+/* harmony export */ });
+/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! immer */ "./node_modules/immer/dist/immer.mjs");
+
+
+// eslint-disable-next-line no-redeclare
+var PathRef = {
+  transform(ref, op) {
+    var {
+      current,
+      affinity
+    } = ref;
+    if (current == null) {
+      return;
+    }
+    var path = Path.transform(current, op, {
+      affinity
+    });
+    ref.current = path;
+    if (path == null) {
+      ref.unref();
+    }
+  }
+};
+
+// eslint-disable-next-line no-redeclare
+var PointRef = {
+  transform(ref, op) {
+    var {
+      current,
+      affinity
+    } = ref;
+    if (current == null) {
+      return;
+    }
+    var point = Point.transform(current, op, {
+      affinity
+    });
+    ref.current = point;
+    if (point == null) {
+      ref.unref();
+    }
+  }
+};
+
+// eslint-disable-next-line no-redeclare
+var RangeRef = {
+  transform(ref, op) {
+    var {
+      current,
+      affinity
+    } = ref;
+    if (current == null) {
+      return;
+    }
+    var path = Range.transform(current, op, {
+      affinity
+    });
+    ref.current = path;
+    if (path == null) {
+      ref.unref();
+    }
+  }
+};
+
+var DIRTY_PATHS = new WeakMap();
+var DIRTY_PATH_KEYS = new WeakMap();
+var FLUSHING = new WeakMap();
+var NORMALIZING = new WeakMap();
+var PATH_REFS = new WeakMap();
+var POINT_REFS = new WeakMap();
+var RANGE_REFS = new WeakMap();
+
+// eslint-disable-next-line no-redeclare
+var Path = {
+  ancestors(path) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var {
+      reverse = false
+    } = options;
+    var paths = Path.levels(path, options);
+    if (reverse) {
+      paths = paths.slice(1);
+    } else {
+      paths = paths.slice(0, -1);
+    }
+    return paths;
+  },
+  common(path, another) {
+    var common = [];
+    for (var i = 0; i < path.length && i < another.length; i++) {
+      var av = path[i];
+      var bv = another[i];
+      if (av !== bv) {
+        break;
+      }
+      common.push(av);
+    }
+    return common;
+  },
+  compare(path, another) {
+    var min = Math.min(path.length, another.length);
+    for (var i = 0; i < min; i++) {
+      if (path[i] < another[i]) return -1;
+      if (path[i] > another[i]) return 1;
+    }
+    return 0;
+  },
+  endsAfter(path, another) {
+    var i = path.length - 1;
+    var as = path.slice(0, i);
+    var bs = another.slice(0, i);
+    var av = path[i];
+    var bv = another[i];
+    return Path.equals(as, bs) && av > bv;
+  },
+  endsAt(path, another) {
+    var i = path.length;
+    var as = path.slice(0, i);
+    var bs = another.slice(0, i);
+    return Path.equals(as, bs);
+  },
+  endsBefore(path, another) {
+    var i = path.length - 1;
+    var as = path.slice(0, i);
+    var bs = another.slice(0, i);
+    var av = path[i];
+    var bv = another[i];
+    return Path.equals(as, bs) && av < bv;
+  },
+  equals(path, another) {
+    return path.length === another.length && path.every((n, i) => n === another[i]);
+  },
+  hasPrevious(path) {
+    return path[path.length - 1] > 0;
+  },
+  isAfter(path, another) {
+    return Path.compare(path, another) === 1;
+  },
+  isAncestor(path, another) {
+    return path.length < another.length && Path.compare(path, another) === 0;
+  },
+  isBefore(path, another) {
+    return Path.compare(path, another) === -1;
+  },
+  isChild(path, another) {
+    return path.length === another.length + 1 && Path.compare(path, another) === 0;
+  },
+  isCommon(path, another) {
+    return path.length <= another.length && Path.compare(path, another) === 0;
+  },
+  isDescendant(path, another) {
+    return path.length > another.length && Path.compare(path, another) === 0;
+  },
+  isParent(path, another) {
+    return path.length + 1 === another.length && Path.compare(path, another) === 0;
+  },
+  isPath(value) {
+    return Array.isArray(value) && (value.length === 0 || typeof value[0] === 'number');
+  },
+  isSibling(path, another) {
+    if (path.length !== another.length) {
+      return false;
+    }
+    var as = path.slice(0, -1);
+    var bs = another.slice(0, -1);
+    var al = path[path.length - 1];
+    var bl = another[another.length - 1];
+    return al !== bl && Path.equals(as, bs);
+  },
+  levels(path) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var {
+      reverse = false
+    } = options;
+    var list = [];
+    for (var i = 0; i <= path.length; i++) {
+      list.push(path.slice(0, i));
+    }
+    if (reverse) {
+      list.reverse();
+    }
+    return list;
+  },
+  next(path) {
+    if (path.length === 0) {
+      throw new Error("Cannot get the next path of a root path [".concat(path, "], because it has no next index."));
+    }
+    var last = path[path.length - 1];
+    return path.slice(0, -1).concat(last + 1);
+  },
+  operationCanTransformPath(operation) {
+    switch (operation.type) {
+      case 'insert_node':
+      case 'remove_node':
+      case 'merge_node':
+      case 'split_node':
+      case 'move_node':
+        return true;
+      default:
+        return false;
+    }
+  },
+  parent(path) {
+    if (path.length === 0) {
+      throw new Error("Cannot get the parent path of the root path [".concat(path, "]."));
+    }
+    return path.slice(0, -1);
+  },
+  previous(path) {
+    if (path.length === 0) {
+      throw new Error("Cannot get the previous path of a root path [".concat(path, "], because it has no previous index."));
+    }
+    var last = path[path.length - 1];
+    if (last <= 0) {
+      throw new Error("Cannot get the previous path of a first child path [".concat(path, "] because it would result in a negative index."));
+    }
+    return path.slice(0, -1).concat(last - 1);
+  },
+  relative(path, ancestor) {
+    if (!Path.isAncestor(ancestor, path) && !Path.equals(path, ancestor)) {
+      throw new Error("Cannot get the relative path of [".concat(path, "] inside ancestor [").concat(ancestor, "], because it is not above or equal to the path."));
+    }
+    return path.slice(ancestor.length);
+  },
+  transform(path, operation) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (!path) return null;
+    // PERF: use destructing instead of immer
+    var p = [...path];
+    var {
+      affinity = 'forward'
+    } = options;
+    // PERF: Exit early if the operation is guaranteed not to have an effect.
+    if (path.length === 0) {
+      return p;
+    }
+    switch (operation.type) {
+      case 'insert_node':
+        {
+          var {
+            path: op
+          } = operation;
+          if (Path.equals(op, p) || Path.endsBefore(op, p) || Path.isAncestor(op, p)) {
+            p[op.length - 1] += 1;
+          }
+          break;
+        }
+      case 'remove_node':
+        {
+          var {
+            path: _op
+          } = operation;
+          if (Path.equals(_op, p) || Path.isAncestor(_op, p)) {
+            return null;
+          } else if (Path.endsBefore(_op, p)) {
+            p[_op.length - 1] -= 1;
+          }
+          break;
+        }
+      case 'merge_node':
+        {
+          var {
+            path: _op2,
+            position
+          } = operation;
+          if (Path.equals(_op2, p) || Path.endsBefore(_op2, p)) {
+            p[_op2.length - 1] -= 1;
+          } else if (Path.isAncestor(_op2, p)) {
+            p[_op2.length - 1] -= 1;
+            p[_op2.length] += position;
+          }
+          break;
+        }
+      case 'split_node':
+        {
+          var {
+            path: _op3,
+            position: _position
+          } = operation;
+          if (Path.equals(_op3, p)) {
+            if (affinity === 'forward') {
+              p[p.length - 1] += 1;
+            } else if (affinity === 'backward') ; else {
+              return null;
+            }
+          } else if (Path.endsBefore(_op3, p)) {
+            p[_op3.length - 1] += 1;
+          } else if (Path.isAncestor(_op3, p) && path[_op3.length] >= _position) {
+            p[_op3.length - 1] += 1;
+            p[_op3.length] -= _position;
+          }
+          break;
+        }
+      case 'move_node':
+        {
+          var {
+            path: _op4,
+            newPath: onp
+          } = operation;
+          // If the old and new path are the same, it's a no-op.
+          if (Path.equals(_op4, onp)) {
+            return p;
+          }
+          if (Path.isAncestor(_op4, p) || Path.equals(_op4, p)) {
+            var copy = onp.slice();
+            if (Path.endsBefore(_op4, onp) && _op4.length < onp.length) {
+              copy[_op4.length - 1] -= 1;
+            }
+            return copy.concat(p.slice(_op4.length));
+          } else if (Path.isSibling(_op4, onp) && (Path.isAncestor(onp, p) || Path.equals(onp, p))) {
+            if (Path.endsBefore(_op4, p)) {
+              p[_op4.length - 1] -= 1;
+            } else {
+              p[_op4.length - 1] += 1;
+            }
+          } else if (Path.endsBefore(onp, p) || Path.equals(onp, p) || Path.isAncestor(onp, p)) {
+            if (Path.endsBefore(_op4, p)) {
+              p[_op4.length - 1] -= 1;
+            }
+            p[onp.length - 1] += 1;
+          } else if (Path.endsBefore(_op4, p)) {
+            if (Path.equals(onp, p)) {
+              p[onp.length - 1] += 1;
+            }
+            p[_op4.length - 1] -= 1;
+          }
+          break;
+        }
+    }
+    return p;
+  }
+};
+
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+
+function _toPrimitive(input, hint) {
+  if (_typeof(input) !== "object" || input === null) return input;
+  var prim = input[Symbol.toPrimitive];
+  if (prim !== undefined) {
+    var res = prim.call(input, hint || "default");
+    if (_typeof(res) !== "object") return res;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (hint === "string" ? String : Number)(input);
+}
+
+function _toPropertyKey(arg) {
+  var key = _toPrimitive(arg, "string");
+  return _typeof(key) === "symbol" ? key : String(key);
+}
+
+function _defineProperty(obj, key, value) {
+  key = _toPropertyKey(key);
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+
+function ownKeys$e(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$e(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$e(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$e(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var insertChildren = function insertChildren(xs, index) {
+  for (var _len = arguments.length, newValues = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+    newValues[_key - 2] = arguments[_key];
+  }
+  return [...xs.slice(0, index), ...newValues, ...xs.slice(index)];
+};
+var replaceChildren = function replaceChildren(xs, index, removeCount) {
+  for (var _len2 = arguments.length, newValues = new Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
+    newValues[_key2 - 3] = arguments[_key2];
+  }
+  return [...xs.slice(0, index), ...newValues, ...xs.slice(index + removeCount)];
+};
+var removeChildren = replaceChildren;
+/**
+ * Replace a descendant with a new node, replacing all ancestors
+ */
+var modifyDescendant = (editor, path, f) => {
+  if (path.length === 0) {
+    throw new Error('Cannot modify the editor');
+  }
+  var node = Node.get(editor, path);
+  var slicedPath = path.slice();
+  var modifiedNode = f(node);
+  while (slicedPath.length > 1) {
+    var _index = slicedPath.pop();
+    var ancestorNode = Node.get(editor, slicedPath);
+    modifiedNode = _objectSpread$e(_objectSpread$e({}, ancestorNode), {}, {
+      children: replaceChildren(ancestorNode.children, _index, 1, modifiedNode)
+    });
+  }
+  var index = slicedPath.pop();
+  editor.children = replaceChildren(editor.children, index, 1, modifiedNode);
+};
+/**
+ * Replace the children of a node, replacing all ancestors
+ */
+var modifyChildren = (editor, path, f) => {
+  if (path.length === 0) {
+    editor.children = f(editor.children);
+  } else {
+    modifyDescendant(editor, path, node => {
+      if (Text.isText(node)) {
+        throw new Error("Cannot get the element at path [".concat(path, "] because it refers to a leaf node: ").concat(Scrubber.stringify(node)));
+      }
+      return _objectSpread$e(_objectSpread$e({}, node), {}, {
+        children: f(node.children)
+      });
+    });
+  }
+};
+/**
+ * Replace a leaf, replacing all ancestors
+ */
+var modifyLeaf = (editor, path, f) => modifyDescendant(editor, path, node => {
+  if (!Text.isText(node)) {
+    throw new Error("Cannot get the leaf node at path [".concat(path, "] because it refers to a non-leaf node: ").concat(Scrubber.stringify(node)));
+  }
+  return f(node);
+});
+// eslint-disable-next-line no-redeclare
+var GeneralTransforms = {
+  transform(editor, op) {
+    var transformSelection = false;
+    switch (op.type) {
+      case 'insert_node':
+        {
+          var {
+            path,
+            node
+          } = op;
+          modifyChildren(editor, Path.parent(path), children => {
+            var index = path[path.length - 1];
+            if (index > children.length) {
+              throw new Error("Cannot apply an \"insert_node\" operation at path [".concat(path, "] because the destination is past the end of the node."));
+            }
+            return insertChildren(children, index, node);
+          });
+          transformSelection = true;
+          break;
+        }
+      case 'insert_text':
+        {
+          var {
+            path: _path,
+            offset,
+            text
+          } = op;
+          if (text.length === 0) break;
+          modifyLeaf(editor, _path, node => {
+            var before = node.text.slice(0, offset);
+            var after = node.text.slice(offset);
+            return _objectSpread$e(_objectSpread$e({}, node), {}, {
+              text: before + text + after
+            });
+          });
+          transformSelection = true;
+          break;
+        }
+      case 'merge_node':
+        {
+          var {
+            path: _path2
+          } = op;
+          var index = _path2[_path2.length - 1];
+          var prevPath = Path.previous(_path2);
+          var prevIndex = prevPath[prevPath.length - 1];
+          modifyChildren(editor, Path.parent(_path2), children => {
+            var node = children[index];
+            var prev = children[prevIndex];
+            var newNode;
+            if (Text.isText(node) && Text.isText(prev)) {
+              newNode = _objectSpread$e(_objectSpread$e({}, prev), {}, {
+                text: prev.text + node.text
+              });
+            } else if (!Text.isText(node) && !Text.isText(prev)) {
+              newNode = _objectSpread$e(_objectSpread$e({}, prev), {}, {
+                children: prev.children.concat(node.children)
+              });
+            } else {
+              throw new Error("Cannot apply a \"merge_node\" operation at path [".concat(_path2, "] to nodes of different interfaces: ").concat(Scrubber.stringify(node), " ").concat(Scrubber.stringify(prev)));
+            }
+            return replaceChildren(children, prevIndex, 2, newNode);
+          });
+          transformSelection = true;
+          break;
+        }
+      case 'move_node':
+        {
+          var {
+            path: _path3,
+            newPath
+          } = op;
+          var _index2 = _path3[_path3.length - 1];
+          if (Path.isAncestor(_path3, newPath)) {
+            throw new Error("Cannot move a path [".concat(_path3, "] to new path [").concat(newPath, "] because the destination is inside itself."));
+          }
+          var _node = Node.get(editor, _path3);
+          modifyChildren(editor, Path.parent(_path3), children => removeChildren(children, _index2, 1));
+          // This is tricky, but since the `path` and `newPath` both refer to
+          // the same snapshot in time, there's a mismatch. After either
+          // removing the original position, the second step's path can be out
+          // of date. So instead of using the `op.newPath` directly, we
+          // transform `op.path` to ascertain what the `newPath` would be after
+          // the operation was applied.
+          var truePath = Path.transform(_path3, op);
+          var newIndex = truePath[truePath.length - 1];
+          modifyChildren(editor, Path.parent(truePath), children => insertChildren(children, newIndex, _node));
+          transformSelection = true;
+          break;
+        }
+      case 'remove_node':
+        {
+          var {
+            path: _path4
+          } = op;
+          var _index3 = _path4[_path4.length - 1];
+          modifyChildren(editor, Path.parent(_path4), children => removeChildren(children, _index3, 1));
+          // Transform all the points in the value, but if the point was in the
+          // node that was removed we need to update the range or remove it.
+          if (editor.selection) {
+            var selection = _objectSpread$e({}, editor.selection);
+            for (var [point, key] of Range.points(selection)) {
+              var result = Point.transform(point, op);
+              if (selection != null && result != null) {
+                selection[key] = result;
+              } else {
+                var prev = void 0;
+                var next = void 0;
+                for (var [n, p] of Node.texts(editor)) {
+                  if (Path.compare(p, _path4) === -1) {
+                    prev = [n, p];
+                  } else {
+                    next = [n, p];
+                    break;
+                  }
+                }
+                var preferNext = false;
+                if (prev && next) {
+                  if (Path.isSibling(prev[1], _path4)) {
+                    preferNext = false;
+                  } else if (Path.equals(next[1], _path4)) {
+                    preferNext = true;
+                  } else {
+                    preferNext = Path.common(prev[1], _path4).length < Path.common(next[1], _path4).length;
+                  }
+                }
+                if (prev && !preferNext) {
+                  selection[key] = {
+                    path: prev[1],
+                    offset: prev[0].text.length
+                  };
+                } else if (next) {
+                  selection[key] = {
+                    path: next[1],
+                    offset: 0
+                  };
+                } else {
+                  selection = null;
+                }
+              }
+            }
+            if (!selection || !Range.equals(selection, editor.selection)) {
+              editor.selection = selection;
+            }
+          }
+          break;
+        }
+      case 'remove_text':
+        {
+          var {
+            path: _path5,
+            offset: _offset,
+            text: _text
+          } = op;
+          if (_text.length === 0) break;
+          modifyLeaf(editor, _path5, node => {
+            var before = node.text.slice(0, _offset);
+            var after = node.text.slice(_offset + _text.length);
+            return _objectSpread$e(_objectSpread$e({}, node), {}, {
+              text: before + after
+            });
+          });
+          transformSelection = true;
+          break;
+        }
+      case 'set_node':
+        {
+          var {
+            path: _path6,
+            properties,
+            newProperties
+          } = op;
+          if (_path6.length === 0) {
+            throw new Error("Cannot set properties on the root node!");
+          }
+          modifyDescendant(editor, _path6, node => {
+            var newNode = _objectSpread$e({}, node);
+            for (var _key3 in newProperties) {
+              if (_key3 === 'children' || _key3 === 'text') {
+                throw new Error("Cannot set the \"".concat(_key3, "\" property of nodes!"));
+              }
+              var value = newProperties[_key3];
+              if (value == null) {
+                delete newNode[_key3];
+              } else {
+                newNode[_key3] = value;
+              }
+            }
+            // properties that were previously defined, but are now missing, must be deleted
+            for (var _key4 in properties) {
+              if (!newProperties.hasOwnProperty(_key4)) {
+                delete newNode[_key4];
+              }
+            }
+            return newNode;
+          });
+          break;
+        }
+      case 'set_selection':
+        {
+          var {
+            newProperties: _newProperties
+          } = op;
+          if (_newProperties == null) {
+            editor.selection = null;
+            break;
+          }
+          if (editor.selection == null) {
+            if (!Range.isRange(_newProperties)) {
+              throw new Error("Cannot apply an incomplete \"set_selection\" operation properties ".concat(Scrubber.stringify(_newProperties), " when there is no current selection."));
+            }
+            editor.selection = _objectSpread$e({}, _newProperties);
+            break;
+          }
+          var _selection = _objectSpread$e({}, editor.selection);
+          for (var _key5 in _newProperties) {
+            var value = _newProperties[_key5];
+            if (value == null) {
+              if (_key5 === 'anchor' || _key5 === 'focus') {
+                throw new Error("Cannot remove the \"".concat(_key5, "\" selection property"));
+              }
+              delete _selection[_key5];
+            } else {
+              _selection[_key5] = value;
+            }
+          }
+          editor.selection = _selection;
+          break;
+        }
+      case 'split_node':
+        {
+          var {
+            path: _path7,
+            position,
+            properties: _properties
+          } = op;
+          var _index4 = _path7[_path7.length - 1];
+          if (_path7.length === 0) {
+            throw new Error("Cannot apply a \"split_node\" operation at path [".concat(_path7, "] because the root node cannot be split."));
+          }
+          modifyChildren(editor, Path.parent(_path7), children => {
+            var node = children[_index4];
+            var newNode;
+            var nextNode;
+            if (Text.isText(node)) {
+              var before = node.text.slice(0, position);
+              var after = node.text.slice(position);
+              newNode = _objectSpread$e(_objectSpread$e({}, node), {}, {
+                text: before
+              });
+              nextNode = _objectSpread$e(_objectSpread$e({}, _properties), {}, {
+                text: after
+              });
+            } else {
+              var _before = node.children.slice(0, position);
+              var _after = node.children.slice(position);
+              newNode = _objectSpread$e(_objectSpread$e({}, node), {}, {
+                children: _before
+              });
+              nextNode = _objectSpread$e(_objectSpread$e({}, _properties), {}, {
+                children: _after
+              });
+            }
+            return replaceChildren(children, _index4, 1, newNode, nextNode);
+          });
+          transformSelection = true;
+          break;
+        }
+    }
+    if (transformSelection && editor.selection) {
+      var _selection2 = _objectSpread$e({}, editor.selection);
+      for (var [_point, _key6] of Range.points(_selection2)) {
+        _selection2[_key6] = Point.transform(_point, op);
+      }
+      if (!Range.equals(_selection2, editor.selection)) {
+        editor.selection = _selection2;
+      }
+    }
+  }
+};
+
+// eslint-disable-next-line no-redeclare
+var NodeTransforms = {
+  insertNodes(editor, nodes, options) {
+    editor.insertNodes(nodes, options);
+  },
+  liftNodes(editor, options) {
+    editor.liftNodes(options);
+  },
+  mergeNodes(editor, options) {
+    editor.mergeNodes(options);
+  },
+  moveNodes(editor, options) {
+    editor.moveNodes(options);
+  },
+  removeNodes(editor, options) {
+    editor.removeNodes(options);
+  },
+  setNodes(editor, props, options) {
+    editor.setNodes(props, options);
+  },
+  splitNodes(editor, options) {
+    editor.splitNodes(options);
+  },
+  unsetNodes(editor, props, options) {
+    editor.unsetNodes(props, options);
+  },
+  unwrapNodes(editor, options) {
+    editor.unwrapNodes(options);
+  },
+  wrapNodes(editor, element, options) {
+    editor.wrapNodes(element, options);
+  }
+};
+
+// eslint-disable-next-line no-redeclare
+var SelectionTransforms = {
+  collapse(editor, options) {
+    editor.collapse(options);
+  },
+  deselect(editor) {
+    editor.deselect();
+  },
+  move(editor, options) {
+    editor.move(options);
+  },
+  select(editor, target) {
+    editor.select(target);
+  },
+  setPoint(editor, props, options) {
+    editor.setPoint(props, options);
+  },
+  setSelection(editor, props) {
+    editor.setSelection(props);
+  }
+};
+
+var isObject = value => typeof value === 'object' && value !== null;
+
+/*
+  Custom deep equal comparison for Slate nodes.
+
+  We don't need general purpose deep equality;
+  Slate only supports plain values, Arrays, and nested objects.
+  Complex values nested inside Arrays are not supported.
+
+  Slate objects are designed to be serialised, so
+  missing keys are deliberately normalised to undefined.
+ */
+var isDeepEqual = (node, another) => {
+  for (var key in node) {
+    var a = node[key];
+    var b = another[key];
+    if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) return false;
+      for (var i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+      }
+    } else if (isObject(a) && isObject(b)) {
+      if (!isDeepEqual(a, b)) return false;
+    } else if (a !== b) {
+      return false;
+    }
+  }
+  /*
+    Deep object equality is only necessary in one direction; in the reverse direction
+    we are only looking for keys that are missing.
+    As above, undefined keys are normalised to missing.
+  */
+  for (var _key in another) {
+    if (node[_key] === undefined && another[_key] !== undefined) {
+      return false;
+    }
+  }
+  return true;
+};
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+var _excluded$4 = ["anchor", "focus"];
+function ownKeys$d(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$d(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$d(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$d(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+// eslint-disable-next-line no-redeclare
+var Range = {
+  edges(range) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var {
+      reverse = false
+    } = options;
+    var {
+      anchor,
+      focus
+    } = range;
+    return Range.isBackward(range) === reverse ? [anchor, focus] : [focus, anchor];
+  },
+  end(range) {
+    var [, end] = Range.edges(range);
+    return end;
+  },
+  equals(range, another) {
+    return Point.equals(range.anchor, another.anchor) && Point.equals(range.focus, another.focus);
+  },
+  surrounds(range, target) {
+    var intersectionRange = Range.intersection(range, target);
+    if (!intersectionRange) {
+      return false;
+    }
+    return Range.equals(intersectionRange, target);
+  },
+  includes(range, target) {
+    if (Range.isRange(target)) {
+      if (Range.includes(range, target.anchor) || Range.includes(range, target.focus)) {
+        return true;
+      }
+      var [rs, re] = Range.edges(range);
+      var [ts, te] = Range.edges(target);
+      return Point.isBefore(rs, ts) && Point.isAfter(re, te);
+    }
+    var [start, end] = Range.edges(range);
+    var isAfterStart = false;
+    var isBeforeEnd = false;
+    if (Point.isPoint(target)) {
+      isAfterStart = Point.compare(target, start) >= 0;
+      isBeforeEnd = Point.compare(target, end) <= 0;
+    } else {
+      isAfterStart = Path.compare(target, start.path) >= 0;
+      isBeforeEnd = Path.compare(target, end.path) <= 0;
+    }
+    return isAfterStart && isBeforeEnd;
+  },
+  intersection(range, another) {
+    var rest = _objectWithoutProperties(range, _excluded$4);
+    var [s1, e1] = Range.edges(range);
+    var [s2, e2] = Range.edges(another);
+    var start = Point.isBefore(s1, s2) ? s2 : s1;
+    var end = Point.isBefore(e1, e2) ? e1 : e2;
+    if (Point.isBefore(end, start)) {
+      return null;
+    } else {
+      return _objectSpread$d({
+        anchor: start,
+        focus: end
+      }, rest);
+    }
+  },
+  isBackward(range) {
+    var {
+      anchor,
+      focus
+    } = range;
+    return Point.isAfter(anchor, focus);
+  },
+  isCollapsed(range) {
+    var {
+      anchor,
+      focus
+    } = range;
+    return Point.equals(anchor, focus);
+  },
+  isExpanded(range) {
+    return !Range.isCollapsed(range);
+  },
+  isForward(range) {
+    return !Range.isBackward(range);
+  },
+  isRange(value) {
+    return isObject(value) && Point.isPoint(value.anchor) && Point.isPoint(value.focus);
+  },
+  *points(range) {
+    yield [range.anchor, 'anchor'];
+    yield [range.focus, 'focus'];
+  },
+  start(range) {
+    var [start] = Range.edges(range);
+    return start;
+  },
+  transform(range, op) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (range === null) {
+      return null;
+    }
+    var {
+      affinity = 'inward'
+    } = options;
+    var affinityAnchor;
+    var affinityFocus;
+    if (affinity === 'inward') {
+      // If the range is collapsed, make sure to use the same affinity to
+      // avoid the two points passing each other and expanding in the opposite
+      // direction
+      var isCollapsed = Range.isCollapsed(range);
+      if (Range.isForward(range)) {
+        affinityAnchor = 'forward';
+        affinityFocus = isCollapsed ? affinityAnchor : 'backward';
+      } else {
+        affinityAnchor = 'backward';
+        affinityFocus = isCollapsed ? affinityAnchor : 'forward';
+      }
+    } else if (affinity === 'outward') {
+      if (Range.isForward(range)) {
+        affinityAnchor = 'backward';
+        affinityFocus = 'forward';
+      } else {
+        affinityAnchor = 'forward';
+        affinityFocus = 'backward';
+      }
+    } else {
+      affinityAnchor = affinity;
+      affinityFocus = affinity;
+    }
+    var anchor = Point.transform(range.anchor, op, {
+      affinity: affinityAnchor
+    });
+    var focus = Point.transform(range.focus, op, {
+      affinity: affinityFocus
+    });
+    if (!anchor || !focus) {
+      return null;
+    }
+    return {
+      anchor,
+      focus
+    };
+  }
+};
+
+/**
+ * Shared the function with isElementType utility
+ */
+var isElement = function isElement(value) {
+  var {
+    deep = false
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!isObject(value)) return false;
+  // PERF: No need to use the full Editor.isEditor here
+  var isEditor = typeof value.apply === 'function';
+  if (isEditor) return false;
+  var isChildrenValid = deep ? Node.isNodeList(value.children) : Array.isArray(value.children);
+  return isChildrenValid;
+};
+// eslint-disable-next-line no-redeclare
+var Element = {
+  isAncestor(value) {
+    var {
+      deep = false
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return isObject(value) && Node.isNodeList(value.children, {
+      deep
+    });
+  },
+  isElement,
+  isElementList(value) {
+    var {
+      deep = false
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return Array.isArray(value) && value.every(val => Element.isElement(val, {
+      deep
+    }));
+  },
+  isElementProps(props) {
+    return props.children !== undefined;
+  },
+  isElementType: function isElementType(value, elementVal) {
+    var elementKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'type';
+    return isElement(value) && value[elementKey] === elementVal;
+  },
+  matches(element, props) {
+    for (var key in props) {
+      if (key === 'children') {
+        continue;
+      }
+      if (element[key] !== props[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+
+var _excluded$3 = ["children"],
+  _excluded2$3 = ["text"];
+// eslint-disable-next-line no-redeclare
+var Node = {
+  ancestor(root, path) {
+    var node = Node.get(root, path);
+    if (Text.isText(node)) {
+      throw new Error("Cannot get the ancestor node at path [".concat(path, "] because it refers to a text node instead: ").concat(Scrubber.stringify(node)));
+    }
+    return node;
+  },
+  ancestors(root, path) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    return function* () {
+      for (var p of Path.ancestors(path, options)) {
+        var n = Node.ancestor(root, p);
+        var entry = [n, p];
+        yield entry;
+      }
+    }();
+  },
+  child(root, index) {
+    if (Text.isText(root)) {
+      throw new Error("Cannot get the child of a text node: ".concat(Scrubber.stringify(root)));
+    }
+    var c = root.children[index];
+    if (c == null) {
+      throw new Error("Cannot get child at index `".concat(index, "` in node: ").concat(Scrubber.stringify(root)));
+    }
+    return c;
+  },
+  children(root, path) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    return function* () {
+      var {
+        reverse = false
+      } = options;
+      var ancestor = Node.ancestor(root, path);
+      var {
+        children
+      } = ancestor;
+      var index = reverse ? children.length - 1 : 0;
+      while (reverse ? index >= 0 : index < children.length) {
+        var child = Node.child(ancestor, index);
+        var childPath = path.concat(index);
+        yield [child, childPath];
+        index = reverse ? index - 1 : index + 1;
+      }
+    }();
+  },
+  common(root, path, another) {
+    var p = Path.common(path, another);
+    var n = Node.get(root, p);
+    return [n, p];
+  },
+  descendant(root, path) {
+    var node = Node.get(root, path);
+    if (Editor.isEditor(node)) {
+      throw new Error("Cannot get the descendant node at path [".concat(path, "] because it refers to the root editor node instead: ").concat(Scrubber.stringify(node)));
+    }
+    return node;
+  },
+  descendants(root) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return function* () {
+      for (var [node, path] of Node.nodes(root, options)) {
+        if (path.length !== 0) {
+          // NOTE: we have to coerce here because checking the path's length does
+          // guarantee that `node` is not a `Editor`, but TypeScript doesn't know.
+          yield [node, path];
+        }
+      }
+    }();
+  },
+  elements(root) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return function* () {
+      for (var [node, path] of Node.nodes(root, options)) {
+        if (Element.isElement(node)) {
+          yield [node, path];
+        }
+      }
+    }();
+  },
+  extractProps(node) {
+    if (Element.isAncestor(node)) {
+      var properties = _objectWithoutProperties(node, _excluded$3);
+      return properties;
+    } else {
+      var properties = _objectWithoutProperties(node, _excluded2$3);
+      return properties;
+    }
+  },
+  first(root, path) {
+    var p = path.slice();
+    var n = Node.get(root, p);
+    while (n) {
+      if (Text.isText(n) || n.children.length === 0) {
+        break;
+      } else {
+        n = n.children[0];
+        p.push(0);
+      }
+    }
+    return [n, p];
+  },
+  fragment(root, range) {
+    if (Text.isText(root)) {
+      throw new Error("Cannot get a fragment starting from a root text node: ".concat(Scrubber.stringify(root)));
+    }
+    var newRoot = (0,immer__WEBPACK_IMPORTED_MODULE_0__.produce)({
+      children: root.children
+    }, r => {
+      var [start, end] = Range.edges(range);
+      var nodeEntries = Node.nodes(r, {
+        reverse: true,
+        pass: _ref => {
+          var [, path] = _ref;
+          return !Range.includes(range, path);
+        }
+      });
+      for (var [, path] of nodeEntries) {
+        if (!Range.includes(range, path)) {
+          var parent = Node.parent(r, path);
+          var index = path[path.length - 1];
+          parent.children.splice(index, 1);
+        }
+        if (Path.equals(path, end.path)) {
+          var leaf = Node.leaf(r, path);
+          leaf.text = leaf.text.slice(0, end.offset);
+        }
+        if (Path.equals(path, start.path)) {
+          var _leaf = Node.leaf(r, path);
+          _leaf.text = _leaf.text.slice(start.offset);
+        }
+      }
+      if (Editor.isEditor(r)) {
+        r.selection = null;
+      }
+    });
+    return newRoot.children;
+  },
+  get(root, path) {
+    var node = Node.getIf(root, path);
+    if (node === undefined) {
+      throw new Error("Cannot find a descendant at path [".concat(path, "] in node: ").concat(Scrubber.stringify(root)));
+    }
+    return node;
+  },
+  getIf(root, path) {
+    var node = root;
+    for (var i = 0; i < path.length; i++) {
+      var p = path[i];
+      if (Text.isText(node) || !node.children[p]) {
+        return;
+      }
+      node = node.children[p];
+    }
+    return node;
+  },
+  has(root, path) {
+    var node = root;
+    for (var i = 0; i < path.length; i++) {
+      var p = path[i];
+      if (Text.isText(node) || !node.children[p]) {
+        return false;
+      }
+      node = node.children[p];
+    }
+    return true;
+  },
+  isNode(value) {
+    var {
+      deep = false
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return Text.isText(value) || Element.isElement(value, {
+      deep
+    }) || Editor.isEditor(value, {
+      deep
+    });
+  },
+  isNodeList(value) {
+    var {
+      deep = false
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return Array.isArray(value) && value.every(val => Node.isNode(val, {
+      deep
+    }));
+  },
+  last(root, path) {
+    var p = path.slice();
+    var n = Node.get(root, p);
+    while (n) {
+      if (Text.isText(n) || n.children.length === 0) {
+        break;
+      } else {
+        var i = n.children.length - 1;
+        n = n.children[i];
+        p.push(i);
+      }
+    }
+    return [n, p];
+  },
+  leaf(root, path) {
+    var node = Node.get(root, path);
+    if (!Text.isText(node)) {
+      throw new Error("Cannot get the leaf node at path [".concat(path, "] because it refers to a non-leaf node: ").concat(Scrubber.stringify(node)));
+    }
+    return node;
+  },
+  levels(root, path) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    return function* () {
+      for (var p of Path.levels(path, options)) {
+        var n = Node.get(root, p);
+        yield [n, p];
+      }
+    }();
+  },
+  matches(node, props) {
+    return Element.isElement(node) && Element.isElementProps(props) && Element.matches(node, props) || Text.isText(node) && Text.isTextProps(props) && Text.matches(node, props);
+  },
+  nodes(root) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return function* () {
+      var {
+        pass,
+        reverse = false
+      } = options;
+      var {
+        from = [],
+        to
+      } = options;
+      var visited = new Set();
+      var p = [];
+      var n = root;
+      while (true) {
+        if (to && (reverse ? Path.isBefore(p, to) : Path.isAfter(p, to))) {
+          break;
+        }
+        if (!visited.has(n)) {
+          yield [n, p];
+        }
+        // If we're allowed to go downward and we haven't descended yet, do.
+        if (!visited.has(n) && !Text.isText(n) && n.children.length !== 0 && (pass == null || pass([n, p]) === false)) {
+          visited.add(n);
+          var nextIndex = reverse ? n.children.length - 1 : 0;
+          if (Path.isAncestor(p, from)) {
+            nextIndex = from[p.length];
+          }
+          p = p.concat(nextIndex);
+          n = Node.get(root, p);
+          continue;
+        }
+        // If we're at the root and we can't go down, we're done.
+        if (p.length === 0) {
+          break;
+        }
+        // If we're going forward...
+        if (!reverse) {
+          var newPath = Path.next(p);
+          if (Node.has(root, newPath)) {
+            p = newPath;
+            n = Node.get(root, p);
+            continue;
+          }
+        }
+        // If we're going backward...
+        if (reverse && p[p.length - 1] !== 0) {
+          var _newPath = Path.previous(p);
+          p = _newPath;
+          n = Node.get(root, p);
+          continue;
+        }
+        // Otherwise we're going upward...
+        p = Path.parent(p);
+        n = Node.get(root, p);
+        visited.add(n);
+      }
+    }();
+  },
+  parent(root, path) {
+    var parentPath = Path.parent(path);
+    var p = Node.get(root, parentPath);
+    if (Text.isText(p)) {
+      throw new Error("Cannot get the parent of path [".concat(path, "] because it does not exist in the root."));
+    }
+    return p;
+  },
+  string(node) {
+    if (Text.isText(node)) {
+      return node.text;
+    } else {
+      return node.children.map(Node.string).join('');
+    }
+  },
+  texts(root) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return function* () {
+      for (var [node, path] of Node.nodes(root, options)) {
+        if (Text.isText(node)) {
+          yield [node, path];
+        }
+      }
+    }();
+  }
+};
+
+function ownKeys$c(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$c(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$c(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$c(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+// eslint-disable-next-line no-redeclare
+var Operation = {
+  isNodeOperation(value) {
+    return Operation.isOperation(value) && value.type.endsWith('_node');
+  },
+  isOperation(value) {
+    if (!isObject(value)) {
+      return false;
+    }
+    switch (value.type) {
+      case 'insert_node':
+        return Path.isPath(value.path) && Node.isNode(value.node);
+      case 'insert_text':
+        return typeof value.offset === 'number' && typeof value.text === 'string' && Path.isPath(value.path);
+      case 'merge_node':
+        return typeof value.position === 'number' && Path.isPath(value.path) && isObject(value.properties);
+      case 'move_node':
+        return Path.isPath(value.path) && Path.isPath(value.newPath);
+      case 'remove_node':
+        return Path.isPath(value.path) && Node.isNode(value.node);
+      case 'remove_text':
+        return typeof value.offset === 'number' && typeof value.text === 'string' && Path.isPath(value.path);
+      case 'set_node':
+        return Path.isPath(value.path) && isObject(value.properties) && isObject(value.newProperties);
+      case 'set_selection':
+        return value.properties === null && Range.isRange(value.newProperties) || value.newProperties === null && Range.isRange(value.properties) || isObject(value.properties) && isObject(value.newProperties);
+      case 'split_node':
+        return Path.isPath(value.path) && typeof value.position === 'number' && isObject(value.properties);
+      default:
+        return false;
+    }
+  },
+  isOperationList(value) {
+    return Array.isArray(value) && value.every(val => Operation.isOperation(val));
+  },
+  isSelectionOperation(value) {
+    return Operation.isOperation(value) && value.type.endsWith('_selection');
+  },
+  isTextOperation(value) {
+    return Operation.isOperation(value) && value.type.endsWith('_text');
+  },
+  inverse(op) {
+    switch (op.type) {
+      case 'insert_node':
+        {
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            type: 'remove_node'
+          });
+        }
+      case 'insert_text':
+        {
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            type: 'remove_text'
+          });
+        }
+      case 'merge_node':
+        {
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            type: 'split_node',
+            path: Path.previous(op.path)
+          });
+        }
+      case 'move_node':
+        {
+          var {
+            newPath,
+            path
+          } = op;
+          // PERF: in this case the move operation is a no-op anyways.
+          if (Path.equals(newPath, path)) {
+            return op;
+          }
+          // If the move happens completely within a single parent the path and
+          // newPath are stable with respect to each other.
+          if (Path.isSibling(path, newPath)) {
+            return _objectSpread$c(_objectSpread$c({}, op), {}, {
+              path: newPath,
+              newPath: path
+            });
+          }
+          // If the move does not happen within a single parent it is possible
+          // for the move to impact the true path to the location where the node
+          // was removed from and where it was inserted. We have to adjust for this
+          // and find the original path. We can accomplish this (only in non-sibling)
+          // moves by looking at the impact of the move operation on the node
+          // after the original move path.
+          var inversePath = Path.transform(path, op);
+          var inverseNewPath = Path.transform(Path.next(path), op);
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            path: inversePath,
+            newPath: inverseNewPath
+          });
+        }
+      case 'remove_node':
+        {
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            type: 'insert_node'
+          });
+        }
+      case 'remove_text':
+        {
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            type: 'insert_text'
+          });
+        }
+      case 'set_node':
+        {
+          var {
+            properties,
+            newProperties
+          } = op;
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            properties: newProperties,
+            newProperties: properties
+          });
+        }
+      case 'set_selection':
+        {
+          var {
+            properties: _properties,
+            newProperties: _newProperties
+          } = op;
+          if (_properties == null) {
+            return _objectSpread$c(_objectSpread$c({}, op), {}, {
+              properties: _newProperties,
+              newProperties: null
+            });
+          } else if (_newProperties == null) {
+            return _objectSpread$c(_objectSpread$c({}, op), {}, {
+              properties: null,
+              newProperties: _properties
+            });
+          } else {
+            return _objectSpread$c(_objectSpread$c({}, op), {}, {
+              properties: _newProperties,
+              newProperties: _properties
+            });
+          }
+        }
+      case 'split_node':
+        {
+          return _objectSpread$c(_objectSpread$c({}, op), {}, {
+            type: 'merge_node',
+            path: Path.next(op.path)
+          });
+        }
+    }
+  }
+};
+
+var isEditor = function isEditor(value) {
+  var {
+    deep = false
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!isObject(value)) {
+    return false;
+  }
+  var isEditor = typeof value.addMark === 'function' && typeof value.apply === 'function' && typeof value.deleteFragment === 'function' && typeof value.insertBreak === 'function' && typeof value.insertSoftBreak === 'function' && typeof value.insertFragment === 'function' && typeof value.insertNode === 'function' && typeof value.insertText === 'function' && typeof value.isElementReadOnly === 'function' && typeof value.isInline === 'function' && typeof value.isSelectable === 'function' && typeof value.isVoid === 'function' && typeof value.normalizeNode === 'function' && typeof value.onChange === 'function' && typeof value.removeMark === 'function' && typeof value.getDirtyPaths === 'function' && (value.marks === null || isObject(value.marks)) && (value.selection === null || Range.isRange(value.selection)) && (!deep || Node.isNodeList(value.children)) && Operation.isOperationList(value.operations);
+  return isEditor;
+};
+
+// eslint-disable-next-line no-redeclare
+var Editor = {
+  above(editor, options) {
+    return editor.above(options);
+  },
+  addMark(editor, key, value) {
+    editor.addMark(key, value);
+  },
+  after(editor, at, options) {
+    return editor.after(at, options);
+  },
+  before(editor, at, options) {
+    return editor.before(at, options);
+  },
+  deleteBackward(editor) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var {
+      unit = 'character'
+    } = options;
+    editor.deleteBackward(unit);
+  },
+  deleteForward(editor) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var {
+      unit = 'character'
+    } = options;
+    editor.deleteForward(unit);
+  },
+  deleteFragment(editor, options) {
+    editor.deleteFragment(options);
+  },
+  edges(editor, at) {
+    return editor.edges(at);
+  },
+  elementReadOnly(editor) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return editor.elementReadOnly(options);
+  },
+  end(editor, at) {
+    return editor.end(at);
+  },
+  first(editor, at) {
+    return editor.first(at);
+  },
+  fragment(editor, at) {
+    return editor.fragment(at);
+  },
+  hasBlocks(editor, element) {
+    return editor.hasBlocks(element);
+  },
+  hasInlines(editor, element) {
+    return editor.hasInlines(element);
+  },
+  hasPath(editor, path) {
+    return editor.hasPath(path);
+  },
+  hasTexts(editor, element) {
+    return editor.hasTexts(element);
+  },
+  insertBreak(editor) {
+    editor.insertBreak();
+  },
+  insertFragment(editor, fragment, options) {
+    editor.insertFragment(fragment, options);
+  },
+  insertNode(editor, node) {
+    editor.insertNode(node);
+  },
+  insertSoftBreak(editor) {
+    editor.insertSoftBreak();
+  },
+  insertText(editor, text) {
+    editor.insertText(text);
+  },
+  isBlock(editor, value) {
+    return editor.isBlock(value);
+  },
+  isEdge(editor, point, at) {
+    return editor.isEdge(point, at);
+  },
+  isEditor(value) {
+    return isEditor(value);
+  },
+  isElementReadOnly(editor, element) {
+    return editor.isElementReadOnly(element);
+  },
+  isEmpty(editor, element) {
+    return editor.isEmpty(element);
+  },
+  isEnd(editor, point, at) {
+    return editor.isEnd(point, at);
+  },
+  isInline(editor, value) {
+    return editor.isInline(value);
+  },
+  isNormalizing(editor) {
+    return editor.isNormalizing();
+  },
+  isSelectable(editor, value) {
+    return editor.isSelectable(value);
+  },
+  isStart(editor, point, at) {
+    return editor.isStart(point, at);
+  },
+  isVoid(editor, value) {
+    return editor.isVoid(value);
+  },
+  last(editor, at) {
+    return editor.last(at);
+  },
+  leaf(editor, at, options) {
+    return editor.leaf(at, options);
+  },
+  levels(editor, options) {
+    return editor.levels(options);
+  },
+  marks(editor) {
+    return editor.getMarks();
+  },
+  next(editor, options) {
+    return editor.next(options);
+  },
+  node(editor, at, options) {
+    return editor.node(at, options);
+  },
+  nodes(editor, options) {
+    return editor.nodes(options);
+  },
+  normalize(editor, options) {
+    editor.normalize(options);
+  },
+  parent(editor, at, options) {
+    return editor.parent(at, options);
+  },
+  path(editor, at, options) {
+    return editor.path(at, options);
+  },
+  pathRef(editor, path, options) {
+    return editor.pathRef(path, options);
+  },
+  pathRefs(editor) {
+    return editor.pathRefs();
+  },
+  point(editor, at, options) {
+    return editor.point(at, options);
+  },
+  pointRef(editor, point, options) {
+    return editor.pointRef(point, options);
+  },
+  pointRefs(editor) {
+    return editor.pointRefs();
+  },
+  positions(editor, options) {
+    return editor.positions(options);
+  },
+  previous(editor, options) {
+    return editor.previous(options);
+  },
+  range(editor, at, to) {
+    return editor.range(at, to);
+  },
+  rangeRef(editor, range, options) {
+    return editor.rangeRef(range, options);
+  },
+  rangeRefs(editor) {
+    return editor.rangeRefs();
+  },
+  removeMark(editor, key) {
+    editor.removeMark(key);
+  },
+  setNormalizing(editor, isNormalizing) {
+    editor.setNormalizing(isNormalizing);
+  },
+  start(editor, at) {
+    return editor.start(at);
+  },
+  string(editor, at, options) {
+    return editor.string(at, options);
+  },
+  unhangRange(editor, range, options) {
+    return editor.unhangRange(range, options);
+  },
+  void(editor, options) {
+    return editor.void(options);
+  },
+  withoutNormalizing(editor, fn) {
+    editor.withoutNormalizing(fn);
+  },
+  shouldMergeNodesRemovePrevNode: (editor, prevNode, curNode) => {
+    return editor.shouldMergeNodesRemovePrevNode(prevNode, curNode);
+  }
+};
+
+// eslint-disable-next-line no-redeclare
+var Location = {
+  isLocation(value) {
+    return Path.isPath(value) || Point.isPoint(value) || Range.isRange(value);
+  }
+};
+// eslint-disable-next-line no-redeclare
+var Span = {
+  isSpan(value) {
+    return Array.isArray(value) && value.length === 2 && value.every(Path.isPath);
+  }
+};
+
+function ownKeys$b(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$b(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$b(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$b(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+// eslint-disable-next-line no-redeclare
+var Point = {
+  compare(point, another) {
+    var result = Path.compare(point.path, another.path);
+    if (result === 0) {
+      if (point.offset < another.offset) return -1;
+      if (point.offset > another.offset) return 1;
+      return 0;
+    }
+    return result;
+  },
+  isAfter(point, another) {
+    return Point.compare(point, another) === 1;
+  },
+  isBefore(point, another) {
+    return Point.compare(point, another) === -1;
+  },
+  equals(point, another) {
+    // PERF: ensure the offsets are equal first since they are cheaper to check.
+    return point.offset === another.offset && Path.equals(point.path, another.path);
+  },
+  isPoint(value) {
+    return isObject(value) && typeof value.offset === 'number' && Path.isPath(value.path);
+  },
+  transform(point, op) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (point === null) {
+      return null;
+    }
+    var {
+      affinity = 'forward'
+    } = options;
+    var {
+      path,
+      offset
+    } = point;
+    switch (op.type) {
+      case 'insert_node':
+      case 'move_node':
+        {
+          path = Path.transform(path, op, options);
+          break;
+        }
+      case 'insert_text':
+        {
+          if (Path.equals(op.path, path) && (op.offset < offset || op.offset === offset && affinity === 'forward')) {
+            offset += op.text.length;
+          }
+          break;
+        }
+      case 'merge_node':
+        {
+          if (Path.equals(op.path, path)) {
+            offset += op.position;
+          }
+          path = Path.transform(path, op, options);
+          break;
+        }
+      case 'remove_text':
+        {
+          if (Path.equals(op.path, path) && op.offset <= offset) {
+            offset -= Math.min(offset - op.offset, op.text.length);
+          }
+          break;
+        }
+      case 'remove_node':
+        {
+          if (Path.equals(op.path, path) || Path.isAncestor(op.path, path)) {
+            return null;
+          }
+          path = Path.transform(path, op, options);
+          break;
+        }
+      case 'split_node':
+        {
+          if (Path.equals(op.path, path)) {
+            if (op.position === offset && affinity == null) {
+              return null;
+            } else if (op.position < offset || op.position === offset && affinity === 'forward') {
+              offset -= op.position;
+              path = Path.transform(path, op, _objectSpread$b(_objectSpread$b({}, options), {}, {
+                affinity: 'forward'
+              }));
+            }
+          } else {
+            path = Path.transform(path, op, options);
+          }
+          break;
+        }
+      default:
+        return point;
+    }
+    return {
+      path,
+      offset
+    };
+  }
+};
+
+var _scrubber = undefined;
+/**
+ * This interface implements a stringify() function, which is used by Slate
+ * internally when generating exceptions containing end user data. Developers
+ * using Slate may call Scrubber.setScrubber() to alter the behavior of this
+ * stringify() function.
+ *
+ * For example, to prevent the cleartext logging of 'text' fields within Nodes:
+ *
+ *    import { Scrubber } from 'slate';
+ *    Scrubber.setScrubber((key, val) => {
+ *      if (key === 'text') return '...scrubbed...'
+ *      return val
+ *    });
+ *
+ */
+// eslint-disable-next-line no-redeclare
+var Scrubber = {
+  setScrubber(scrubber) {
+    _scrubber = scrubber;
+  },
+  stringify(value) {
+    return JSON.stringify(value, _scrubber);
+  }
+};
+
+var _excluded$2 = ["text"],
+  _excluded2$2 = ["anchor", "focus", "merge"];
+function ownKeys$a(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$a(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$a(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$a(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+// eslint-disable-next-line no-redeclare
+var Text = {
+  equals(text, another) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var {
+      loose = false
+    } = options;
+    function omitText(obj) {
+      var rest = _objectWithoutProperties(obj, _excluded$2);
+      return rest;
+    }
+    return isDeepEqual(loose ? omitText(text) : text, loose ? omitText(another) : another);
+  },
+  isText(value) {
+    return isObject(value) && typeof value.text === 'string';
+  },
+  isTextList(value) {
+    return Array.isArray(value) && value.every(val => Text.isText(val));
+  },
+  isTextProps(props) {
+    return props.text !== undefined;
+  },
+  matches(text, props) {
+    for (var key in props) {
+      if (key === 'text') {
+        continue;
+      }
+      if (!text.hasOwnProperty(key) || text[key] !== props[key]) {
+        return false;
+      }
+    }
+    return true;
+  },
+  decorations(node, decorations) {
+    var leaves = [{
+      leaf: _objectSpread$a({}, node)
+    }];
+    for (var dec of decorations) {
+      var {
+          anchor,
+          focus,
+          merge: mergeDecoration
+        } = dec,
+        rest = _objectWithoutProperties(dec, _excluded2$2);
+      var [start, end] = Range.edges(dec);
+      var next = [];
+      var leafEnd = 0;
+      var decorationStart = start.offset;
+      var decorationEnd = end.offset;
+      var merge = mergeDecoration !== null && mergeDecoration !== void 0 ? mergeDecoration : Object.assign;
+      for (var {
+        leaf
+      } of leaves) {
+        var {
+          length
+        } = leaf.text;
+        var leafStart = leafEnd;
+        leafEnd += length;
+        // If the range encompasses the entire leaf, add the range.
+        if (decorationStart <= leafStart && leafEnd <= decorationEnd) {
+          merge(leaf, rest);
+          next.push({
+            leaf
+          });
+          continue;
+        }
+        // If the range expanded and match the leaf, or starts after, or ends before it, continue.
+        if (decorationStart !== decorationEnd && (decorationStart === leafEnd || decorationEnd === leafStart) || decorationStart > leafEnd || decorationEnd < leafStart || decorationEnd === leafStart && leafStart !== 0) {
+          next.push({
+            leaf
+          });
+          continue;
+        }
+        // Otherwise we need to split the leaf, at the start, end, or both,
+        // and add the range to the middle intersecting section. Do the end
+        // split first since we don't need to update the offset that way.
+        var middle = leaf;
+        var before = void 0;
+        var after = void 0;
+        if (decorationEnd < leafEnd) {
+          var off = decorationEnd - leafStart;
+          after = {
+            leaf: _objectSpread$a(_objectSpread$a({}, middle), {}, {
+              text: middle.text.slice(off)
+            })
+          };
+          middle = _objectSpread$a(_objectSpread$a({}, middle), {}, {
+            text: middle.text.slice(0, off)
+          });
+        }
+        if (decorationStart > leafStart) {
+          var _off = decorationStart - leafStart;
+          before = {
+            leaf: _objectSpread$a(_objectSpread$a({}, middle), {}, {
+              text: middle.text.slice(0, _off)
+            })
+          };
+          middle = _objectSpread$a(_objectSpread$a({}, middle), {}, {
+            text: middle.text.slice(_off)
+          });
+        }
+        merge(middle, rest);
+        if (before) {
+          next.push(before);
+        }
+        next.push({
+          leaf: middle
+        });
+        if (after) {
+          next.push(after);
+        }
+      }
+      leaves = next;
+    }
+    if (leaves.length > 1) {
+      var currentOffset = 0;
+      for (var [index, item] of leaves.entries()) {
+        var _start = currentOffset;
+        var _end = _start + item.leaf.text.length;
+        var position = {
+          start: _start,
+          end: _end
+        };
+        if (index === 0) position.isFirst = true;
+        if (index === leaves.length - 1) position.isLast = true;
+        item.position = position;
+        currentOffset = _end;
+      }
+    }
+    return leaves;
+  }
+};
+
+/**
+ * Get the default location to insert content into the editor.
+ * By default, use the selection as the target location. But if there is
+ * no selection, insert at the end of the document since that is such a
+ * common use case when inserting from a non-selected state.
+ */
+var getDefaultInsertLocation = editor => {
+  if (editor.selection) {
+    return editor.selection;
+  } else if (editor.children.length > 0) {
+    return Editor.end(editor, []);
+  } else {
+    return [0];
+  }
+};
+
+var matchPath = (editor, path) => {
+  var [node] = Editor.node(editor, path);
+  return n => n === node;
+};
+
+// Character (grapheme cluster) boundaries are determined according to
+// the default grapheme cluster boundary specification, extended grapheme clusters variant[1].
+//
+// References:
+//
+// [1] https://www.unicode.org/reports/tr29/#Default_Grapheme_Cluster_Table
+// [2] https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/GraphemeBreakProperty.txt
+// [3] https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/GraphemeBreakTest.html
+// [4] https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/GraphemeBreakTest.txt
+/**
+ * Get the distance to the end of the first character in a string of text.
+ */
+var getCharacterDistance = function getCharacterDistance(str) {
+  var isRTL = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var isLTR = !isRTL;
+  var codepoints = isRTL ? codepointsIteratorRTL(str) : str;
+  var left = CodepointType.None;
+  var right = CodepointType.None;
+  var distance = 0;
+  // Evaluation of these conditions are deferred.
+  var gb11 = null; // Is GB11 applicable?
+  var gb12Or13 = null; // Is GB12 or GB13 applicable?
+  for (var char of codepoints) {
+    var code = char.codePointAt(0);
+    if (!code) break;
+    var type = getCodepointType(char, code);
+    [left, right] = isLTR ? [right, type] : [type, left];
+    if (intersects(left, CodepointType.ZWJ) && intersects(right, CodepointType.ExtPict)) {
+      if (isLTR) {
+        gb11 = endsWithEmojiZWJ(str.substring(0, distance));
+      } else {
+        gb11 = endsWithEmojiZWJ(str.substring(0, str.length - distance));
+      }
+      if (!gb11) break;
+    }
+    if (intersects(left, CodepointType.RI) && intersects(right, CodepointType.RI)) {
+      if (gb12Or13 !== null) {
+        gb12Or13 = !gb12Or13;
+      } else {
+        if (isLTR) {
+          gb12Or13 = true;
+        } else {
+          gb12Or13 = endsWithOddNumberOfRIs(str.substring(0, str.length - distance));
+        }
+      }
+      if (!gb12Or13) break;
+    }
+    if (left !== CodepointType.None && right !== CodepointType.None && isBoundaryPair(left, right)) {
+      break;
+    }
+    distance += char.length;
+  }
+  return distance || 1;
+};
+var SPACE = /\s/;
+var PUNCTUATION = /[\u002B\u0021-\u0023\u0025-\u002A\u002C-\u002F\u003A\u003B\u003F\u0040\u005B-\u005D\u005F\u007B\u007D\u00A1\u00A7\u00AB\u00B6\u00B7\u00BB\u00BF\u037E\u0387\u055A-\u055F\u0589\u058A\u05BE\u05C0\u05C3\u05C6\u05F3\u05F4\u0609\u060A\u060C\u060D\u061B\u061E\u061F\u066A-\u066D\u06D4\u0700-\u070D\u07F7-\u07F9\u0830-\u083E\u085E\u0964\u0965\u0970\u0AF0\u0DF4\u0E4F\u0E5A\u0E5B\u0F04-\u0F12\u0F14\u0F3A-\u0F3D\u0F85\u0FD0-\u0FD4\u0FD9\u0FDA\u104A-\u104F\u10FB\u1360-\u1368\u1400\u166D\u166E\u169B\u169C\u16EB-\u16ED\u1735\u1736\u17D4-\u17D6\u17D8-\u17DA\u1800-\u180A\u1944\u1945\u1A1E\u1A1F\u1AA0-\u1AA6\u1AA8-\u1AAD\u1B5A-\u1B60\u1BFC-\u1BFF\u1C3B-\u1C3F\u1C7E\u1C7F\u1CC0-\u1CC7\u1CD3\u2010-\u2027\u2030-\u2043\u2045-\u2051\u2053-\u205E\u207D\u207E\u208D\u208E\u2329\u232A\u2768-\u2775\u27C5\u27C6\u27E6-\u27EF\u2983-\u2998\u29D8-\u29DB\u29FC\u29FD\u2CF9-\u2CFC\u2CFE\u2CFF\u2D70\u2E00-\u2E2E\u2E30-\u2E3B\u3001-\u3003\u3008-\u3011\u3014-\u301F\u3030\u303D\u30A0\u30FB\uA4FE\uA4FF\uA60D-\uA60F\uA673\uA67E\uA6F2-\uA6F7\uA874-\uA877\uA8CE\uA8CF\uA8F8-\uA8FA\uA92E\uA92F\uA95F\uA9C1-\uA9CD\uA9DE\uA9DF\uAA5C-\uAA5F\uAADE\uAADF\uAAF0\uAAF1\uABEB\uFD3E\uFD3F\uFE10-\uFE19\uFE30-\uFE52\uFE54-\uFE61\uFE63\uFE68\uFE6A\uFE6B\uFF01-\uFF03\uFF05-\uFF0A\uFF0C-\uFF0F\uFF1A\uFF1B\uFF1F\uFF20\uFF3B-\uFF3D\uFF3F\uFF5B\uFF5D\uFF5F-\uFF65]/;
+var CHAMELEON = /['\u2018\u2019]/;
+/**
+ * Get the distance to the end of the first word in a string of text.
+ */
+var getWordDistance = function getWordDistance(text) {
+  var isRTL = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var dist = 0;
+  var started = false;
+  while (text.length > 0) {
+    var charDist = getCharacterDistance(text, isRTL);
+    var [char, remaining] = splitByCharacterDistance(text, charDist, isRTL);
+    if (isWordCharacter(char, remaining, isRTL)) {
+      started = true;
+      dist += charDist;
+    } else if (!started) {
+      dist += charDist;
+    } else {
+      break;
+    }
+    text = remaining;
+  }
+  return dist;
+};
+/**
+ * Split a string in two parts at a given distance starting from the end when
+ * `isRTL` is set to `true`.
+ */
+var splitByCharacterDistance = (str, dist, isRTL) => {
+  if (isRTL) {
+    var at = str.length - dist;
+    return [str.slice(at, str.length), str.slice(0, at)];
+  }
+  return [str.slice(0, dist), str.slice(dist)];
+};
+/**
+ * Check if a character is a word character. The `remaining` argument is used
+ * because sometimes you must read subsequent characters to truly determine it.
+ */
+var isWordCharacter = function isWordCharacter(char, remaining) {
+  var isRTL = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  if (SPACE.test(char)) {
+    return false;
+  }
+  // Chameleons count as word characters as long as they're in a word, so
+  // recurse to see if the next one is a word character or not.
+  if (CHAMELEON.test(char)) {
+    var charDist = getCharacterDistance(remaining, isRTL);
+    var [nextChar, nextRemaining] = splitByCharacterDistance(remaining, charDist, isRTL);
+    if (isWordCharacter(nextChar, nextRemaining, isRTL)) {
+      return true;
+    }
+  }
+  if (PUNCTUATION.test(char)) {
+    return false;
+  }
+  return true;
+};
+/**
+ * Iterate on codepoints from right to left.
+ */
+var codepointsIteratorRTL = function* codepointsIteratorRTL(str) {
+  var end = str.length - 1;
+  for (var i = 0; i < str.length; i++) {
+    var char1 = str.charAt(end - i);
+    if (isLowSurrogate(char1.charCodeAt(0))) {
+      var char2 = str.charAt(end - i - 1);
+      if (isHighSurrogate(char2.charCodeAt(0))) {
+        yield char2 + char1;
+        i++;
+        continue;
+      }
+    }
+    yield char1;
+  }
+};
+/**
+ * Is `charCode` a high surrogate.
+ *
+ * https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+ */
+var isHighSurrogate = charCode => {
+  return charCode >= 0xd800 && charCode <= 0xdbff;
+};
+/**
+ * Is `charCode` a low surrogate.
+ *
+ * https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+ */
+var isLowSurrogate = charCode => {
+  return charCode >= 0xdc00 && charCode <= 0xdfff;
+};
+var CodepointType;
+(function (CodepointType) {
+  CodepointType[CodepointType["None"] = 0] = "None";
+  CodepointType[CodepointType["Extend"] = 1] = "Extend";
+  CodepointType[CodepointType["ZWJ"] = 2] = "ZWJ";
+  CodepointType[CodepointType["RI"] = 4] = "RI";
+  CodepointType[CodepointType["Prepend"] = 8] = "Prepend";
+  CodepointType[CodepointType["SpacingMark"] = 16] = "SpacingMark";
+  CodepointType[CodepointType["L"] = 32] = "L";
+  CodepointType[CodepointType["V"] = 64] = "V";
+  CodepointType[CodepointType["T"] = 128] = "T";
+  CodepointType[CodepointType["LV"] = 256] = "LV";
+  CodepointType[CodepointType["LVT"] = 512] = "LVT";
+  CodepointType[CodepointType["ExtPict"] = 1024] = "ExtPict";
+  CodepointType[CodepointType["Any"] = 2048] = "Any";
+})(CodepointType || (CodepointType = {}));
+var reExtend = /^(?:[\u0300-\u036F\u0483-\u0489\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u0711\u0730-\u074A\u07A6-\u07B0\u07EB-\u07F3\u07FD\u0816-\u0819\u081B-\u0823\u0825-\u0827\u0829-\u082D\u0859-\u085B\u0898-\u089F\u08CA-\u08E1\u08E3-\u0902\u093A\u093C\u0941-\u0948\u094D\u0951-\u0957\u0962\u0963\u0981\u09BC\u09BE\u09C1-\u09C4\u09CD\u09D7\u09E2\u09E3\u09FE\u0A01\u0A02\u0A3C\u0A41\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A70\u0A71\u0A75\u0A81\u0A82\u0ABC\u0AC1-\u0AC5\u0AC7\u0AC8\u0ACD\u0AE2\u0AE3\u0AFA-\u0AFF\u0B01\u0B3C\u0B3E\u0B3F\u0B41-\u0B44\u0B4D\u0B55-\u0B57\u0B62\u0B63\u0B82\u0BBE\u0BC0\u0BCD\u0BD7\u0C00\u0C04\u0C3C\u0C3E-\u0C40\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C62\u0C63\u0C81\u0CBC\u0CBF\u0CC2\u0CC6\u0CCC\u0CCD\u0CD5\u0CD6\u0CE2\u0CE3\u0D00\u0D01\u0D3B\u0D3C\u0D3E\u0D41-\u0D44\u0D4D\u0D57\u0D62\u0D63\u0D81\u0DCA\u0DCF\u0DD2-\u0DD4\u0DD6\u0DDF\u0E31\u0E34-\u0E3A\u0E47-\u0E4E\u0EB1\u0EB4-\u0EBC\u0EC8-\u0ECE\u0F18\u0F19\u0F35\u0F37\u0F39\u0F71-\u0F7E\u0F80-\u0F84\u0F86\u0F87\u0F8D-\u0F97\u0F99-\u0FBC\u0FC6\u102D-\u1030\u1032-\u1037\u1039\u103A\u103D\u103E\u1058\u1059\u105E-\u1060\u1071-\u1074\u1082\u1085\u1086\u108D\u109D\u135D-\u135F\u1712-\u1714\u1732\u1733\u1752\u1753\u1772\u1773\u17B4\u17B5\u17B7-\u17BD\u17C6\u17C9-\u17D3\u17DD\u180B-\u180D\u180F\u1885\u1886\u18A9\u1920-\u1922\u1927\u1928\u1932\u1939-\u193B\u1A17\u1A18\u1A1B\u1A56\u1A58-\u1A5E\u1A60\u1A62\u1A65-\u1A6C\u1A73-\u1A7C\u1A7F\u1AB0-\u1ACE\u1B00-\u1B03\u1B34-\u1B3A\u1B3C\u1B42\u1B6B-\u1B73\u1B80\u1B81\u1BA2-\u1BA5\u1BA8\u1BA9\u1BAB-\u1BAD\u1BE6\u1BE8\u1BE9\u1BED\u1BEF-\u1BF1\u1C2C-\u1C33\u1C36\u1C37\u1CD0-\u1CD2\u1CD4-\u1CE0\u1CE2-\u1CE8\u1CED\u1CF4\u1CF8\u1CF9\u1DC0-\u1DFF\u200C\u20D0-\u20F0\u2CEF-\u2CF1\u2D7F\u2DE0-\u2DFF\u302A-\u302F\u3099\u309A\uA66F-\uA672\uA674-\uA67D\uA69E\uA69F\uA6F0\uA6F1\uA802\uA806\uA80B\uA825\uA826\uA82C\uA8C4\uA8C5\uA8E0-\uA8F1\uA8FF\uA926-\uA92D\uA947-\uA951\uA980-\uA982\uA9B3\uA9B6-\uA9B9\uA9BC\uA9BD\uA9E5\uAA29-\uAA2E\uAA31\uAA32\uAA35\uAA36\uAA43\uAA4C\uAA7C\uAAB0\uAAB2-\uAAB4\uAAB7\uAAB8\uAABE\uAABF\uAAC1\uAAEC\uAAED\uAAF6\uABE5\uABE8\uABED\uFB1E\uFE00-\uFE0F\uFE20-\uFE2F\uFF9E\uFF9F]|\uD800[\uDDFD\uDEE0\uDF76-\uDF7A]|\uD802[\uDE01-\uDE03\uDE05\uDE06\uDE0C-\uDE0F\uDE38-\uDE3A\uDE3F\uDEE5\uDEE6]|\uD803[\uDD24-\uDD27\uDEAB\uDEAC\uDEFD-\uDEFF\uDF46-\uDF50\uDF82-\uDF85]|\uD804[\uDC01\uDC38-\uDC46\uDC70\uDC73\uDC74\uDC7F-\uDC81\uDCB3-\uDCB6\uDCB9\uDCBA\uDCC2\uDD00-\uDD02\uDD27-\uDD2B\uDD2D-\uDD34\uDD73\uDD80\uDD81\uDDB6-\uDDBE\uDDC9-\uDDCC\uDDCF\uDE2F-\uDE31\uDE34\uDE36\uDE37\uDE3E\uDE41\uDEDF\uDEE3-\uDEEA\uDF00\uDF01\uDF3B\uDF3C\uDF3E\uDF40\uDF57\uDF66-\uDF6C\uDF70-\uDF74]|\uD805[\uDC38-\uDC3F\uDC42-\uDC44\uDC46\uDC5E\uDCB0\uDCB3-\uDCB8\uDCBA\uDCBD\uDCBF\uDCC0\uDCC2\uDCC3\uDDAF\uDDB2-\uDDB5\uDDBC\uDDBD\uDDBF\uDDC0\uDDDC\uDDDD\uDE33-\uDE3A\uDE3D\uDE3F\uDE40\uDEAB\uDEAD\uDEB0-\uDEB5\uDEB7\uDF1D-\uDF1F\uDF22-\uDF25\uDF27-\uDF2B]|\uD806[\uDC2F-\uDC37\uDC39\uDC3A\uDD30\uDD3B\uDD3C\uDD3E\uDD43\uDDD4-\uDDD7\uDDDA\uDDDB\uDDE0\uDE01-\uDE0A\uDE33-\uDE38\uDE3B-\uDE3E\uDE47\uDE51-\uDE56\uDE59-\uDE5B\uDE8A-\uDE96\uDE98\uDE99]|\uD807[\uDC30-\uDC36\uDC38-\uDC3D\uDC3F\uDC92-\uDCA7\uDCAA-\uDCB0\uDCB2\uDCB3\uDCB5\uDCB6\uDD31-\uDD36\uDD3A\uDD3C\uDD3D\uDD3F-\uDD45\uDD47\uDD90\uDD91\uDD95\uDD97\uDEF3\uDEF4\uDF00\uDF01\uDF36-\uDF3A\uDF40\uDF42]|\uD80D[\uDC40\uDC47-\uDC55]|\uD81A[\uDEF0-\uDEF4\uDF30-\uDF36]|\uD81B[\uDF4F\uDF8F-\uDF92\uDFE4]|\uD82F[\uDC9D\uDC9E]|\uD833[\uDF00-\uDF2D\uDF30-\uDF46]|\uD834[\uDD65\uDD67-\uDD69\uDD6E-\uDD72\uDD7B-\uDD82\uDD85-\uDD8B\uDDAA-\uDDAD\uDE42-\uDE44]|\uD836[\uDE00-\uDE36\uDE3B-\uDE6C\uDE75\uDE84\uDE9B-\uDE9F\uDEA1-\uDEAF]|\uD838[\uDC00-\uDC06\uDC08-\uDC18\uDC1B-\uDC21\uDC23\uDC24\uDC26-\uDC2A\uDC8F\uDD30-\uDD36\uDEAE\uDEEC-\uDEEF]|\uD839[\uDCEC-\uDCEF]|\uD83A[\uDCD0-\uDCD6\uDD44-\uDD4A]|\uD83C[\uDFFB-\uDFFF]|\uDB40[\uDC20-\uDC7F\uDD00-\uDDEF])$/;
+var rePrepend = /^(?:[\u0600-\u0605\u06DD\u070F\u0890\u0891\u08E2\u0D4E]|\uD804[\uDCBD\uDCCD\uDDC2\uDDC3]|\uD806[\uDD3F\uDD41\uDE3A\uDE84-\uDE89]|\uD807\uDD46)$/;
+var reSpacingMark = /^(?:[\u0903\u093B\u093E-\u0940\u0949-\u094C\u094E\u094F\u0982\u0983\u09BF\u09C0\u09C7\u09C8\u09CB\u09CC\u0A03\u0A3E-\u0A40\u0A83\u0ABE-\u0AC0\u0AC9\u0ACB\u0ACC\u0B02\u0B03\u0B40\u0B47\u0B48\u0B4B\u0B4C\u0BBF\u0BC1\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCC\u0C01-\u0C03\u0C41-\u0C44\u0C82\u0C83\u0CBE\u0CC0\u0CC1\u0CC3\u0CC4\u0CC7\u0CC8\u0CCA\u0CCB\u0D02\u0D03\u0D3F\u0D40\u0D46-\u0D48\u0D4A-\u0D4C\u0D82\u0D83\u0DD0\u0DD1\u0DD8-\u0DDE\u0DF2\u0DF3\u0E33\u0EB3\u0F3E\u0F3F\u0F7F\u1031\u103B\u103C\u1056\u1057\u1084\u1715\u1734\u17B6\u17BE-\u17C5\u17C7\u17C8\u1923-\u1926\u1929-\u192B\u1930\u1931\u1933-\u1938\u1A19\u1A1A\u1A55\u1A57\u1A6D-\u1A72\u1B04\u1B3B\u1B3D-\u1B41\u1B43\u1B44\u1B82\u1BA1\u1BA6\u1BA7\u1BAA\u1BE7\u1BEA-\u1BEC\u1BEE\u1BF2\u1BF3\u1C24-\u1C2B\u1C34\u1C35\u1CE1\u1CF7\uA823\uA824\uA827\uA880\uA881\uA8B4-\uA8C3\uA952\uA953\uA983\uA9B4\uA9B5\uA9BA\uA9BB\uA9BE-\uA9C0\uAA2F\uAA30\uAA33\uAA34\uAA4D\uAAEB\uAAEE\uAAEF\uAAF5\uABE3\uABE4\uABE6\uABE7\uABE9\uABEA\uABEC]|\uD804[\uDC00\uDC02\uDC82\uDCB0-\uDCB2\uDCB7\uDCB8\uDD2C\uDD45\uDD46\uDD82\uDDB3-\uDDB5\uDDBF\uDDC0\uDDCE\uDE2C-\uDE2E\uDE32\uDE33\uDE35\uDEE0-\uDEE2\uDF02\uDF03\uDF3F\uDF41-\uDF44\uDF47\uDF48\uDF4B-\uDF4D\uDF62\uDF63]|\uD805[\uDC35-\uDC37\uDC40\uDC41\uDC45\uDCB1\uDCB2\uDCB9\uDCBB\uDCBC\uDCBE\uDCC1\uDDB0\uDDB1\uDDB8-\uDDBB\uDDBE\uDE30-\uDE32\uDE3B\uDE3C\uDE3E\uDEAC\uDEAE\uDEAF\uDEB6\uDF26]|\uD806[\uDC2C-\uDC2E\uDC38\uDD31-\uDD35\uDD37\uDD38\uDD3D\uDD40\uDD42\uDDD1-\uDDD3\uDDDC-\uDDDF\uDDE4\uDE39\uDE57\uDE58\uDE97]|\uD807[\uDC2F\uDC3E\uDCA9\uDCB1\uDCB4\uDD8A-\uDD8E\uDD93\uDD94\uDD96\uDEF5\uDEF6]|\uD81B[\uDF51-\uDF87\uDFF0\uDFF1]|\uD834[\uDD66\uDD6D])$/;
+var reL = /^[\u1100-\u115F\uA960-\uA97C]$/;
+var reV = /^[\u1160-\u11A7\uD7B0-\uD7C6]$/;
+var reT = /^[\u11A8-\u11FF\uD7CB-\uD7FB]$/;
+var reLV = /^[\uAC00\uAC1C\uAC38\uAC54\uAC70\uAC8C\uACA8\uACC4\uACE0\uACFC\uAD18\uAD34\uAD50\uAD6C\uAD88\uADA4\uADC0\uADDC\uADF8\uAE14\uAE30\uAE4C\uAE68\uAE84\uAEA0\uAEBC\uAED8\uAEF4\uAF10\uAF2C\uAF48\uAF64\uAF80\uAF9C\uAFB8\uAFD4\uAFF0\uB00C\uB028\uB044\uB060\uB07C\uB098\uB0B4\uB0D0\uB0EC\uB108\uB124\uB140\uB15C\uB178\uB194\uB1B0\uB1CC\uB1E8\uB204\uB220\uB23C\uB258\uB274\uB290\uB2AC\uB2C8\uB2E4\uB300\uB31C\uB338\uB354\uB370\uB38C\uB3A8\uB3C4\uB3E0\uB3FC\uB418\uB434\uB450\uB46C\uB488\uB4A4\uB4C0\uB4DC\uB4F8\uB514\uB530\uB54C\uB568\uB584\uB5A0\uB5BC\uB5D8\uB5F4\uB610\uB62C\uB648\uB664\uB680\uB69C\uB6B8\uB6D4\uB6F0\uB70C\uB728\uB744\uB760\uB77C\uB798\uB7B4\uB7D0\uB7EC\uB808\uB824\uB840\uB85C\uB878\uB894\uB8B0\uB8CC\uB8E8\uB904\uB920\uB93C\uB958\uB974\uB990\uB9AC\uB9C8\uB9E4\uBA00\uBA1C\uBA38\uBA54\uBA70\uBA8C\uBAA8\uBAC4\uBAE0\uBAFC\uBB18\uBB34\uBB50\uBB6C\uBB88\uBBA4\uBBC0\uBBDC\uBBF8\uBC14\uBC30\uBC4C\uBC68\uBC84\uBCA0\uBCBC\uBCD8\uBCF4\uBD10\uBD2C\uBD48\uBD64\uBD80\uBD9C\uBDB8\uBDD4\uBDF0\uBE0C\uBE28\uBE44\uBE60\uBE7C\uBE98\uBEB4\uBED0\uBEEC\uBF08\uBF24\uBF40\uBF5C\uBF78\uBF94\uBFB0\uBFCC\uBFE8\uC004\uC020\uC03C\uC058\uC074\uC090\uC0AC\uC0C8\uC0E4\uC100\uC11C\uC138\uC154\uC170\uC18C\uC1A8\uC1C4\uC1E0\uC1FC\uC218\uC234\uC250\uC26C\uC288\uC2A4\uC2C0\uC2DC\uC2F8\uC314\uC330\uC34C\uC368\uC384\uC3A0\uC3BC\uC3D8\uC3F4\uC410\uC42C\uC448\uC464\uC480\uC49C\uC4B8\uC4D4\uC4F0\uC50C\uC528\uC544\uC560\uC57C\uC598\uC5B4\uC5D0\uC5EC\uC608\uC624\uC640\uC65C\uC678\uC694\uC6B0\uC6CC\uC6E8\uC704\uC720\uC73C\uC758\uC774\uC790\uC7AC\uC7C8\uC7E4\uC800\uC81C\uC838\uC854\uC870\uC88C\uC8A8\uC8C4\uC8E0\uC8FC\uC918\uC934\uC950\uC96C\uC988\uC9A4\uC9C0\uC9DC\uC9F8\uCA14\uCA30\uCA4C\uCA68\uCA84\uCAA0\uCABC\uCAD8\uCAF4\uCB10\uCB2C\uCB48\uCB64\uCB80\uCB9C\uCBB8\uCBD4\uCBF0\uCC0C\uCC28\uCC44\uCC60\uCC7C\uCC98\uCCB4\uCCD0\uCCEC\uCD08\uCD24\uCD40\uCD5C\uCD78\uCD94\uCDB0\uCDCC\uCDE8\uCE04\uCE20\uCE3C\uCE58\uCE74\uCE90\uCEAC\uCEC8\uCEE4\uCF00\uCF1C\uCF38\uCF54\uCF70\uCF8C\uCFA8\uCFC4\uCFE0\uCFFC\uD018\uD034\uD050\uD06C\uD088\uD0A4\uD0C0\uD0DC\uD0F8\uD114\uD130\uD14C\uD168\uD184\uD1A0\uD1BC\uD1D8\uD1F4\uD210\uD22C\uD248\uD264\uD280\uD29C\uD2B8\uD2D4\uD2F0\uD30C\uD328\uD344\uD360\uD37C\uD398\uD3B4\uD3D0\uD3EC\uD408\uD424\uD440\uD45C\uD478\uD494\uD4B0\uD4CC\uD4E8\uD504\uD520\uD53C\uD558\uD574\uD590\uD5AC\uD5C8\uD5E4\uD600\uD61C\uD638\uD654\uD670\uD68C\uD6A8\uD6C4\uD6E0\uD6FC\uD718\uD734\uD750\uD76C\uD788]$/;
+var reLVT = /^[\uAC01-\uAC1B\uAC1D-\uAC37\uAC39-\uAC53\uAC55-\uAC6F\uAC71-\uAC8B\uAC8D-\uACA7\uACA9-\uACC3\uACC5-\uACDF\uACE1-\uACFB\uACFD-\uAD17\uAD19-\uAD33\uAD35-\uAD4F\uAD51-\uAD6B\uAD6D-\uAD87\uAD89-\uADA3\uADA5-\uADBF\uADC1-\uADDB\uADDD-\uADF7\uADF9-\uAE13\uAE15-\uAE2F\uAE31-\uAE4B\uAE4D-\uAE67\uAE69-\uAE83\uAE85-\uAE9F\uAEA1-\uAEBB\uAEBD-\uAED7\uAED9-\uAEF3\uAEF5-\uAF0F\uAF11-\uAF2B\uAF2D-\uAF47\uAF49-\uAF63\uAF65-\uAF7F\uAF81-\uAF9B\uAF9D-\uAFB7\uAFB9-\uAFD3\uAFD5-\uAFEF\uAFF1-\uB00B\uB00D-\uB027\uB029-\uB043\uB045-\uB05F\uB061-\uB07B\uB07D-\uB097\uB099-\uB0B3\uB0B5-\uB0CF\uB0D1-\uB0EB\uB0ED-\uB107\uB109-\uB123\uB125-\uB13F\uB141-\uB15B\uB15D-\uB177\uB179-\uB193\uB195-\uB1AF\uB1B1-\uB1CB\uB1CD-\uB1E7\uB1E9-\uB203\uB205-\uB21F\uB221-\uB23B\uB23D-\uB257\uB259-\uB273\uB275-\uB28F\uB291-\uB2AB\uB2AD-\uB2C7\uB2C9-\uB2E3\uB2E5-\uB2FF\uB301-\uB31B\uB31D-\uB337\uB339-\uB353\uB355-\uB36F\uB371-\uB38B\uB38D-\uB3A7\uB3A9-\uB3C3\uB3C5-\uB3DF\uB3E1-\uB3FB\uB3FD-\uB417\uB419-\uB433\uB435-\uB44F\uB451-\uB46B\uB46D-\uB487\uB489-\uB4A3\uB4A5-\uB4BF\uB4C1-\uB4DB\uB4DD-\uB4F7\uB4F9-\uB513\uB515-\uB52F\uB531-\uB54B\uB54D-\uB567\uB569-\uB583\uB585-\uB59F\uB5A1-\uB5BB\uB5BD-\uB5D7\uB5D9-\uB5F3\uB5F5-\uB60F\uB611-\uB62B\uB62D-\uB647\uB649-\uB663\uB665-\uB67F\uB681-\uB69B\uB69D-\uB6B7\uB6B9-\uB6D3\uB6D5-\uB6EF\uB6F1-\uB70B\uB70D-\uB727\uB729-\uB743\uB745-\uB75F\uB761-\uB77B\uB77D-\uB797\uB799-\uB7B3\uB7B5-\uB7CF\uB7D1-\uB7EB\uB7ED-\uB807\uB809-\uB823\uB825-\uB83F\uB841-\uB85B\uB85D-\uB877\uB879-\uB893\uB895-\uB8AF\uB8B1-\uB8CB\uB8CD-\uB8E7\uB8E9-\uB903\uB905-\uB91F\uB921-\uB93B\uB93D-\uB957\uB959-\uB973\uB975-\uB98F\uB991-\uB9AB\uB9AD-\uB9C7\uB9C9-\uB9E3\uB9E5-\uB9FF\uBA01-\uBA1B\uBA1D-\uBA37\uBA39-\uBA53\uBA55-\uBA6F\uBA71-\uBA8B\uBA8D-\uBAA7\uBAA9-\uBAC3\uBAC5-\uBADF\uBAE1-\uBAFB\uBAFD-\uBB17\uBB19-\uBB33\uBB35-\uBB4F\uBB51-\uBB6B\uBB6D-\uBB87\uBB89-\uBBA3\uBBA5-\uBBBF\uBBC1-\uBBDB\uBBDD-\uBBF7\uBBF9-\uBC13\uBC15-\uBC2F\uBC31-\uBC4B\uBC4D-\uBC67\uBC69-\uBC83\uBC85-\uBC9F\uBCA1-\uBCBB\uBCBD-\uBCD7\uBCD9-\uBCF3\uBCF5-\uBD0F\uBD11-\uBD2B\uBD2D-\uBD47\uBD49-\uBD63\uBD65-\uBD7F\uBD81-\uBD9B\uBD9D-\uBDB7\uBDB9-\uBDD3\uBDD5-\uBDEF\uBDF1-\uBE0B\uBE0D-\uBE27\uBE29-\uBE43\uBE45-\uBE5F\uBE61-\uBE7B\uBE7D-\uBE97\uBE99-\uBEB3\uBEB5-\uBECF\uBED1-\uBEEB\uBEED-\uBF07\uBF09-\uBF23\uBF25-\uBF3F\uBF41-\uBF5B\uBF5D-\uBF77\uBF79-\uBF93\uBF95-\uBFAF\uBFB1-\uBFCB\uBFCD-\uBFE7\uBFE9-\uC003\uC005-\uC01F\uC021-\uC03B\uC03D-\uC057\uC059-\uC073\uC075-\uC08F\uC091-\uC0AB\uC0AD-\uC0C7\uC0C9-\uC0E3\uC0E5-\uC0FF\uC101-\uC11B\uC11D-\uC137\uC139-\uC153\uC155-\uC16F\uC171-\uC18B\uC18D-\uC1A7\uC1A9-\uC1C3\uC1C5-\uC1DF\uC1E1-\uC1FB\uC1FD-\uC217\uC219-\uC233\uC235-\uC24F\uC251-\uC26B\uC26D-\uC287\uC289-\uC2A3\uC2A5-\uC2BF\uC2C1-\uC2DB\uC2DD-\uC2F7\uC2F9-\uC313\uC315-\uC32F\uC331-\uC34B\uC34D-\uC367\uC369-\uC383\uC385-\uC39F\uC3A1-\uC3BB\uC3BD-\uC3D7\uC3D9-\uC3F3\uC3F5-\uC40F\uC411-\uC42B\uC42D-\uC447\uC449-\uC463\uC465-\uC47F\uC481-\uC49B\uC49D-\uC4B7\uC4B9-\uC4D3\uC4D5-\uC4EF\uC4F1-\uC50B\uC50D-\uC527\uC529-\uC543\uC545-\uC55F\uC561-\uC57B\uC57D-\uC597\uC599-\uC5B3\uC5B5-\uC5CF\uC5D1-\uC5EB\uC5ED-\uC607\uC609-\uC623\uC625-\uC63F\uC641-\uC65B\uC65D-\uC677\uC679-\uC693\uC695-\uC6AF\uC6B1-\uC6CB\uC6CD-\uC6E7\uC6E9-\uC703\uC705-\uC71F\uC721-\uC73B\uC73D-\uC757\uC759-\uC773\uC775-\uC78F\uC791-\uC7AB\uC7AD-\uC7C7\uC7C9-\uC7E3\uC7E5-\uC7FF\uC801-\uC81B\uC81D-\uC837\uC839-\uC853\uC855-\uC86F\uC871-\uC88B\uC88D-\uC8A7\uC8A9-\uC8C3\uC8C5-\uC8DF\uC8E1-\uC8FB\uC8FD-\uC917\uC919-\uC933\uC935-\uC94F\uC951-\uC96B\uC96D-\uC987\uC989-\uC9A3\uC9A5-\uC9BF\uC9C1-\uC9DB\uC9DD-\uC9F7\uC9F9-\uCA13\uCA15-\uCA2F\uCA31-\uCA4B\uCA4D-\uCA67\uCA69-\uCA83\uCA85-\uCA9F\uCAA1-\uCABB\uCABD-\uCAD7\uCAD9-\uCAF3\uCAF5-\uCB0F\uCB11-\uCB2B\uCB2D-\uCB47\uCB49-\uCB63\uCB65-\uCB7F\uCB81-\uCB9B\uCB9D-\uCBB7\uCBB9-\uCBD3\uCBD5-\uCBEF\uCBF1-\uCC0B\uCC0D-\uCC27\uCC29-\uCC43\uCC45-\uCC5F\uCC61-\uCC7B\uCC7D-\uCC97\uCC99-\uCCB3\uCCB5-\uCCCF\uCCD1-\uCCEB\uCCED-\uCD07\uCD09-\uCD23\uCD25-\uCD3F\uCD41-\uCD5B\uCD5D-\uCD77\uCD79-\uCD93\uCD95-\uCDAF\uCDB1-\uCDCB\uCDCD-\uCDE7\uCDE9-\uCE03\uCE05-\uCE1F\uCE21-\uCE3B\uCE3D-\uCE57\uCE59-\uCE73\uCE75-\uCE8F\uCE91-\uCEAB\uCEAD-\uCEC7\uCEC9-\uCEE3\uCEE5-\uCEFF\uCF01-\uCF1B\uCF1D-\uCF37\uCF39-\uCF53\uCF55-\uCF6F\uCF71-\uCF8B\uCF8D-\uCFA7\uCFA9-\uCFC3\uCFC5-\uCFDF\uCFE1-\uCFFB\uCFFD-\uD017\uD019-\uD033\uD035-\uD04F\uD051-\uD06B\uD06D-\uD087\uD089-\uD0A3\uD0A5-\uD0BF\uD0C1-\uD0DB\uD0DD-\uD0F7\uD0F9-\uD113\uD115-\uD12F\uD131-\uD14B\uD14D-\uD167\uD169-\uD183\uD185-\uD19F\uD1A1-\uD1BB\uD1BD-\uD1D7\uD1D9-\uD1F3\uD1F5-\uD20F\uD211-\uD22B\uD22D-\uD247\uD249-\uD263\uD265-\uD27F\uD281-\uD29B\uD29D-\uD2B7\uD2B9-\uD2D3\uD2D5-\uD2EF\uD2F1-\uD30B\uD30D-\uD327\uD329-\uD343\uD345-\uD35F\uD361-\uD37B\uD37D-\uD397\uD399-\uD3B3\uD3B5-\uD3CF\uD3D1-\uD3EB\uD3ED-\uD407\uD409-\uD423\uD425-\uD43F\uD441-\uD45B\uD45D-\uD477\uD479-\uD493\uD495-\uD4AF\uD4B1-\uD4CB\uD4CD-\uD4E7\uD4E9-\uD503\uD505-\uD51F\uD521-\uD53B\uD53D-\uD557\uD559-\uD573\uD575-\uD58F\uD591-\uD5AB\uD5AD-\uD5C7\uD5C9-\uD5E3\uD5E5-\uD5FF\uD601-\uD61B\uD61D-\uD637\uD639-\uD653\uD655-\uD66F\uD671-\uD68B\uD68D-\uD6A7\uD6A9-\uD6C3\uD6C5-\uD6DF\uD6E1-\uD6FB\uD6FD-\uD717\uD719-\uD733\uD735-\uD74F\uD751-\uD76B\uD76D-\uD787\uD789-\uD7A3]$/;
+var reExtPict = /^(?:[\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u2388\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2605\u2607-\u2612\u2614-\u2685\u2690-\u2705\u2708-\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763-\u2767\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC00-\uDCFF\uDD0D-\uDD0F\uDD2F\uDD6C-\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDAD-\uDDE5\uDE01-\uDE0F\uDE1A\uDE2F\uDE32-\uDE3A\uDE3C-\uDE3F\uDE49-\uDFFA]|\uD83D[\uDC00-\uDD3D\uDD46-\uDE4F\uDE80-\uDEFF\uDF74-\uDF7F\uDFD5-\uDFFF]|\uD83E[\uDC0C-\uDC0F\uDC48-\uDC4F\uDC5A-\uDC5F\uDC88-\uDC8F\uDCAE-\uDCFF\uDD0C-\uDD3A\uDD3C-\uDD45\uDD47-\uDEFF]|\uD83F[\uDC00-\uDFFD])$/;
+var getCodepointType = (char, code) => {
+  var type = CodepointType.Any;
+  if (char.search(reExtend) !== -1) {
+    type |= CodepointType.Extend;
+  }
+  if (code === 0x200d) {
+    type |= CodepointType.ZWJ;
+  }
+  if (code >= 0x1f1e6 && code <= 0x1f1ff) {
+    type |= CodepointType.RI;
+  }
+  if (char.search(rePrepend) !== -1) {
+    type |= CodepointType.Prepend;
+  }
+  if (char.search(reSpacingMark) !== -1) {
+    type |= CodepointType.SpacingMark;
+  }
+  if (char.search(reL) !== -1) {
+    type |= CodepointType.L;
+  }
+  if (char.search(reV) !== -1) {
+    type |= CodepointType.V;
+  }
+  if (char.search(reT) !== -1) {
+    type |= CodepointType.T;
+  }
+  if (char.search(reLV) !== -1) {
+    type |= CodepointType.LV;
+  }
+  if (char.search(reLVT) !== -1) {
+    type |= CodepointType.LVT;
+  }
+  if (char.search(reExtPict) !== -1) {
+    type |= CodepointType.ExtPict;
+  }
+  return type;
+};
+function intersects(x, y) {
+  return (x & y) !== 0;
+}
+var NonBoundaryPairs = [
+// GB6
+[CodepointType.L, CodepointType.L | CodepointType.V | CodepointType.LV | CodepointType.LVT],
+// GB7
+[CodepointType.LV | CodepointType.V, CodepointType.V | CodepointType.T],
+// GB8
+[CodepointType.LVT | CodepointType.T, CodepointType.T],
+// GB9
+[CodepointType.Any, CodepointType.Extend | CodepointType.ZWJ],
+// GB9a
+[CodepointType.Any, CodepointType.SpacingMark],
+// GB9b
+[CodepointType.Prepend, CodepointType.Any],
+// GB11
+[CodepointType.ZWJ, CodepointType.ExtPict],
+// GB12 and GB13
+[CodepointType.RI, CodepointType.RI]];
+function isBoundaryPair(left, right) {
+  return NonBoundaryPairs.findIndex(r => intersects(left, r[0]) && intersects(right, r[1])) === -1;
+}
+var endingEmojiZWJ = /(?:[\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u2388\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2605\u2607-\u2612\u2614-\u2685\u2690-\u2705\u2708-\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763-\u2767\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC00-\uDCFF\uDD0D-\uDD0F\uDD2F\uDD6C-\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDAD-\uDDE5\uDE01-\uDE0F\uDE1A\uDE2F\uDE32-\uDE3A\uDE3C-\uDE3F\uDE49-\uDFFA]|\uD83D[\uDC00-\uDD3D\uDD46-\uDE4F\uDE80-\uDEFF\uDF74-\uDF7F\uDFD5-\uDFFF]|\uD83E[\uDC0C-\uDC0F\uDC48-\uDC4F\uDC5A-\uDC5F\uDC88-\uDC8F\uDCAE-\uDCFF\uDD0C-\uDD3A\uDD3C-\uDD45\uDD47-\uDEFF]|\uD83F[\uDC00-\uDFFD])(?:[\u0300-\u036F\u0483-\u0489\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u0711\u0730-\u074A\u07A6-\u07B0\u07EB-\u07F3\u07FD\u0816-\u0819\u081B-\u0823\u0825-\u0827\u0829-\u082D\u0859-\u085B\u0898-\u089F\u08CA-\u08E1\u08E3-\u0902\u093A\u093C\u0941-\u0948\u094D\u0951-\u0957\u0962\u0963\u0981\u09BC\u09BE\u09C1-\u09C4\u09CD\u09D7\u09E2\u09E3\u09FE\u0A01\u0A02\u0A3C\u0A41\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A70\u0A71\u0A75\u0A81\u0A82\u0ABC\u0AC1-\u0AC5\u0AC7\u0AC8\u0ACD\u0AE2\u0AE3\u0AFA-\u0AFF\u0B01\u0B3C\u0B3E\u0B3F\u0B41-\u0B44\u0B4D\u0B55-\u0B57\u0B62\u0B63\u0B82\u0BBE\u0BC0\u0BCD\u0BD7\u0C00\u0C04\u0C3C\u0C3E-\u0C40\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C62\u0C63\u0C81\u0CBC\u0CBF\u0CC2\u0CC6\u0CCC\u0CCD\u0CD5\u0CD6\u0CE2\u0CE3\u0D00\u0D01\u0D3B\u0D3C\u0D3E\u0D41-\u0D44\u0D4D\u0D57\u0D62\u0D63\u0D81\u0DCA\u0DCF\u0DD2-\u0DD4\u0DD6\u0DDF\u0E31\u0E34-\u0E3A\u0E47-\u0E4E\u0EB1\u0EB4-\u0EBC\u0EC8-\u0ECE\u0F18\u0F19\u0F35\u0F37\u0F39\u0F71-\u0F7E\u0F80-\u0F84\u0F86\u0F87\u0F8D-\u0F97\u0F99-\u0FBC\u0FC6\u102D-\u1030\u1032-\u1037\u1039\u103A\u103D\u103E\u1058\u1059\u105E-\u1060\u1071-\u1074\u1082\u1085\u1086\u108D\u109D\u135D-\u135F\u1712-\u1714\u1732\u1733\u1752\u1753\u1772\u1773\u17B4\u17B5\u17B7-\u17BD\u17C6\u17C9-\u17D3\u17DD\u180B-\u180D\u180F\u1885\u1886\u18A9\u1920-\u1922\u1927\u1928\u1932\u1939-\u193B\u1A17\u1A18\u1A1B\u1A56\u1A58-\u1A5E\u1A60\u1A62\u1A65-\u1A6C\u1A73-\u1A7C\u1A7F\u1AB0-\u1ACE\u1B00-\u1B03\u1B34-\u1B3A\u1B3C\u1B42\u1B6B-\u1B73\u1B80\u1B81\u1BA2-\u1BA5\u1BA8\u1BA9\u1BAB-\u1BAD\u1BE6\u1BE8\u1BE9\u1BED\u1BEF-\u1BF1\u1C2C-\u1C33\u1C36\u1C37\u1CD0-\u1CD2\u1CD4-\u1CE0\u1CE2-\u1CE8\u1CED\u1CF4\u1CF8\u1CF9\u1DC0-\u1DFF\u200C\u20D0-\u20F0\u2CEF-\u2CF1\u2D7F\u2DE0-\u2DFF\u302A-\u302F\u3099\u309A\uA66F-\uA672\uA674-\uA67D\uA69E\uA69F\uA6F0\uA6F1\uA802\uA806\uA80B\uA825\uA826\uA82C\uA8C4\uA8C5\uA8E0-\uA8F1\uA8FF\uA926-\uA92D\uA947-\uA951\uA980-\uA982\uA9B3\uA9B6-\uA9B9\uA9BC\uA9BD\uA9E5\uAA29-\uAA2E\uAA31\uAA32\uAA35\uAA36\uAA43\uAA4C\uAA7C\uAAB0\uAAB2-\uAAB4\uAAB7\uAAB8\uAABE\uAABF\uAAC1\uAAEC\uAAED\uAAF6\uABE5\uABE8\uABED\uFB1E\uFE00-\uFE0F\uFE20-\uFE2F\uFF9E\uFF9F]|\uD800[\uDDFD\uDEE0\uDF76-\uDF7A]|\uD802[\uDE01-\uDE03\uDE05\uDE06\uDE0C-\uDE0F\uDE38-\uDE3A\uDE3F\uDEE5\uDEE6]|\uD803[\uDD24-\uDD27\uDEAB\uDEAC\uDEFD-\uDEFF\uDF46-\uDF50\uDF82-\uDF85]|\uD804[\uDC01\uDC38-\uDC46\uDC70\uDC73\uDC74\uDC7F-\uDC81\uDCB3-\uDCB6\uDCB9\uDCBA\uDCC2\uDD00-\uDD02\uDD27-\uDD2B\uDD2D-\uDD34\uDD73\uDD80\uDD81\uDDB6-\uDDBE\uDDC9-\uDDCC\uDDCF\uDE2F-\uDE31\uDE34\uDE36\uDE37\uDE3E\uDE41\uDEDF\uDEE3-\uDEEA\uDF00\uDF01\uDF3B\uDF3C\uDF3E\uDF40\uDF57\uDF66-\uDF6C\uDF70-\uDF74]|\uD805[\uDC38-\uDC3F\uDC42-\uDC44\uDC46\uDC5E\uDCB0\uDCB3-\uDCB8\uDCBA\uDCBD\uDCBF\uDCC0\uDCC2\uDCC3\uDDAF\uDDB2-\uDDB5\uDDBC\uDDBD\uDDBF\uDDC0\uDDDC\uDDDD\uDE33-\uDE3A\uDE3D\uDE3F\uDE40\uDEAB\uDEAD\uDEB0-\uDEB5\uDEB7\uDF1D-\uDF1F\uDF22-\uDF25\uDF27-\uDF2B]|\uD806[\uDC2F-\uDC37\uDC39\uDC3A\uDD30\uDD3B\uDD3C\uDD3E\uDD43\uDDD4-\uDDD7\uDDDA\uDDDB\uDDE0\uDE01-\uDE0A\uDE33-\uDE38\uDE3B-\uDE3E\uDE47\uDE51-\uDE56\uDE59-\uDE5B\uDE8A-\uDE96\uDE98\uDE99]|\uD807[\uDC30-\uDC36\uDC38-\uDC3D\uDC3F\uDC92-\uDCA7\uDCAA-\uDCB0\uDCB2\uDCB3\uDCB5\uDCB6\uDD31-\uDD36\uDD3A\uDD3C\uDD3D\uDD3F-\uDD45\uDD47\uDD90\uDD91\uDD95\uDD97\uDEF3\uDEF4\uDF00\uDF01\uDF36-\uDF3A\uDF40\uDF42]|\uD80D[\uDC40\uDC47-\uDC55]|\uD81A[\uDEF0-\uDEF4\uDF30-\uDF36]|\uD81B[\uDF4F\uDF8F-\uDF92\uDFE4]|\uD82F[\uDC9D\uDC9E]|\uD833[\uDF00-\uDF2D\uDF30-\uDF46]|\uD834[\uDD65\uDD67-\uDD69\uDD6E-\uDD72\uDD7B-\uDD82\uDD85-\uDD8B\uDDAA-\uDDAD\uDE42-\uDE44]|\uD836[\uDE00-\uDE36\uDE3B-\uDE6C\uDE75\uDE84\uDE9B-\uDE9F\uDEA1-\uDEAF]|\uD838[\uDC00-\uDC06\uDC08-\uDC18\uDC1B-\uDC21\uDC23\uDC24\uDC26-\uDC2A\uDC8F\uDD30-\uDD36\uDEAE\uDEEC-\uDEEF]|\uD839[\uDCEC-\uDCEF]|\uD83A[\uDCD0-\uDCD6\uDD44-\uDD4A]|\uD83C[\uDFFB-\uDFFF]|\uDB40[\uDC20-\uDC7F\uDD00-\uDDEF])*\u200D$/;
+var endsWithEmojiZWJ = str => {
+  return str.search(endingEmojiZWJ) !== -1;
+};
+var endingRIs = /(?:\uD83C[\uDDE6-\uDDFF])+$/g;
+var endsWithOddNumberOfRIs = str => {
+  var match = str.match(endingRIs);
+  if (match === null) {
+    return false;
+  } else {
+    // A RI is represented by a surrogate pair.
+    var numRIs = match[0].length / 2;
+    return numRIs % 2 === 1;
+  }
+};
+
+// eslint-disable-next-line no-redeclare
+var TextTransforms = {
+  delete(editor, options) {
+    editor.delete(options);
+  },
+  insertFragment(editor, fragment, options) {
+    editor.insertFragment(fragment, options);
+  },
+  insertText(editor, text) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    Editor.withoutNormalizing(editor, () => {
+      var {
+        voids = false
+      } = options;
+      var {
+        at = getDefaultInsertLocation(editor)
+      } = options;
+      if (Path.isPath(at)) {
+        at = Editor.range(editor, at);
+      }
+      if (Range.isRange(at)) {
+        if (Range.isCollapsed(at)) {
+          at = at.anchor;
+        } else {
+          var end = Range.end(at);
+          if (!voids && Editor.void(editor, {
+            at: end
+          })) {
+            return;
+          }
+          var start = Range.start(at);
+          var startRef = Editor.pointRef(editor, start);
+          var endRef = Editor.pointRef(editor, end);
+          Transforms.delete(editor, {
+            at,
+            voids
+          });
+          var startPoint = startRef.unref();
+          var endPoint = endRef.unref();
+          at = startPoint || endPoint;
+          Transforms.setSelection(editor, {
+            anchor: at,
+            focus: at
+          });
+        }
+      }
+      if (!voids && Editor.void(editor, {
+        at
+      }) || Editor.elementReadOnly(editor, {
+        at
+      })) {
+        return;
+      }
+      var {
+        path,
+        offset
+      } = at;
+      if (text.length > 0) editor.apply({
+        type: 'insert_text',
+        path,
+        offset,
+        text
+      });
+    });
+  }
+};
+
+function ownKeys$9(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$9(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$9(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$9(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var Transforms = _objectSpread$9(_objectSpread$9(_objectSpread$9(_objectSpread$9({}, GeneralTransforms), NodeTransforms), SelectionTransforms), TextTransforms);
+
+// perf
+var BATCHING_DIRTY_PATHS = new WeakMap();
+var isBatchingDirtyPaths = editor => {
+  return BATCHING_DIRTY_PATHS.get(editor) || false;
+};
+var batchDirtyPaths = (editor, fn, update) => {
+  var value = BATCHING_DIRTY_PATHS.get(editor) || false;
+  BATCHING_DIRTY_PATHS.set(editor, true);
+  try {
+    fn();
+    update();
+  } finally {
+    BATCHING_DIRTY_PATHS.set(editor, value);
+  }
+};
+
+/**
+ * update editor dirty paths
+ *
+ * @param newDirtyPaths: Path[]; new dirty paths
+ * @param transform: (p: Path) => Path | null; how to transform existing dirty paths
+ */
+function updateDirtyPaths(editor, newDirtyPaths, transform) {
+  var oldDirtyPaths = DIRTY_PATHS.get(editor) || [];
+  var oldDirtyPathKeys = DIRTY_PATH_KEYS.get(editor) || new Set();
+  var dirtyPaths;
+  var dirtyPathKeys;
+  var add = path => {
+    if (path) {
+      var key = path.join(',');
+      if (!dirtyPathKeys.has(key)) {
+        dirtyPathKeys.add(key);
+        dirtyPaths.push(path);
+      }
+    }
+  };
+  if (transform) {
+    dirtyPaths = [];
+    dirtyPathKeys = new Set();
+    for (var path of oldDirtyPaths) {
+      var newPath = transform(path);
+      add(newPath);
+    }
+  } else {
+    dirtyPaths = oldDirtyPaths;
+    dirtyPathKeys = oldDirtyPathKeys;
+  }
+  for (var _path of newDirtyPaths) {
+    add(_path);
+  }
+  DIRTY_PATHS.set(editor, dirtyPaths);
+  DIRTY_PATH_KEYS.set(editor, dirtyPathKeys);
+}
+
+var apply = (editor, op) => {
+  for (var ref of Editor.pathRefs(editor)) {
+    PathRef.transform(ref, op);
+  }
+  for (var _ref of Editor.pointRefs(editor)) {
+    PointRef.transform(_ref, op);
+  }
+  for (var _ref2 of Editor.rangeRefs(editor)) {
+    RangeRef.transform(_ref2, op);
+  }
+  // update dirty paths
+  if (!isBatchingDirtyPaths(editor)) {
+    var transform = Path.operationCanTransformPath(op) ? p => Path.transform(p, op) : undefined;
+    updateDirtyPaths(editor, editor.getDirtyPaths(op), transform);
+  }
+  Transforms.transform(editor, op);
+  editor.operations.push(op);
+  Editor.normalize(editor, {
+    operation: op
+  });
+  // Clear any formats applied to the cursor if the selection changes.
+  if (op.type === 'set_selection') {
+    editor.marks = null;
+  }
+  if (!FLUSHING.get(editor)) {
+    FLUSHING.set(editor, true);
+    Promise.resolve().then(() => {
+      FLUSHING.set(editor, false);
+      editor.onChange({
+        operation: op
+      });
+      editor.operations = [];
+    });
+  }
+};
+
+/**
+ * Get the "dirty" paths generated from an operation.
+ */
+var getDirtyPaths = (editor, op) => {
+  switch (op.type) {
+    case 'insert_text':
+    case 'remove_text':
+    case 'set_node':
+      {
+        var {
+          path
+        } = op;
+        return Path.levels(path);
+      }
+    case 'insert_node':
+      {
+        var {
+          node,
+          path: _path
+        } = op;
+        var levels = Path.levels(_path);
+        var descendants = Text.isText(node) ? [] : Array.from(Node.nodes(node), _ref => {
+          var [, p] = _ref;
+          return _path.concat(p);
+        });
+        return [...levels, ...descendants];
+      }
+    case 'merge_node':
+      {
+        var {
+          path: _path2
+        } = op;
+        var ancestors = Path.ancestors(_path2);
+        var previousPath = Path.previous(_path2);
+        return [...ancestors, previousPath];
+      }
+    case 'move_node':
+      {
+        var {
+          path: _path3,
+          newPath
+        } = op;
+        if (Path.equals(_path3, newPath)) {
+          return [];
+        }
+        var oldAncestors = [];
+        var newAncestors = [];
+        for (var ancestor of Path.ancestors(_path3)) {
+          var p = Path.transform(ancestor, op);
+          oldAncestors.push(p);
+        }
+        for (var _ancestor of Path.ancestors(newPath)) {
+          var _p = Path.transform(_ancestor, op);
+          newAncestors.push(_p);
+        }
+        var newParent = newAncestors[newAncestors.length - 1];
+        var newIndex = newPath[newPath.length - 1];
+        var resultPath = newParent.concat(newIndex);
+        return [...oldAncestors, ...newAncestors, resultPath];
+      }
+    case 'remove_node':
+      {
+        var {
+          path: _path4
+        } = op;
+        var _ancestors = Path.ancestors(_path4);
+        return [..._ancestors];
+      }
+    case 'split_node':
+      {
+        var {
+          path: _path5
+        } = op;
+        var _levels = Path.levels(_path5);
+        var nextPath = Path.next(_path5);
+        return [..._levels, nextPath];
+      }
+    default:
+      {
+        return [];
+      }
+  }
+};
+
+var getFragment = editor => {
+  var {
+    selection
+  } = editor;
+  if (selection) {
+    return Node.fragment(editor, selection);
+  }
+  return [];
+};
+
+var normalizeNode = (editor, entry, options) => {
+  var [node, path] = entry;
+  // There are no core normalizations for text nodes.
+  if (Text.isText(node)) {
+    return;
+  }
+  // Ensure that block and inline nodes have at least one text child.
+  if (Element.isElement(node) && node.children.length === 0) {
+    var child = {
+      text: ''
+    };
+    Transforms.insertNodes(editor, child, {
+      at: path.concat(0),
+      voids: true
+    });
+    return;
+  }
+  // Determine whether the node should have block or inline children.
+  var shouldHaveInlines = Editor.isEditor(node) ? false : Element.isElement(node) && (editor.isInline(node) || node.children.length === 0 || Text.isText(node.children[0]) || editor.isInline(node.children[0]));
+  // Since we'll be applying operations while iterating, keep track of an
+  // index that accounts for any added/removed nodes.
+  var n = 0;
+  for (var i = 0; i < node.children.length; i++, n++) {
+    var currentNode = Node.get(editor, path);
+    if (Text.isText(currentNode)) continue;
+    var _child = currentNode.children[n];
+    var prev = currentNode.children[n - 1];
+    var isLast = i === node.children.length - 1;
+    var isInlineOrText = Text.isText(_child) || Element.isElement(_child) && editor.isInline(_child);
+    // Only allow block nodes in the top-level children and parent blocks
+    // that only contain block nodes. Similarly, only allow inline nodes in
+    // other inline nodes, or parent blocks that only contain inlines and
+    // text.
+    if (isInlineOrText !== shouldHaveInlines) {
+      if (isInlineOrText) {
+        if (options !== null && options !== void 0 && options.fallbackElement) {
+          Transforms.wrapNodes(editor, options.fallbackElement(), {
+            at: path.concat(n),
+            voids: true
+          });
+        } else {
+          Transforms.removeNodes(editor, {
+            at: path.concat(n),
+            voids: true
+          });
+        }
+      } else {
+        Transforms.unwrapNodes(editor, {
+          at: path.concat(n),
+          voids: true
+        });
+      }
+      n--;
+    } else if (Element.isElement(_child)) {
+      // Ensure that inline nodes are surrounded by text nodes.
+      if (editor.isInline(_child)) {
+        if (prev == null || !Text.isText(prev)) {
+          var newChild = {
+            text: ''
+          };
+          Transforms.insertNodes(editor, newChild, {
+            at: path.concat(n),
+            voids: true
+          });
+          n++;
+        } else if (isLast) {
+          var _newChild = {
+            text: ''
+          };
+          Transforms.insertNodes(editor, _newChild, {
+            at: path.concat(n + 1),
+            voids: true
+          });
+          n++;
+        }
+      }
+    } else {
+      // If the child is not a text node, and doesn't have a `children` field,
+      // then we have an invalid node that will upset slate.
+      //
+      // eg: `{ type: 'some_node' }`.
+      //
+      // To prevent slate from breaking, we can add the `children` field,
+      // and now that it is valid, we can to many more operations easily,
+      // such as extend normalizers to fix erronous structure.
+      if (!Text.isText(_child) && !('children' in _child)) {
+        var elementChild = _child;
+        elementChild.children = [];
+      }
+      // Merge adjacent text nodes that are empty or match.
+      if (prev != null && Text.isText(prev)) {
+        if (Text.equals(_child, prev, {
+          loose: true
+        })) {
+          Transforms.mergeNodes(editor, {
+            at: path.concat(n),
+            voids: true
+          });
+          n--;
+        } else if (prev.text === '') {
+          Transforms.removeNodes(editor, {
+            at: path.concat(n - 1),
+            voids: true
+          });
+          n--;
+        } else if (_child.text === '') {
+          Transforms.removeNodes(editor, {
+            at: path.concat(n),
+            voids: true
+          });
+          n--;
+        }
+      }
+    }
+  }
+};
+
+var shouldNormalize = (editor, _ref) => {
+  var {
+    iteration,
+    initialDirtyPathsLength
+  } = _ref;
+  var maxIterations = initialDirtyPathsLength * 42; // HACK: better way?
+  if (iteration > maxIterations) {
+    throw new Error("Could not completely normalize the editor after ".concat(maxIterations, " iterations! This is usually due to incorrect normalization logic that leaves a node in an invalid state."));
+  }
+  return true;
+};
+
+var above = function above(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var {
+    voids = false,
+    mode = 'lowest',
+    at = editor.selection,
+    match
+  } = options;
+  if (!at) {
+    return;
+  }
+  var path = Editor.path(editor, at);
+  // If `at` is a Range that spans mulitple nodes, `path` will be their common ancestor.
+  // Otherwise `path` will be a text node and/or the same as `at`, in which cases we want to start with its parent.
+  if (!Range.isRange(at) || Path.equals(at.focus.path, at.anchor.path)) {
+    if (path.length === 0) return;
+    path = Path.parent(path);
+  }
+  var reverse = mode === 'lowest';
+  var [firstMatch] = Editor.levels(editor, {
+    at: path,
+    voids,
+    match,
+    reverse
+  });
+  return firstMatch; // if nothing matches this returns undefined
+};
+
+function ownKeys$8(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$8(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$8(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$8(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var addMark = (editor, key, value) => {
+  var {
+    selection
+  } = editor;
+  if (selection) {
+    var match = (node, path) => {
+      if (!Text.isText(node)) {
+        return false; // marks can only be applied to text
+      }
+
+      var [parentNode, parentPath] = Editor.parent(editor, path);
+      return !editor.isVoid(parentNode) || editor.markableVoid(parentNode);
+    };
+    var expandedSelection = Range.isExpanded(selection);
+    var markAcceptingVoidSelected = false;
+    if (!expandedSelection) {
+      var [selectedNode, selectedPath] = Editor.node(editor, selection);
+      if (selectedNode && match(selectedNode, selectedPath)) {
+        var [parentNode] = Editor.parent(editor, selectedPath);
+        markAcceptingVoidSelected = parentNode && editor.markableVoid(parentNode);
+      }
+    }
+    if (expandedSelection || markAcceptingVoidSelected) {
+      Transforms.setNodes(editor, {
+        [key]: value
+      }, {
+        match,
+        split: true,
+        voids: true
+      });
+    } else {
+      var marks = _objectSpread$8(_objectSpread$8({}, Editor.marks(editor) || {}), {}, {
+        [key]: value
+      });
+      editor.marks = marks;
+      if (!FLUSHING.get(editor)) {
+        editor.onChange();
+      }
+    }
+  }
+};
+
+function ownKeys$7(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$7(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$7(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$7(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var after = function after(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var anchor = Editor.point(editor, at, {
+    edge: 'end'
+  });
+  var focus = Editor.end(editor, []);
+  var range = {
+    anchor,
+    focus
+  };
+  var {
+    distance = 1
+  } = options;
+  var d = 0;
+  var target;
+  for (var p of Editor.positions(editor, _objectSpread$7(_objectSpread$7({}, options), {}, {
+    at: range
+  }))) {
+    if (d > distance) {
+      break;
+    }
+    if (d !== 0) {
+      target = p;
+    }
+    d++;
+  }
+  return target;
+};
+
+function ownKeys$6(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$6(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$6(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$6(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var before = function before(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var anchor = Editor.start(editor, []);
+  var focus = Editor.point(editor, at, {
+    edge: 'start'
+  });
+  var range = {
+    anchor,
+    focus
+  };
+  var {
+    distance = 1
+  } = options;
+  var d = 0;
+  var target;
+  for (var p of Editor.positions(editor, _objectSpread$6(_objectSpread$6({}, options), {}, {
+    at: range,
+    reverse: true
+  }))) {
+    if (d > distance) {
+      break;
+    }
+    if (d !== 0) {
+      target = p;
+    }
+    d++;
+  }
+  return target;
+};
+
+var deleteBackward = (editor, unit) => {
+  var {
+    selection
+  } = editor;
+  if (selection && Range.isCollapsed(selection)) {
+    Transforms.delete(editor, {
+      unit,
+      reverse: true
+    });
+  }
+};
+
+var deleteForward = (editor, unit) => {
+  var {
+    selection
+  } = editor;
+  if (selection && Range.isCollapsed(selection)) {
+    Transforms.delete(editor, {
+      unit
+    });
+  }
+};
+
+var deleteFragment = function deleteFragment(editor) {
+  var {
+    direction = 'forward'
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var {
+    selection
+  } = editor;
+  if (selection && Range.isExpanded(selection)) {
+    Transforms.delete(editor, {
+      reverse: direction === 'backward'
+    });
+  }
+};
+
+var edges = (editor, at) => {
+  return [Editor.start(editor, at), Editor.end(editor, at)];
+};
+
+function ownKeys$5(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$5(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$5(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$5(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var elementReadOnly = function elementReadOnly(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return Editor.above(editor, _objectSpread$5(_objectSpread$5({}, options), {}, {
+    match: n => Element.isElement(n) && Editor.isElementReadOnly(editor, n)
+  }));
+};
+
+var end = (editor, at) => {
+  return Editor.point(editor, at, {
+    edge: 'end'
+  });
+};
+
+var first = (editor, at) => {
+  var path = Editor.path(editor, at, {
+    edge: 'start'
+  });
+  return Editor.node(editor, path);
+};
+
+var fragment = (editor, at) => {
+  var range = Editor.range(editor, at);
+  return Node.fragment(editor, range);
+};
+
+function ownKeys$4(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$4(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$4(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$4(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var getVoid = function getVoid(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return Editor.above(editor, _objectSpread$4(_objectSpread$4({}, options), {}, {
+    match: n => Element.isElement(n) && Editor.isVoid(editor, n)
+  }));
+};
+
+var hasBlocks = (editor, element) => {
+  return element.children.some(n => Element.isElement(n) && Editor.isBlock(editor, n));
+};
+
+var hasInlines = (editor, element) => {
+  return element.children.some(n => Text.isText(n) || Editor.isInline(editor, n));
+};
+
+var hasPath = (editor, path) => {
+  return Node.has(editor, path);
+};
+
+var hasTexts = (editor, element) => {
+  return element.children.every(n => Text.isText(n));
+};
+
+var insertBreak = editor => {
+  Transforms.splitNodes(editor, {
+    always: true
+  });
+};
+
+var insertNode = (editor, node, options) => {
+  Transforms.insertNodes(editor, node, options);
+};
+
+var insertSoftBreak = editor => {
+  Transforms.splitNodes(editor, {
+    always: true
+  });
+};
+
+function ownKeys$3(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$3(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$3(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$3(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var insertText = function insertText(editor, text) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    selection,
+    marks
+  } = editor;
+  if (selection) {
+    if (marks) {
+      var node = _objectSpread$3({
+        text
+      }, marks);
+      Transforms.insertNodes(editor, node, {
+        at: options.at,
+        voids: options.voids
+      });
+    } else {
+      Transforms.insertText(editor, text, options);
+    }
+    editor.marks = null;
+  }
+};
+
+var isBlock = (editor, value) => {
+  return !editor.isInline(value);
+};
+
+var isEdge = (editor, point, at) => {
+  return Editor.isStart(editor, point, at) || Editor.isEnd(editor, point, at);
+};
+
+var isEmpty = (editor, element) => {
+  var {
+    children
+  } = element;
+  var [first] = children;
+  return children.length === 0 || children.length === 1 && Text.isText(first) && first.text === '' && !editor.isVoid(element);
+};
+
+var isEnd = (editor, point, at) => {
+  var end = Editor.end(editor, at);
+  return Point.equals(point, end);
+};
+
+var isNormalizing = editor => {
+  var isNormalizing = NORMALIZING.get(editor);
+  return isNormalizing === undefined ? true : isNormalizing;
+};
+
+var isStart = (editor, point, at) => {
+  // PERF: If the offset isn't `0` we know it's not the start.
+  if (point.offset !== 0) {
+    return false;
+  }
+  var start = Editor.start(editor, at);
+  return Point.equals(point, start);
+};
+
+var last = (editor, at) => {
+  var path = Editor.path(editor, at, {
+    edge: 'end'
+  });
+  return Editor.node(editor, path);
+};
+
+var leaf = function leaf(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var path = Editor.path(editor, at, options);
+  var node = Node.leaf(editor, path);
+  return [node, path];
+};
+
+function levels(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return function* () {
+    var {
+      at = editor.selection,
+      reverse = false,
+      voids = false
+    } = options;
+    var {
+      match
+    } = options;
+    if (match == null) {
+      match = () => true;
+    }
+    if (!at) {
+      return;
+    }
+    var levels = [];
+    var path = Editor.path(editor, at);
+    for (var [n, p] of Node.levels(editor, path)) {
+      if (!match(n, p)) {
+        continue;
+      }
+      levels.push([n, p]);
+      if (!voids && Element.isElement(n) && Editor.isVoid(editor, n)) {
+        break;
+      }
+    }
+    if (reverse) {
+      levels.reverse();
+    }
+    yield* levels;
+  }();
+}
+
+var _excluded$1 = ["text"],
+  _excluded2$1 = ["text"];
+var marks = function marks(editor) {
+  var {
+    marks,
+    selection
+  } = editor;
+  if (!selection) {
+    return null;
+  }
+  var {
+    anchor,
+    focus
+  } = selection;
+  if (marks) {
+    return marks;
+  }
+  if (Range.isExpanded(selection)) {
+    var isBackward = Range.isBackward(selection);
+    if (isBackward) {
+      [focus, anchor] = [anchor, focus];
+    }
+    /**
+     * COMPAT: Make sure hanging ranges (caused by double clicking in Firefox)
+     * do not adversely affect the returned marks.
+     */
+    var isEnd = Editor.isEnd(editor, anchor, anchor.path);
+    if (isEnd) {
+      var after = Editor.after(editor, anchor);
+      if (after) {
+        anchor = after;
+      }
+    }
+    var [match] = Editor.nodes(editor, {
+      match: Text.isText,
+      at: {
+        anchor,
+        focus
+      }
+    });
+    if (match) {
+      var [_node] = match;
+      var _rest = _objectWithoutProperties(_node, _excluded$1);
+      return _rest;
+    } else {
+      return {};
+    }
+  }
+  var {
+    path
+  } = anchor;
+  var [node] = Editor.leaf(editor, path);
+  if (anchor.offset === 0) {
+    var prev = Editor.previous(editor, {
+      at: path,
+      match: Text.isText
+    });
+    var markedVoid = Editor.above(editor, {
+      match: n => Element.isElement(n) && Editor.isVoid(editor, n) && editor.markableVoid(n)
+    });
+    if (!markedVoid) {
+      var block = Editor.above(editor, {
+        match: n => Element.isElement(n) && Editor.isBlock(editor, n)
+      });
+      if (prev && block) {
+        var [prevNode, prevPath] = prev;
+        var [, blockPath] = block;
+        if (Path.isAncestor(blockPath, prevPath)) {
+          node = prevNode;
+        }
+      }
+    }
+  }
+  var rest = _objectWithoutProperties(node, _excluded2$1);
+  return rest;
+};
+
+var next = function next(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var {
+    mode = 'lowest',
+    voids = false
+  } = options;
+  var {
+    match,
+    at = editor.selection
+  } = options;
+  if (!at) {
+    return;
+  }
+  var pointAfterLocation = Editor.after(editor, at, {
+    voids
+  });
+  if (!pointAfterLocation) return;
+  var [, to] = Editor.last(editor, []);
+  var span = [pointAfterLocation.path, to];
+  if (Path.isPath(at) && at.length === 0) {
+    throw new Error("Cannot get the next node from the root node!");
+  }
+  if (match == null) {
+    if (Path.isPath(at)) {
+      var [parent] = Editor.parent(editor, at);
+      match = n => parent.children.includes(n);
+    } else {
+      match = () => true;
+    }
+  }
+  var [next] = Editor.nodes(editor, {
+    at: span,
+    match,
+    mode,
+    voids
+  });
+  return next;
+};
+
+var node = function node(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var path = Editor.path(editor, at, options);
+  var node = Node.get(editor, path);
+  return [node, path];
+};
+
+function nodes(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return function* () {
+    var {
+      at = editor.selection,
+      mode = 'all',
+      universal = false,
+      reverse = false,
+      voids = false,
+      pass: _pass
+    } = options;
+    var {
+      match
+    } = options;
+    if (!match) {
+      match = () => true;
+    }
+    if (!at) {
+      return;
+    }
+    var from;
+    var to;
+    if (Span.isSpan(at)) {
+      from = at[0];
+      to = at[1];
+    } else {
+      var first = Editor.path(editor, at, {
+        edge: 'start'
+      });
+      var last = Editor.path(editor, at, {
+        edge: 'end'
+      });
+      from = reverse ? last : first;
+      to = reverse ? first : last;
+    }
+    var nodeEntries = Node.nodes(editor, {
+      reverse,
+      from,
+      to,
+      pass: _ref => {
+        var [node, path] = _ref;
+        if (_pass && _pass([node, path])) return true;
+        if (!Element.isElement(node)) return false;
+        if (!voids && (Editor.isVoid(editor, node) || Editor.isElementReadOnly(editor, node))) return true;
+        return false;
+      }
+    });
+    var matches = [];
+    var hit;
+    for (var [node, path] of nodeEntries) {
+      var isLower = hit && Path.compare(path, hit[1]) === 0;
+      // In highest mode any node lower than the last hit is not a match.
+      if (mode === 'highest' && isLower) {
+        continue;
+      }
+      if (!match(node, path)) {
+        // If we've arrived at a leaf text node that is not lower than the last
+        // hit, then we've found a branch that doesn't include a match, which
+        // means the match is not universal.
+        if (universal && !isLower && Text.isText(node)) {
+          return;
+        } else {
+          continue;
+        }
+      }
+      // If there's a match and it's lower than the last, update the hit.
+      if (mode === 'lowest' && isLower) {
+        hit = [node, path];
+        continue;
+      }
+      // In lowest mode we emit the last hit, once it's guaranteed lowest.
+      var emit = mode === 'lowest' ? hit : [node, path];
+      if (emit) {
+        if (universal) {
+          matches.push(emit);
+        } else {
+          yield emit;
+        }
+      }
+      hit = [node, path];
+    }
+    // Since lowest is always emitting one behind, catch up at the end.
+    if (mode === 'lowest' && hit) {
+      if (universal) {
+        matches.push(hit);
+      } else {
+        yield hit;
+      }
+    }
+    // Universal defers to ensure that the match occurs in every branch, so we
+    // yield all of the matches after iterating.
+    if (universal) {
+      yield* matches;
+    }
+  }();
+}
+
+var normalize = function normalize(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var {
+    force = false,
+    operation
+  } = options;
+  var getDirtyPaths = editor => {
+    return DIRTY_PATHS.get(editor) || [];
+  };
+  var getDirtyPathKeys = editor => {
+    return DIRTY_PATH_KEYS.get(editor) || new Set();
+  };
+  var popDirtyPath = editor => {
+    var path = getDirtyPaths(editor).pop();
+    var key = path.join(',');
+    getDirtyPathKeys(editor).delete(key);
+    return path;
+  };
+  if (!Editor.isNormalizing(editor)) {
+    return;
+  }
+  if (force) {
+    var allPaths = Array.from(Node.nodes(editor), _ref => {
+      var [, p] = _ref;
+      return p;
+    });
+    var allPathKeys = new Set(allPaths.map(p => p.join(',')));
+    DIRTY_PATHS.set(editor, allPaths);
+    DIRTY_PATH_KEYS.set(editor, allPathKeys);
+  }
+  if (getDirtyPaths(editor).length === 0) {
+    return;
+  }
+  Editor.withoutNormalizing(editor, () => {
+    /*
+      Fix dirty elements with no children.
+      editor.normalizeNode() does fix this, but some normalization fixes also require it to work.
+      Running an initial pass avoids the catch-22 race condition.
+    */
+    for (var dirtyPath of getDirtyPaths(editor)) {
+      if (Node.has(editor, dirtyPath)) {
+        var entry = Editor.node(editor, dirtyPath);
+        var [node, _] = entry;
+        /*
+          The default normalizer inserts an empty text node in this scenario, but it can be customised.
+          So there is some risk here.
+                   As long as the normalizer only inserts child nodes for this case it is safe to do in any order;
+          by definition adding children to an empty node can't cause other paths to change.
+        */
+        if (Element.isElement(node) && node.children.length === 0) {
+          editor.normalizeNode(entry, {
+            operation
+          });
+        }
+      }
+    }
+    var dirtyPaths = getDirtyPaths(editor);
+    var initialDirtyPathsLength = dirtyPaths.length;
+    var iteration = 0;
+    while (dirtyPaths.length !== 0) {
+      if (!editor.shouldNormalize({
+        dirtyPaths,
+        iteration,
+        initialDirtyPathsLength,
+        operation
+      })) {
+        return;
+      }
+      var _dirtyPath = popDirtyPath(editor);
+      // If the node doesn't exist in the tree, it does not need to be normalized.
+      if (Node.has(editor, _dirtyPath)) {
+        var _entry = Editor.node(editor, _dirtyPath);
+        editor.normalizeNode(_entry, {
+          operation
+        });
+      }
+      iteration++;
+      dirtyPaths = getDirtyPaths(editor);
+    }
+  });
+};
+
+var parent = function parent(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var path = Editor.path(editor, at, options);
+  var parentPath = Path.parent(path);
+  var entry = Editor.node(editor, parentPath);
+  return entry;
+};
+
+var pathRef = function pathRef(editor, path) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    affinity = 'forward'
+  } = options;
+  var ref = {
+    current: path,
+    affinity,
+    unref() {
+      var {
+        current
+      } = ref;
+      var pathRefs = Editor.pathRefs(editor);
+      pathRefs.delete(ref);
+      ref.current = null;
+      return current;
+    }
+  };
+  var refs = Editor.pathRefs(editor);
+  refs.add(ref);
+  return ref;
+};
+
+var pathRefs = editor => {
+  var refs = PATH_REFS.get(editor);
+  if (!refs) {
+    refs = new Set();
+    PATH_REFS.set(editor, refs);
+  }
+  return refs;
+};
+
+var path = function path(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    depth,
+    edge
+  } = options;
+  if (Path.isPath(at)) {
+    if (edge === 'start') {
+      var [, firstPath] = Node.first(editor, at);
+      at = firstPath;
+    } else if (edge === 'end') {
+      var [, lastPath] = Node.last(editor, at);
+      at = lastPath;
+    }
+  }
+  if (Range.isRange(at)) {
+    if (edge === 'start') {
+      at = Range.start(at);
+    } else if (edge === 'end') {
+      at = Range.end(at);
+    } else {
+      at = Path.common(at.anchor.path, at.focus.path);
+    }
+  }
+  if (Point.isPoint(at)) {
+    at = at.path;
+  }
+  if (depth != null) {
+    at = at.slice(0, depth);
+  }
+  return at;
+};
+
+var pointRef = function pointRef(editor, point) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    affinity = 'forward'
+  } = options;
+  var ref = {
+    current: point,
+    affinity,
+    unref() {
+      var {
+        current
+      } = ref;
+      var pointRefs = Editor.pointRefs(editor);
+      pointRefs.delete(ref);
+      ref.current = null;
+      return current;
+    }
+  };
+  var refs = Editor.pointRefs(editor);
+  refs.add(ref);
+  return ref;
+};
+
+var pointRefs = editor => {
+  var refs = POINT_REFS.get(editor);
+  if (!refs) {
+    refs = new Set();
+    POINT_REFS.set(editor, refs);
+  }
+  return refs;
+};
+
+var point = function point(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    edge = 'start'
+  } = options;
+  if (Path.isPath(at)) {
+    var path;
+    if (edge === 'end') {
+      var [, lastPath] = Node.last(editor, at);
+      path = lastPath;
+    } else {
+      var [, firstPath] = Node.first(editor, at);
+      path = firstPath;
+    }
+    var node = Node.get(editor, path);
+    if (!Text.isText(node)) {
+      throw new Error("Cannot get the ".concat(edge, " point in the node at path [").concat(at, "] because it has no ").concat(edge, " text node."));
+    }
+    return {
+      path,
+      offset: edge === 'end' ? node.text.length : 0
+    };
+  }
+  if (Range.isRange(at)) {
+    var [start, end] = Range.edges(at);
+    return edge === 'start' ? start : end;
+  }
+  return at;
+};
+
+function positions(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return function* () {
+    var {
+      at = editor.selection,
+      unit = 'offset',
+      reverse = false,
+      voids = false
+    } = options;
+    if (!at) {
+      return;
+    }
+    /**
+     * Algorithm notes:
+     *
+     * Each step `distance` is dynamic depending on the underlying text
+     * and the `unit` specified.  Each step, e.g., a line or word, may
+     * span multiple text nodes, so we iterate through the text both on
+     * two levels in step-sync:
+     *
+     * `leafText` stores the text on a text leaf level, and is advanced
+     * through using the counters `leafTextOffset` and `leafTextRemaining`.
+     *
+     * `blockText` stores the text on a block level, and is shortened
+     * by `distance` every time it is advanced.
+     *
+     * We only maintain a window of one blockText and one leafText because
+     * a block node always appears before all of its leaf nodes.
+     */
+    var range = Editor.range(editor, at);
+    var [start, end] = Range.edges(range);
+    var first = reverse ? end : start;
+    var isNewBlock = false;
+    var blockText = '';
+    var distance = 0; // Distance for leafText to catch up to blockText.
+    var leafTextRemaining = 0;
+    var leafTextOffset = 0;
+    // Iterate through all nodes in range, grabbing entire textual content
+    // of block nodes in blockText, and text nodes in leafText.
+    // Exploits the fact that nodes are sequenced in such a way that we first
+    // encounter the block node, then all of its text nodes, so when iterating
+    // through the blockText and leafText we just need to remember a window of
+    // one block node and leaf node, respectively.
+    for (var [node, path] of Editor.nodes(editor, {
+      at,
+      reverse,
+      voids
+    })) {
+      /*
+       * ELEMENT NODE - Yield position(s) for voids, collect blockText for blocks
+       */
+      if (Element.isElement(node)) {
+        if (!editor.isSelectable(node)) {
+          /**
+           * If the node is not selectable, skip it
+           */
+          if (reverse) {
+            yield Editor.end(editor, Path.previous(path));
+            continue;
+          } else {
+            yield Editor.start(editor, Path.next(path));
+            continue;
+          }
+        }
+        // Void nodes are a special case, so by default we will always
+        // yield their first point. If the `voids` option is set to true,
+        // then we will iterate over their content.
+        if (!voids && (editor.isVoid(node) || editor.isElementReadOnly(node))) {
+          yield Editor.start(editor, path);
+          continue;
+        }
+        // Inline element nodes are ignored as they don't themselves
+        // contribute to `blockText` or `leafText` - their parent and
+        // children do.
+        if (editor.isInline(node)) continue;
+        // Block element node - set `blockText` to its text content.
+        if (Editor.hasInlines(editor, node)) {
+          // We always exhaust block nodes before encountering a new one:
+          //   console.assert(blockText === '',
+          //     `blockText='${blockText}' - `+
+          //     `not exhausted before new block node`, path)
+          // Ensure range considered is capped to `range`, in the
+          // start/end edge cases where block extends beyond range.
+          // Equivalent to this, but presumably more performant:
+          //   blockRange = Editor.range(editor, ...Editor.edges(editor, path))
+          //   blockRange = Range.intersection(range, blockRange) // intersect
+          //   blockText = Editor.string(editor, blockRange, { voids })
+          var e = Path.isAncestor(path, end.path) ? end : Editor.end(editor, path);
+          var s = Path.isAncestor(path, start.path) ? start : Editor.start(editor, path);
+          blockText = Editor.string(editor, {
+            anchor: s,
+            focus: e
+          }, {
+            voids
+          });
+          isNewBlock = true;
+        }
+      }
+      /*
+       * TEXT LEAF NODE - Iterate through text content, yielding
+       * positions every `distance` offset according to `unit`.
+       */
+      if (Text.isText(node)) {
+        var isFirst = Path.equals(path, first.path);
+        // Proof that we always exhaust text nodes before encountering a new one:
+        //   console.assert(leafTextRemaining <= 0,
+        //     `leafTextRemaining=${leafTextRemaining} - `+
+        //     `not exhausted before new leaf text node`, path)
+        // Reset `leafText` counters for new text node.
+        if (isFirst) {
+          leafTextRemaining = reverse ? first.offset : node.text.length - first.offset;
+          leafTextOffset = first.offset; // Works for reverse too.
+        } else {
+          leafTextRemaining = node.text.length;
+          leafTextOffset = reverse ? leafTextRemaining : 0;
+        }
+        // Yield position at the start of node (potentially).
+        if (isFirst || isNewBlock || unit === 'offset') {
+          yield {
+            path,
+            offset: leafTextOffset
+          };
+          isNewBlock = false;
+        }
+        // Yield positions every (dynamically calculated) `distance` offset.
+        while (true) {
+          // If `leafText` has caught up with `blockText` (distance=0),
+          // and if blockText is exhausted, break to get another block node,
+          // otherwise advance blockText forward by the new `distance`.
+          if (distance === 0) {
+            if (blockText === '') break;
+            distance = calcDistance(blockText, unit, reverse);
+            // Split the string at the previously found distance and use the
+            // remaining string for the next iteration.
+            blockText = splitByCharacterDistance(blockText, distance, reverse)[1];
+          }
+          // Advance `leafText` by the current `distance`.
+          leafTextOffset = reverse ? leafTextOffset - distance : leafTextOffset + distance;
+          leafTextRemaining = leafTextRemaining - distance;
+          // If `leafText` is exhausted, break to get a new leaf node
+          // and set distance to the overflow amount, so we'll (maybe)
+          // catch up to blockText in the next leaf text node.
+          if (leafTextRemaining < 0) {
+            distance = -leafTextRemaining;
+            break;
+          }
+          // Successfully walked `distance` offsets through `leafText`
+          // to catch up with `blockText`, so we can reset `distance`
+          // and yield this position in this node.
+          distance = 0;
+          yield {
+            path,
+            offset: leafTextOffset
+          };
+        }
+      }
+    }
+    // Proof that upon completion, we've exahusted both leaf and block text:
+    //   console.assert(leafTextRemaining <= 0, "leafText wasn't exhausted")
+    //   console.assert(blockText === '', "blockText wasn't exhausted")
+    // Helper:
+    // Return the distance in offsets for a step of size `unit` on given string.
+    function calcDistance(text, unit, reverse) {
+      if (unit === 'character') {
+        return getCharacterDistance(text, reverse);
+      } else if (unit === 'word') {
+        return getWordDistance(text, reverse);
+      } else if (unit === 'line' || unit === 'block') {
+        return text.length;
+      }
+      return 1;
+    }
+  }();
+}
+
+var previous = function previous(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var {
+    mode = 'lowest',
+    voids = false
+  } = options;
+  var {
+    match,
+    at = editor.selection
+  } = options;
+  if (!at) {
+    return;
+  }
+  var pointBeforeLocation = Editor.before(editor, at, {
+    voids
+  });
+  if (!pointBeforeLocation) {
+    return;
+  }
+  var [, to] = Editor.first(editor, []);
+  // The search location is from the start of the document to the path of
+  // the point before the location passed in
+  var span = [pointBeforeLocation.path, to];
+  if (Path.isPath(at) && at.length === 0) {
+    throw new Error("Cannot get the previous node from the root node!");
+  }
+  if (match == null) {
+    if (Path.isPath(at)) {
+      var [parent] = Editor.parent(editor, at);
+      match = n => parent.children.includes(n);
+    } else {
+      match = () => true;
+    }
+  }
+  var [previous] = Editor.nodes(editor, {
+    reverse: true,
+    at: span,
+    match,
+    mode,
+    voids
+  });
+  return previous;
+};
+
+var rangeRef = function rangeRef(editor, range) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    affinity = 'forward'
+  } = options;
+  var ref = {
+    current: range,
+    affinity,
+    unref() {
+      var {
+        current
+      } = ref;
+      var rangeRefs = Editor.rangeRefs(editor);
+      rangeRefs.delete(ref);
+      ref.current = null;
+      return current;
+    }
+  };
+  var refs = Editor.rangeRefs(editor);
+  refs.add(ref);
+  return ref;
+};
+
+var rangeRefs = editor => {
+  var refs = RANGE_REFS.get(editor);
+  if (!refs) {
+    refs = new Set();
+    RANGE_REFS.set(editor, refs);
+  }
+  return refs;
+};
+
+var range = (editor, at, to) => {
+  if (Range.isRange(at) && !to) {
+    return at;
+  }
+  var start = Editor.start(editor, at);
+  var end = Editor.end(editor, to || at);
+  return {
+    anchor: start,
+    focus: end
+  };
+};
+
+function ownKeys$2(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$2(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$2(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$2(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var removeMark = (editor, key) => {
+  var {
+    selection
+  } = editor;
+  if (selection) {
+    var match = (node, path) => {
+      if (!Text.isText(node)) {
+        return false; // marks can only be applied to text
+      }
+
+      var [parentNode, parentPath] = Editor.parent(editor, path);
+      return !editor.isVoid(parentNode) || editor.markableVoid(parentNode);
+    };
+    var expandedSelection = Range.isExpanded(selection);
+    var markAcceptingVoidSelected = false;
+    if (!expandedSelection) {
+      var [selectedNode, selectedPath] = Editor.node(editor, selection);
+      if (selectedNode && match(selectedNode, selectedPath)) {
+        var [parentNode] = Editor.parent(editor, selectedPath);
+        markAcceptingVoidSelected = parentNode && editor.markableVoid(parentNode);
+      }
+    }
+    if (expandedSelection || markAcceptingVoidSelected) {
+      Transforms.unsetNodes(editor, key, {
+        match,
+        split: true,
+        voids: true
+      });
+    } else {
+      var marks = _objectSpread$2({}, Editor.marks(editor) || {});
+      delete marks[key];
+      editor.marks = marks;
+      if (!FLUSHING.get(editor)) {
+        editor.onChange();
+      }
+    }
+  }
+};
+
+var setNormalizing = (editor, isNormalizing) => {
+  NORMALIZING.set(editor, isNormalizing);
+};
+
+var start = (editor, at) => {
+  return Editor.point(editor, at, {
+    edge: 'start'
+  });
+};
+
+var string = function string(editor, at) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    voids = false
+  } = options;
+  var range = Editor.range(editor, at);
+  var [start, end] = Range.edges(range);
+  var text = '';
+  for (var [node, path] of Editor.nodes(editor, {
+    at: range,
+    match: Text.isText,
+    voids
+  })) {
+    var t = node.text;
+    if (Path.equals(path, end.path)) {
+      t = t.slice(0, end.offset);
+    }
+    if (Path.equals(path, start.path)) {
+      t = t.slice(start.offset);
+    }
+    text += t;
+  }
+  return text;
+};
+
+var unhangRange = function unhangRange(editor, range) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    voids = false
+  } = options;
+  var [start, end] = Range.edges(range);
+  // PERF: exit early if we can guarantee that the range isn't hanging.
+  if (start.offset !== 0 || end.offset !== 0 || Range.isCollapsed(range) || Path.hasPrevious(end.path)) {
+    return range;
+  }
+  var endBlock = Editor.above(editor, {
+    at: end,
+    match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+    voids
+  });
+  var blockPath = endBlock ? endBlock[1] : [];
+  var first = Editor.start(editor, start);
+  var before = {
+    anchor: first,
+    focus: end
+  };
+  var skip = true;
+  for (var [node, path] of Editor.nodes(editor, {
+    at: before,
+    match: Text.isText,
+    reverse: true,
+    voids
+  })) {
+    if (skip) {
+      skip = false;
+      continue;
+    }
+    if (node.text !== '' || Path.isBefore(path, blockPath)) {
+      end = {
+        path,
+        offset: node.text.length
+      };
+      break;
+    }
+  }
+  return {
+    anchor: start,
+    focus: end
+  };
+};
+
+var withoutNormalizing = (editor, fn) => {
+  var value = Editor.isNormalizing(editor);
+  Editor.setNormalizing(editor, false);
+  try {
+    fn();
+  } finally {
+    Editor.setNormalizing(editor, value);
+  }
+  Editor.normalize(editor);
+};
+
+var shouldMergeNodesRemovePrevNode = (editor, _ref, _ref2) => {
+  var [prevNode, prevPath] = _ref;
+  // If the target node that we're merging with is empty, remove it instead
+  // of merging the two. This is a common rich text editor behavior to
+  // prevent losing formatting when deleting entire nodes when you have a
+  // hanging selection.
+  // if prevNode is first child in parent,don't remove it.
+  return Element.isElement(prevNode) && Editor.isEmpty(editor, prevNode) || Text.isText(prevNode) && prevNode.text === '' && prevPath[prevPath.length - 1] !== 0;
+};
+
+var deleteText = function deleteText(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var _Editor$void, _Editor$void2;
+    var {
+      reverse = false,
+      unit = 'character',
+      distance = 1,
+      voids = false
+    } = options;
+    var {
+      at = editor.selection,
+      hanging = false
+    } = options;
+    if (!at) {
+      return;
+    }
+    var isCollapsed = false;
+    if (Range.isRange(at) && Range.isCollapsed(at)) {
+      isCollapsed = true;
+      at = at.anchor;
+    }
+    if (Point.isPoint(at)) {
+      var furthestVoid = Editor.void(editor, {
+        at,
+        mode: 'highest'
+      });
+      if (!voids && furthestVoid) {
+        var [, voidPath] = furthestVoid;
+        at = voidPath;
+      } else {
+        var opts = {
+          unit,
+          distance
+        };
+        var target = reverse ? Editor.before(editor, at, opts) || Editor.start(editor, []) : Editor.after(editor, at, opts) || Editor.end(editor, []);
+        at = {
+          anchor: at,
+          focus: target
+        };
+        hanging = true;
+      }
+    }
+    if (Path.isPath(at)) {
+      Transforms.removeNodes(editor, {
+        at,
+        voids
+      });
+      return;
+    }
+    if (Range.isCollapsed(at)) {
+      return;
+    }
+    if (!hanging) {
+      var [, _end] = Range.edges(at);
+      var endOfDoc = Editor.end(editor, []);
+      if (!Point.equals(_end, endOfDoc)) {
+        at = Editor.unhangRange(editor, at, {
+          voids
+        });
+      }
+    }
+    var [start, end] = Range.edges(at);
+    var startBlock = Editor.above(editor, {
+      match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+      at: start,
+      voids
+    });
+    var endBlock = Editor.above(editor, {
+      match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+      at: end,
+      voids
+    });
+    var isAcrossBlocks = startBlock && endBlock && !Path.equals(startBlock[1], endBlock[1]);
+    var isSingleText = Path.equals(start.path, end.path);
+    var startNonEditable = voids ? null : (_Editor$void = Editor.void(editor, {
+      at: start,
+      mode: 'highest'
+    })) !== null && _Editor$void !== void 0 ? _Editor$void : Editor.elementReadOnly(editor, {
+      at: start,
+      mode: 'highest'
+    });
+    var endNonEditable = voids ? null : (_Editor$void2 = Editor.void(editor, {
+      at: end,
+      mode: 'highest'
+    })) !== null && _Editor$void2 !== void 0 ? _Editor$void2 : Editor.elementReadOnly(editor, {
+      at: end,
+      mode: 'highest'
+    });
+    // If the start or end points are inside an inline void, nudge them out.
+    if (startNonEditable) {
+      var before = Editor.before(editor, start);
+      if (before && startBlock && Path.isAncestor(startBlock[1], before.path)) {
+        start = before;
+      }
+    }
+    if (endNonEditable) {
+      var after = Editor.after(editor, end);
+      if (after && endBlock && Path.isAncestor(endBlock[1], after.path)) {
+        end = after;
+      }
+    }
+    // Get the highest nodes that are completely inside the range, as well as
+    // the start and end nodes.
+    var matches = [];
+    var lastPath;
+    for (var entry of Editor.nodes(editor, {
+      at,
+      voids
+    })) {
+      var [node, path] = entry;
+      if (lastPath && Path.compare(path, lastPath) === 0) {
+        continue;
+      }
+      if (!voids && Element.isElement(node) && (Editor.isVoid(editor, node) || Editor.isElementReadOnly(editor, node)) || !Path.isCommon(path, start.path) && !Path.isCommon(path, end.path)) {
+        matches.push(entry);
+        lastPath = path;
+      }
+    }
+    var pathRefs = Array.from(matches, _ref => {
+      var [, p] = _ref;
+      return Editor.pathRef(editor, p);
+    });
+    var startRef = Editor.pointRef(editor, start);
+    var endRef = Editor.pointRef(editor, end);
+    var removedText = '';
+    if (!isSingleText && !startNonEditable) {
+      var _point = startRef.current;
+      var [_node] = Editor.leaf(editor, _point);
+      var {
+        path: _path
+      } = _point;
+      var {
+        offset
+      } = start;
+      var text = _node.text.slice(offset);
+      if (text.length > 0) {
+        editor.apply({
+          type: 'remove_text',
+          path: _path,
+          offset,
+          text
+        });
+        removedText = text;
+      }
+    }
+    pathRefs.reverse().map(r => r.unref()).filter(r => r !== null).forEach(p => Transforms.removeNodes(editor, {
+      at: p,
+      voids
+    }));
+    if (!endNonEditable) {
+      var _point2 = endRef.current;
+      var [_node2] = Editor.leaf(editor, _point2);
+      var {
+        path: _path2
+      } = _point2;
+      var _offset = isSingleText ? start.offset : 0;
+      var _text = _node2.text.slice(_offset, end.offset);
+      if (_text.length > 0) {
+        editor.apply({
+          type: 'remove_text',
+          path: _path2,
+          offset: _offset,
+          text: _text
+        });
+        removedText = _text;
+      }
+    }
+    if (!isSingleText && isAcrossBlocks && endRef.current && startRef.current) {
+      Transforms.mergeNodes(editor, {
+        at: endRef.current,
+        hanging: true,
+        voids
+      });
+    }
+    // For certain scripts, deleting N character(s) backward should delete
+    // N code point(s) instead of an entire grapheme cluster.
+    // Therefore, the remaining code points should be inserted back.
+    // Bengali: \u0980-\u09FF
+    // Thai: \u0E00-\u0E7F
+    // Burmese (Myanmar): \u1000-\u109F
+    // Hindi (Devanagari): \u0900-\u097F
+    // Khmer: \u1780-\u17FF
+    // Malayalam: \u0D00-\u0D7F
+    // Oriya: \u0B00-\u0B7F
+    // Punjabi (Gurmukhi): \u0A00-\u0A7F
+    // Tamil: \u0B80-\u0BFF
+    // Telugu: \u0C00-\u0C7F
+    if (isCollapsed && reverse && unit === 'character' && removedText.length > 1 && removedText.match(/[\u0980-\u09FF\u0E00-\u0E7F\u1000-\u109F\u0900-\u097F\u1780-\u17FF\u0D00-\u0D7F\u0B00-\u0B7F\u0A00-\u0A7F\u0B80-\u0BFF\u0C00-\u0C7F]+/)) {
+      Transforms.insertText(editor, removedText.slice(0, removedText.length - distance));
+    }
+    var startUnref = startRef.unref();
+    var endUnref = endRef.unref();
+    var point = reverse ? startUnref || endUnref : endUnref || startUnref;
+    if (options.at == null && point) {
+      Transforms.select(editor, point);
+    }
+  });
+};
+
+var insertFragment = function insertFragment(editor, fragment) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      hanging = false,
+      voids = false
+    } = options;
+    var {
+      at = getDefaultInsertLocation(editor),
+      batchDirty = true
+    } = options;
+    if (!fragment.length) {
+      return;
+    }
+    if (Range.isRange(at)) {
+      if (!hanging) {
+        at = Editor.unhangRange(editor, at, {
+          voids
+        });
+      }
+      if (Range.isCollapsed(at)) {
+        at = at.anchor;
+      } else {
+        var [, end] = Range.edges(at);
+        if (!voids && Editor.void(editor, {
+          at: end
+        })) {
+          return;
+        }
+        var pointRef = Editor.pointRef(editor, end);
+        Transforms.delete(editor, {
+          at
+        });
+        at = pointRef.unref();
+      }
+    } else if (Path.isPath(at)) {
+      at = Editor.start(editor, at);
+    }
+    if (!voids && Editor.void(editor, {
+      at
+    })) {
+      return;
+    }
+    // If the insert point is at the edge of an inline node, move it outside
+    // instead since it will need to be split otherwise.
+    var inlineElementMatch = Editor.above(editor, {
+      at,
+      match: n => Element.isElement(n) && Editor.isInline(editor, n),
+      mode: 'highest',
+      voids
+    });
+    if (inlineElementMatch) {
+      var [, _inlinePath] = inlineElementMatch;
+      if (Editor.isEnd(editor, at, _inlinePath)) {
+        var after = Editor.after(editor, _inlinePath);
+        at = after;
+      } else if (Editor.isStart(editor, at, _inlinePath)) {
+        var before = Editor.before(editor, _inlinePath);
+        at = before;
+      }
+    }
+    var blockMatch = Editor.above(editor, {
+      match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+      at,
+      voids
+    });
+    var [, blockPath] = blockMatch;
+    var isBlockStart = Editor.isStart(editor, at, blockPath);
+    var isBlockEnd = Editor.isEnd(editor, at, blockPath);
+    var isBlockEmpty = isBlockStart && isBlockEnd;
+    var [, firstLeafPath] = Node.first({
+      children: fragment
+    }, []);
+    var [, lastLeafPath] = Node.last({
+      children: fragment
+    }, []);
+    // For each node in the fragment, determine what level of wrapping should
+    // be kept. At minimum, all text nodes will be inserted, but if
+    // `shouldInsert` returns true for some ancestor of a particular text node,
+    // then the entire ancestor will be inserted rather than inserting the text
+    // nodes individually.
+    var shouldInsert = _ref => {
+      var [n, p] = _ref;
+      var isRoot = p.length === 0;
+      if (isRoot) {
+        return false;
+      }
+      // If the destination block is empty, insert all top-level blocks of the
+      // fragment.
+      if (isBlockEmpty) {
+        return true;
+      }
+      // Unless we're at the start of the destination block, unwrap any
+      // non-void blocks that contain the first leaf node in the fragment.
+      if (!isBlockStart && Path.isAncestor(p, firstLeafPath) && Element.isElement(n) && !editor.isVoid(n) && !editor.isInline(n)) {
+        return false;
+      }
+      // Unless we're at the end of the destination block, unwrap any non-void
+      // blocks that contain the last leaf node in the fragment.
+      if (!isBlockEnd && Path.isAncestor(p, lastLeafPath) && Element.isElement(n) && !editor.isVoid(n) && !editor.isInline(n)) {
+        return false;
+      }
+      // Always insert void nodes, inline elements and text nodes.
+      return true;
+    };
+    // Whether the current node is in the first block of the fragment.
+    var starting = true;
+    // Inline nodes in the first block of the fragment, to be merged with the
+    // destination block.
+    var starts = [];
+    // Blocks in the middle of the fragment.
+    var middles = [];
+    // Inline nodes in the last block of the fragment, to be merged with the
+    // destination block. If the fragment contains only one block, this will be
+    // empty.
+    var ends = [];
+    for (var entry of Node.nodes({
+      children: fragment
+    }, {
+      pass: shouldInsert
+    })) {
+      var [node, path] = entry;
+      // If we encounter a block that does not contain the first leaf, we're no
+      // longer in the first block of the fragment.
+      if (starting && Element.isElement(node) && !editor.isInline(node) && !Path.isAncestor(path, firstLeafPath)) {
+        starting = false;
+      }
+      if (shouldInsert(entry)) {
+        if (Element.isElement(node) && !editor.isInline(node)) {
+          starting = false;
+          middles.push(node);
+        } else if (starting) {
+          starts.push(node);
+        } else {
+          ends.push(node);
+        }
+      }
+    }
+    var [inlineMatch] = Editor.nodes(editor, {
+      at,
+      match: n => Text.isText(n) || Editor.isInline(editor, n),
+      mode: 'highest',
+      voids
+    });
+    var [, inlinePath] = inlineMatch;
+    var isInlineStart = Editor.isStart(editor, at, inlinePath);
+    var isInlineEnd = Editor.isEnd(editor, at, inlinePath);
+    var middleRef = Editor.pathRef(editor, isBlockEnd && !ends.length ? Path.next(blockPath) : blockPath);
+    var endRef = Editor.pathRef(editor, isInlineEnd ? Path.next(inlinePath) : inlinePath);
+    // If the fragment contains inlines in multiple distinct blocks, split the
+    // destination block.
+    var splitBlock = ends.length > 0;
+    Transforms.splitNodes(editor, {
+      at,
+      match: n => splitBlock ? Element.isElement(n) && Editor.isBlock(editor, n) : Text.isText(n) || Editor.isInline(editor, n),
+      mode: splitBlock ? 'lowest' : 'highest',
+      always: splitBlock && (!isBlockStart || starts.length > 0) && (!isBlockEnd || ends.length > 0),
+      voids
+    });
+    var startRef = Editor.pathRef(editor, !isInlineStart || isInlineStart && isInlineEnd ? Path.next(inlinePath) : inlinePath);
+    Transforms.insertNodes(editor, starts, {
+      at: startRef.current,
+      match: n => Text.isText(n) || Editor.isInline(editor, n),
+      mode: 'highest',
+      voids,
+      batchDirty
+    });
+    if (isBlockEmpty && !starts.length && middles.length && !ends.length) {
+      Transforms.delete(editor, {
+        at: blockPath,
+        voids
+      });
+    }
+    Transforms.insertNodes(editor, middles, {
+      at: middleRef.current,
+      match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+      mode: 'lowest',
+      voids,
+      batchDirty
+    });
+    Transforms.insertNodes(editor, ends, {
+      at: endRef.current,
+      match: n => Text.isText(n) || Editor.isInline(editor, n),
+      mode: 'highest',
+      voids,
+      batchDirty
+    });
+    if (!options.at) {
+      var _path;
+      if (ends.length > 0 && endRef.current) {
+        _path = Path.previous(endRef.current);
+      } else if (middles.length > 0 && middleRef.current) {
+        _path = Path.previous(middleRef.current);
+      } else if (startRef.current) {
+        _path = Path.previous(startRef.current);
+      }
+      if (_path) {
+        var _end = Editor.end(editor, _path);
+        Transforms.select(editor, _end);
+      }
+    }
+    startRef.unref();
+    middleRef.unref();
+    endRef.unref();
+  });
+};
+
+var collapse = function collapse(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var {
+    edge = 'anchor'
+  } = options;
+  var {
+    selection
+  } = editor;
+  if (!selection) {
+    return;
+  } else if (edge === 'anchor') {
+    Transforms.select(editor, selection.anchor);
+  } else if (edge === 'focus') {
+    Transforms.select(editor, selection.focus);
+  } else if (edge === 'start') {
+    var [start] = Range.edges(selection);
+    Transforms.select(editor, start);
+  } else if (edge === 'end') {
+    var [, end] = Range.edges(selection);
+    Transforms.select(editor, end);
+  }
+};
+
+var deselect = editor => {
+  var {
+    selection
+  } = editor;
+  if (selection) {
+    editor.apply({
+      type: 'set_selection',
+      properties: selection,
+      newProperties: null
+    });
+  }
+};
+
+var move = function move(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var {
+    selection
+  } = editor;
+  var {
+    distance = 1,
+    unit = 'character',
+    reverse = false
+  } = options;
+  var {
+    edge = null
+  } = options;
+  if (!selection) {
+    return;
+  }
+  if (edge === 'start') {
+    edge = Range.isBackward(selection) ? 'focus' : 'anchor';
+  }
+  if (edge === 'end') {
+    edge = Range.isBackward(selection) ? 'anchor' : 'focus';
+  }
+  var {
+    anchor,
+    focus
+  } = selection;
+  var opts = {
+    distance,
+    unit
+  };
+  var props = {};
+  if (edge == null || edge === 'anchor') {
+    var point = reverse ? Editor.before(editor, anchor, opts) : Editor.after(editor, anchor, opts);
+    if (point) {
+      props.anchor = point;
+    }
+  }
+  if (edge == null || edge === 'focus') {
+    var _point = reverse ? Editor.before(editor, focus, opts) : Editor.after(editor, focus, opts);
+    if (_point) {
+      props.focus = _point;
+    }
+  }
+  Transforms.setSelection(editor, props);
+};
+
+var select = (editor, target) => {
+  var {
+    selection
+  } = editor;
+  target = Editor.range(editor, target);
+  if (selection) {
+    Transforms.setSelection(editor, target);
+    return;
+  }
+  if (!Range.isRange(target)) {
+    throw new Error("When setting the selection and the current selection is `null` you must provide at least an `anchor` and `focus`, but you passed: ".concat(Scrubber.stringify(target)));
+  }
+  editor.apply({
+    type: 'set_selection',
+    properties: selection,
+    newProperties: target
+  });
+};
+
+function ownKeys$1(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$1(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$1(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$1(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var setPoint = function setPoint(editor, props) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var {
+    selection
+  } = editor;
+  var {
+    edge = 'both'
+  } = options;
+  if (!selection) {
+    return;
+  }
+  if (edge === 'start') {
+    edge = Range.isBackward(selection) ? 'focus' : 'anchor';
+  }
+  if (edge === 'end') {
+    edge = Range.isBackward(selection) ? 'anchor' : 'focus';
+  }
+  var {
+    anchor,
+    focus
+  } = selection;
+  var point = edge === 'anchor' ? anchor : focus;
+  Transforms.setSelection(editor, {
+    [edge === 'anchor' ? 'anchor' : 'focus']: _objectSpread$1(_objectSpread$1({}, point), props)
+  });
+};
+
+var setSelection = (editor, props) => {
+  var {
+    selection
+  } = editor;
+  var oldProps = {};
+  var newProps = {};
+  if (!selection) {
+    return;
+  }
+  for (var k in props) {
+    if (k === 'anchor' && props.anchor != null && !Point.equals(props.anchor, selection.anchor) || k === 'focus' && props.focus != null && !Point.equals(props.focus, selection.focus) || k !== 'anchor' && k !== 'focus' && props[k] !== selection[k]) {
+      oldProps[k] = selection[k];
+      newProps[k] = props[k];
+    }
+  }
+  if (Object.keys(oldProps).length > 0) {
+    editor.apply({
+      type: 'set_selection',
+      properties: oldProps,
+      newProperties: newProps
+    });
+  }
+};
+
+var insertNodes = function insertNodes(editor, nodes) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      hanging = false,
+      voids = false,
+      mode = 'lowest',
+      batchDirty = true
+    } = options;
+    var {
+      at,
+      match,
+      select
+    } = options;
+    if (Node.isNode(nodes)) {
+      nodes = [nodes];
+    }
+    if (nodes.length === 0) {
+      return;
+    }
+    var [node] = nodes;
+    if (!at) {
+      at = getDefaultInsertLocation(editor);
+      if (select !== false) {
+        select = true;
+      }
+    }
+    if (select == null) {
+      select = false;
+    }
+    if (Range.isRange(at)) {
+      if (!hanging) {
+        at = Editor.unhangRange(editor, at, {
+          voids
+        });
+      }
+      if (Range.isCollapsed(at)) {
+        at = at.anchor;
+      } else {
+        var [, end] = Range.edges(at);
+        var pointRef = Editor.pointRef(editor, end);
+        Transforms.delete(editor, {
+          at
+        });
+        at = pointRef.unref();
+      }
+    }
+    if (Point.isPoint(at)) {
+      if (match == null) {
+        if (Text.isText(node)) {
+          match = n => Text.isText(n);
+        } else if (editor.isInline(node)) {
+          match = n => Text.isText(n) || Editor.isInline(editor, n);
+        } else {
+          match = n => Element.isElement(n) && Editor.isBlock(editor, n);
+        }
+      }
+      var [entry] = Editor.nodes(editor, {
+        at: at.path,
+        match,
+        mode,
+        voids
+      });
+      if (entry) {
+        var [, matchPath] = entry;
+        var pathRef = Editor.pathRef(editor, matchPath);
+        var isAtEnd = Editor.isEnd(editor, at, matchPath);
+        Transforms.splitNodes(editor, {
+          at,
+          match,
+          mode,
+          voids
+        });
+        var path = pathRef.unref();
+        at = isAtEnd ? Path.next(path) : path;
+      } else {
+        return;
+      }
+    }
+    var parentPath = Path.parent(at);
+    var index = at[at.length - 1];
+    if (!voids && Editor.void(editor, {
+      at: parentPath
+    })) {
+      return;
+    }
+    if (batchDirty) {
+      // PERF: batch update dirty paths
+      // batched ops used to transform existing dirty paths
+      var batchedOps = [];
+      var newDirtyPaths = Path.levels(parentPath);
+      batchDirtyPaths(editor, () => {
+        var _loop = function _loop() {
+          var path = parentPath.concat(index);
+          index++;
+          var op = {
+            type: 'insert_node',
+            path,
+            node: _node
+          };
+          editor.apply(op);
+          at = Path.next(at);
+          batchedOps.push(op);
+          if (Text.isText(_node)) {
+            newDirtyPaths.push(path);
+          } else {
+            newDirtyPaths.push(...Array.from(Node.nodes(_node), _ref => {
+              var [, p] = _ref;
+              return path.concat(p);
+            }));
+          }
+        };
+        for (var _node of nodes) {
+          _loop();
+        }
+      }, () => {
+        updateDirtyPaths(editor, newDirtyPaths, p => {
+          var newPath = p;
+          for (var op of batchedOps) {
+            if (Path.operationCanTransformPath(op)) {
+              newPath = Path.transform(newPath, op);
+              if (!newPath) {
+                return null;
+              }
+            }
+          }
+          return newPath;
+        });
+      });
+    } else {
+      for (var _node2 of nodes) {
+        var _path = parentPath.concat(index);
+        index++;
+        editor.apply({
+          type: 'insert_node',
+          path: _path,
+          node: _node2
+        });
+        at = Path.next(at);
+      }
+    }
+    at = Path.previous(at);
+    if (select) {
+      var point = Editor.end(editor, at);
+      if (point) {
+        Transforms.select(editor, point);
+      }
+    }
+  });
+};
+
+var liftNodes = function liftNodes(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      at = editor.selection,
+      mode = 'lowest',
+      voids = false
+    } = options;
+    var {
+      match
+    } = options;
+    if (match == null) {
+      match = Path.isPath(at) ? matchPath(editor, at) : n => Element.isElement(n) && Editor.isBlock(editor, n);
+    }
+    if (!at) {
+      return;
+    }
+    var matches = Editor.nodes(editor, {
+      at,
+      match,
+      mode,
+      voids
+    });
+    var pathRefs = Array.from(matches, _ref => {
+      var [, p] = _ref;
+      return Editor.pathRef(editor, p);
+    });
+    for (var pathRef of pathRefs) {
+      var path = pathRef.unref();
+      if (path.length < 2) {
+        throw new Error("Cannot lift node at a path [".concat(path, "] because it has a depth of less than `2`."));
+      }
+      var parentNodeEntry = Editor.node(editor, Path.parent(path));
+      var [parent, parentPath] = parentNodeEntry;
+      var index = path[path.length - 1];
+      var {
+        length
+      } = parent.children;
+      if (length === 1) {
+        var toPath = Path.next(parentPath);
+        Transforms.moveNodes(editor, {
+          at: path,
+          to: toPath,
+          voids
+        });
+        Transforms.removeNodes(editor, {
+          at: parentPath,
+          voids
+        });
+      } else if (index === 0) {
+        Transforms.moveNodes(editor, {
+          at: path,
+          to: parentPath,
+          voids
+        });
+      } else if (index === length - 1) {
+        var _toPath = Path.next(parentPath);
+        Transforms.moveNodes(editor, {
+          at: path,
+          to: _toPath,
+          voids
+        });
+      } else {
+        var splitPath = Path.next(path);
+        var _toPath2 = Path.next(parentPath);
+        Transforms.splitNodes(editor, {
+          at: splitPath,
+          voids
+        });
+        Transforms.moveNodes(editor, {
+          at: path,
+          to: _toPath2,
+          voids
+        });
+      }
+    }
+  });
+};
+
+var _excluded = ["text"],
+  _excluded2 = ["children"];
+var hasSingleChildNest = (editor, node) => {
+  if (Element.isElement(node)) {
+    var element = node;
+    if (Editor.isVoid(editor, node)) {
+      return true;
+    } else if (element.children.length === 1) {
+      return hasSingleChildNest(editor, element.children[0]);
+    } else {
+      return false;
+    }
+  } else if (Editor.isEditor(node)) {
+    return false;
+  } else {
+    return true;
+  }
+};
+var mergeNodes = function mergeNodes(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      match,
+      at = editor.selection
+    } = options;
+    var {
+      hanging = false,
+      voids = false,
+      mode = 'lowest'
+    } = options;
+    if (!at) {
+      return;
+    }
+    if (match == null) {
+      if (Path.isPath(at)) {
+        var [parent] = Editor.parent(editor, at);
+        match = n => parent.children.includes(n);
+      } else {
+        match = n => Element.isElement(n) && Editor.isBlock(editor, n);
+      }
+    }
+    if (!hanging && Range.isRange(at)) {
+      at = Editor.unhangRange(editor, at, {
+        voids
+      });
+    }
+    if (Range.isRange(at)) {
+      if (Range.isCollapsed(at)) {
+        at = at.anchor;
+      } else {
+        var [, end] = Range.edges(at);
+        var pointRef = Editor.pointRef(editor, end);
+        Transforms.delete(editor, {
+          at
+        });
+        at = pointRef.unref();
+        if (options.at == null) {
+          Transforms.select(editor, at);
+        }
+      }
+    }
+    var [current] = Editor.nodes(editor, {
+      at,
+      match,
+      voids,
+      mode
+    });
+    var prev = Editor.previous(editor, {
+      at,
+      match,
+      voids,
+      mode
+    });
+    if (!current || !prev) {
+      return;
+    }
+    var [node, path] = current;
+    var [prevNode, prevPath] = prev;
+    if (path.length === 0 || prevPath.length === 0) {
+      return;
+    }
+    var newPath = Path.next(prevPath);
+    var commonPath = Path.common(path, prevPath);
+    var isPreviousSibling = Path.isSibling(path, prevPath);
+    var levels = Array.from(Editor.levels(editor, {
+      at: path
+    }), _ref => {
+      var [n] = _ref;
+      return n;
+    }).slice(commonPath.length).slice(0, -1);
+    // Determine if the merge will leave an ancestor of the path empty as a
+    // result, in which case we'll want to remove it after merging.
+    var emptyAncestor = Editor.above(editor, {
+      at: path,
+      mode: 'highest',
+      match: n => levels.includes(n) && hasSingleChildNest(editor, n)
+    });
+    var emptyRef = emptyAncestor && Editor.pathRef(editor, emptyAncestor[1]);
+    var properties;
+    var position;
+    // Ensure that the nodes are equivalent, and figure out what the position
+    // and extra properties of the merge will be.
+    if (Text.isText(node) && Text.isText(prevNode)) {
+      var rest = _objectWithoutProperties(node, _excluded);
+      position = prevNode.text.length;
+      properties = rest;
+    } else if (Element.isElement(node) && Element.isElement(prevNode)) {
+      var rest = _objectWithoutProperties(node, _excluded2);
+      position = prevNode.children.length;
+      properties = rest;
+    } else {
+      throw new Error("Cannot merge the node at path [".concat(path, "] with the previous sibling because it is not the same kind: ").concat(Scrubber.stringify(node), " ").concat(Scrubber.stringify(prevNode)));
+    }
+    // If the node isn't already the next sibling of the previous node, move
+    // it so that it is before merging.
+    if (!isPreviousSibling) {
+      Transforms.moveNodes(editor, {
+        at: path,
+        to: newPath,
+        voids
+      });
+    }
+    // If there was going to be an empty ancestor of the node that was merged,
+    // we remove it from the tree.
+    if (emptyRef) {
+      Transforms.removeNodes(editor, {
+        at: emptyRef.current,
+        voids
+      });
+    }
+    if (Editor.shouldMergeNodesRemovePrevNode(editor, prev, current)) {
+      Transforms.removeNodes(editor, {
+        at: prevPath,
+        voids
+      });
+    } else {
+      editor.apply({
+        type: 'merge_node',
+        path: newPath,
+        position,
+        properties
+      });
+    }
+    if (emptyRef) {
+      emptyRef.unref();
+    }
+  });
+};
+
+var moveNodes = (editor, options) => {
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      to,
+      at = editor.selection,
+      mode = 'lowest',
+      voids = false
+    } = options;
+    var {
+      match
+    } = options;
+    if (!at) {
+      return;
+    }
+    if (match == null) {
+      match = Path.isPath(at) ? matchPath(editor, at) : n => Element.isElement(n) && Editor.isBlock(editor, n);
+    }
+    var toRef = Editor.pathRef(editor, to);
+    var targets = Editor.nodes(editor, {
+      at,
+      match,
+      mode,
+      voids
+    });
+    var pathRefs = Array.from(targets, _ref => {
+      var [, p] = _ref;
+      return Editor.pathRef(editor, p);
+    });
+    for (var pathRef of pathRefs) {
+      var path = pathRef.unref();
+      var newPath = toRef.current;
+      if (path.length !== 0) {
+        editor.apply({
+          type: 'move_node',
+          path,
+          newPath
+        });
+      }
+      if (toRef.current && Path.isSibling(newPath, path) && Path.isAfter(newPath, path)) {
+        // When performing a sibling move to a later index, the path at the destination is shifted
+        // to before the insertion point instead of after. To ensure our group of nodes are inserted
+        // in the correct order we increment toRef to account for that
+        toRef.current = Path.next(toRef.current);
+      }
+    }
+    toRef.unref();
+  });
+};
+
+var removeNodes = function removeNodes(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      hanging = false,
+      voids = false,
+      mode = 'lowest'
+    } = options;
+    var {
+      at = editor.selection,
+      match
+    } = options;
+    if (!at) {
+      return;
+    }
+    if (match == null) {
+      match = Path.isPath(at) ? matchPath(editor, at) : n => Element.isElement(n) && Editor.isBlock(editor, n);
+    }
+    if (!hanging && Range.isRange(at)) {
+      at = Editor.unhangRange(editor, at, {
+        voids
+      });
+    }
+    var depths = Editor.nodes(editor, {
+      at,
+      match,
+      mode,
+      voids
+    });
+    var pathRefs = Array.from(depths, _ref => {
+      var [, p] = _ref;
+      return Editor.pathRef(editor, p);
+    });
+    for (var pathRef of pathRefs) {
+      var path = pathRef.unref();
+      if (path) {
+        var [node] = Editor.node(editor, path);
+        editor.apply({
+          type: 'remove_node',
+          path,
+          node
+        });
+      }
+    }
+  });
+};
+
+var setNodes = function setNodes(editor, props) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      match,
+      at = editor.selection,
+      compare,
+      merge
+    } = options;
+    var {
+      hanging = false,
+      mode = 'lowest',
+      split = false,
+      voids = false
+    } = options;
+    if (!at) {
+      return;
+    }
+    if (match == null) {
+      match = Path.isPath(at) ? matchPath(editor, at) : n => Element.isElement(n) && Editor.isBlock(editor, n);
+    }
+    if (!hanging && Range.isRange(at)) {
+      at = Editor.unhangRange(editor, at, {
+        voids
+      });
+    }
+    if (split && Range.isRange(at)) {
+      if (Range.isCollapsed(at) && Editor.leaf(editor, at.anchor)[0].text.length > 0) {
+        // If the range is collapsed in a non-empty node and 'split' is true, there's nothing to
+        // set that won't get normalized away
+        return;
+      }
+      var rangeRef = Editor.rangeRef(editor, at, {
+        affinity: 'inward'
+      });
+      var [start, end] = Range.edges(at);
+      var splitMode = mode === 'lowest' ? 'lowest' : 'highest';
+      var endAtEndOfNode = Editor.isEnd(editor, end, end.path);
+      Transforms.splitNodes(editor, {
+        at: end,
+        match,
+        mode: splitMode,
+        voids,
+        always: !endAtEndOfNode
+      });
+      var startAtStartOfNode = Editor.isStart(editor, start, start.path);
+      Transforms.splitNodes(editor, {
+        at: start,
+        match,
+        mode: splitMode,
+        voids,
+        always: !startAtStartOfNode
+      });
+      at = rangeRef.unref();
+      if (options.at == null) {
+        Transforms.select(editor, at);
+      }
+    }
+    if (!compare) {
+      compare = (prop, nodeProp) => prop !== nodeProp;
+    }
+    for (var [node, path] of Editor.nodes(editor, {
+      at,
+      match,
+      mode,
+      voids
+    })) {
+      var properties = {};
+      // FIXME: is this correct?
+      var newProperties = {};
+      // You can't set properties on the editor node.
+      if (path.length === 0) {
+        continue;
+      }
+      var hasChanges = false;
+      for (var k in props) {
+        if (k === 'children' || k === 'text') {
+          continue;
+        }
+        if (compare(props[k], node[k])) {
+          hasChanges = true;
+          // Omit new properties from the old properties list
+          if (node.hasOwnProperty(k)) properties[k] = node[k];
+          // Omit properties that have been removed from the new properties list
+          if (merge) {
+            if (props[k] != null) newProperties[k] = merge(node[k], props[k]);
+          } else {
+            if (props[k] != null) newProperties[k] = props[k];
+          }
+        }
+      }
+      if (hasChanges) {
+        editor.apply({
+          type: 'set_node',
+          path,
+          properties,
+          newProperties
+        });
+      }
+    }
+  });
+};
+
+/**
+ * Convert a range into a point by deleting it's content.
+ */
+var deleteRange = (editor, range) => {
+  if (Range.isCollapsed(range)) {
+    return range.anchor;
+  } else {
+    var [, end] = Range.edges(range);
+    var pointRef = Editor.pointRef(editor, end);
+    Transforms.delete(editor, {
+      at: range
+    });
+    return pointRef.unref();
+  }
+};
+var splitNodes = function splitNodes(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      mode = 'lowest',
+      voids = false
+    } = options;
+    var {
+      match,
+      at = editor.selection,
+      height = 0,
+      always = false
+    } = options;
+    if (match == null) {
+      match = n => Element.isElement(n) && Editor.isBlock(editor, n);
+    }
+    if (Range.isRange(at)) {
+      at = deleteRange(editor, at);
+    }
+    // If the target is a path, the default height-skipping and position
+    // counters need to account for us potentially splitting at a non-leaf.
+    if (Path.isPath(at)) {
+      var path = at;
+      var point = Editor.point(editor, path);
+      var [parent] = Editor.parent(editor, path);
+      match = n => n === parent;
+      height = point.path.length - path.length + 1;
+      at = point;
+      always = true;
+    }
+    if (!at) {
+      return;
+    }
+    var beforeRef = Editor.pointRef(editor, at, {
+      affinity: 'backward'
+    });
+    var afterRef;
+    try {
+      var [highest] = Editor.nodes(editor, {
+        at,
+        match,
+        mode,
+        voids
+      });
+      if (!highest) {
+        return;
+      }
+      var voidMatch = Editor.void(editor, {
+        at,
+        mode: 'highest'
+      });
+      var nudge = 0;
+      if (!voids && voidMatch) {
+        var [voidNode, voidPath] = voidMatch;
+        if (Element.isElement(voidNode) && editor.isInline(voidNode)) {
+          var after = Editor.after(editor, voidPath);
+          if (!after) {
+            var text = {
+              text: ''
+            };
+            var afterPath = Path.next(voidPath);
+            Transforms.insertNodes(editor, text, {
+              at: afterPath,
+              voids
+            });
+            after = Editor.point(editor, afterPath);
+          }
+          at = after;
+          always = true;
+        }
+        var siblingHeight = at.path.length - voidPath.length;
+        height = siblingHeight + 1;
+        always = true;
+      }
+      afterRef = Editor.pointRef(editor, at);
+      var depth = at.path.length - height;
+      var [, highestPath] = highest;
+      var lowestPath = at.path.slice(0, depth);
+      var position = height === 0 ? at.offset : at.path[depth] + nudge;
+      for (var [node, _path] of Editor.levels(editor, {
+        at: lowestPath,
+        reverse: true,
+        voids
+      })) {
+        var split = false;
+        if (_path.length < highestPath.length || _path.length === 0 || !voids && Element.isElement(node) && Editor.isVoid(editor, node)) {
+          break;
+        }
+        var _point = beforeRef.current;
+        var isEnd = Editor.isEnd(editor, _point, _path);
+        if (always || !beforeRef || !Editor.isEdge(editor, _point, _path)) {
+          split = true;
+          var properties = Node.extractProps(node);
+          editor.apply({
+            type: 'split_node',
+            path: _path,
+            position,
+            properties
+          });
+        }
+        position = _path[_path.length - 1] + (split || isEnd ? 1 : 0);
+      }
+      if (options.at == null) {
+        var _point2 = afterRef.current || Editor.end(editor, []);
+        Transforms.select(editor, _point2);
+      }
+    } finally {
+      var _afterRef;
+      beforeRef.unref();
+      (_afterRef = afterRef) === null || _afterRef === void 0 || _afterRef.unref();
+    }
+  });
+};
+
+var unsetNodes = function unsetNodes(editor, props) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  if (!Array.isArray(props)) {
+    props = [props];
+  }
+  var obj = {};
+  for (var key of props) {
+    obj[key] = null;
+  }
+  Transforms.setNodes(editor, obj, options);
+};
+
+var unwrapNodes = function unwrapNodes(editor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      mode = 'lowest',
+      split = false,
+      voids = false
+    } = options;
+    var {
+      at = editor.selection,
+      match
+    } = options;
+    if (!at) {
+      return;
+    }
+    if (match == null) {
+      match = Path.isPath(at) ? matchPath(editor, at) : n => Element.isElement(n) && Editor.isBlock(editor, n);
+    }
+    if (Path.isPath(at)) {
+      at = Editor.range(editor, at);
+    }
+    var rangeRef = Range.isRange(at) ? Editor.rangeRef(editor, at) : null;
+    var matches = Editor.nodes(editor, {
+      at,
+      match,
+      mode,
+      voids
+    });
+    var pathRefs = Array.from(matches, _ref => {
+      var [, p] = _ref;
+      return Editor.pathRef(editor, p);
+    }
+    // unwrapNode will call liftNode which does not support splitting the node when nested.
+    // If we do not reverse the order and call it from top to the bottom, it will remove all blocks
+    // that wrap target node. So we reverse the order.
+    ).reverse();
+    var _loop = function _loop() {
+      var path = pathRef.unref();
+      var [node] = Editor.node(editor, path);
+      var range = Editor.range(editor, path);
+      if (split && rangeRef) {
+        range = Range.intersection(rangeRef.current, range);
+      }
+      Transforms.liftNodes(editor, {
+        at: range,
+        match: n => Element.isAncestor(node) && node.children.includes(n),
+        voids
+      });
+    };
+    for (var pathRef of pathRefs) {
+      _loop();
+    }
+    if (rangeRef) {
+      rangeRef.unref();
+    }
+  });
+};
+
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var wrapNodes = function wrapNodes(editor, element) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  Editor.withoutNormalizing(editor, () => {
+    var {
+      mode = 'lowest',
+      split = false,
+      voids = false
+    } = options;
+    var {
+      match,
+      at = editor.selection
+    } = options;
+    if (!at) {
+      return;
+    }
+    if (match == null) {
+      if (Path.isPath(at)) {
+        match = matchPath(editor, at);
+      } else if (editor.isInline(element)) {
+        match = n => Element.isElement(n) && Editor.isInline(editor, n) || Text.isText(n);
+      } else {
+        match = n => Element.isElement(n) && Editor.isBlock(editor, n);
+      }
+    }
+    if (split && Range.isRange(at)) {
+      var [start, end] = Range.edges(at);
+      var rangeRef = Editor.rangeRef(editor, at, {
+        affinity: 'inward'
+      });
+      Transforms.splitNodes(editor, {
+        at: end,
+        match,
+        voids
+      });
+      Transforms.splitNodes(editor, {
+        at: start,
+        match,
+        voids
+      });
+      at = rangeRef.unref();
+      if (options.at == null) {
+        Transforms.select(editor, at);
+      }
+    }
+    var roots = Array.from(Editor.nodes(editor, {
+      at,
+      match: editor.isInline(element) ? n => Element.isElement(n) && Editor.isBlock(editor, n) : n => Editor.isEditor(n),
+      mode: 'lowest',
+      voids
+    }));
+    var _loop = function _loop() {
+        var a = Range.isRange(at) ? Range.intersection(at, Editor.range(editor, rootPath)) : at;
+        if (!a) {
+          return 0; // continue
+        }
+        var matches = Array.from(Editor.nodes(editor, {
+          at: a,
+          match,
+          mode,
+          voids
+        }));
+        if (matches.length > 0) {
+          var [first] = matches;
+          var last = matches[matches.length - 1];
+          var [, firstPath] = first;
+          var [, lastPath] = last;
+          if (firstPath.length === 0 && lastPath.length === 0) {
+            // if there's no matching parent - usually means the node is an editor - don't do anything
+            return 0; // continue
+          }
+          var commonPath = Path.equals(firstPath, lastPath) ? Path.parent(firstPath) : Path.common(firstPath, lastPath);
+          var range = Editor.range(editor, firstPath, lastPath);
+          var commonNodeEntry = Editor.node(editor, commonPath);
+          var [commonNode] = commonNodeEntry;
+          var depth = commonPath.length + 1;
+          var wrapperPath = Path.next(lastPath.slice(0, depth));
+          var wrapper = _objectSpread(_objectSpread({}, element), {}, {
+            children: []
+          });
+          Transforms.insertNodes(editor, wrapper, {
+            at: wrapperPath,
+            voids
+          });
+          Transforms.moveNodes(editor, {
+            at: range,
+            match: n => Element.isAncestor(commonNode) && commonNode.children.includes(n),
+            to: wrapperPath.concat(0),
+            voids
+          });
+        }
+      },
+      _ret;
+    for (var [, rootPath] of roots) {
+      _ret = _loop();
+      if (_ret === 0) continue;
+    }
+  });
+};
+
+/**
+ * Create a new Slate `Editor` object.
+ */
+var createEditor = () => {
+  var editor = {
+    children: [],
+    operations: [],
+    selection: null,
+    marks: null,
+    isElementReadOnly: () => false,
+    isInline: () => false,
+    isSelectable: () => true,
+    isVoid: () => false,
+    markableVoid: () => false,
+    onChange: () => {},
+    // Core
+    apply: function apply$1() {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+      return apply(editor, ...args);
+    },
+    // Editor
+    addMark: function addMark$1() {
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+      return addMark(editor, ...args);
+    },
+    deleteBackward: function deleteBackward$1() {
+      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+      }
+      return deleteBackward(editor, ...args);
+    },
+    deleteForward: function deleteForward$1() {
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+      return deleteForward(editor, ...args);
+    },
+    deleteFragment: function deleteFragment$1() {
+      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+      }
+      return deleteFragment(editor, ...args);
+    },
+    getFragment: function getFragment$1() {
+      for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+      }
+      return getFragment(editor, ...args);
+    },
+    insertBreak: function insertBreak$1() {
+      for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+      }
+      return insertBreak(editor, ...args);
+    },
+    insertSoftBreak: function insertSoftBreak$1() {
+      for (var _len8 = arguments.length, args = new Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+      }
+      return insertSoftBreak(editor, ...args);
+    },
+    insertFragment: function insertFragment$1() {
+      for (var _len9 = arguments.length, args = new Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
+      }
+      return insertFragment(editor, ...args);
+    },
+    insertNode: function insertNode$1() {
+      for (var _len10 = arguments.length, args = new Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
+        args[_key10] = arguments[_key10];
+      }
+      return insertNode(editor, ...args);
+    },
+    insertText: function insertText$1() {
+      for (var _len11 = arguments.length, args = new Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+        args[_key11] = arguments[_key11];
+      }
+      return insertText(editor, ...args);
+    },
+    normalizeNode: function normalizeNode$1() {
+      for (var _len12 = arguments.length, args = new Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+        args[_key12] = arguments[_key12];
+      }
+      return normalizeNode(editor, ...args);
+    },
+    removeMark: function removeMark$1() {
+      for (var _len13 = arguments.length, args = new Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+        args[_key13] = arguments[_key13];
+      }
+      return removeMark(editor, ...args);
+    },
+    getDirtyPaths: function getDirtyPaths$1() {
+      for (var _len14 = arguments.length, args = new Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+        args[_key14] = arguments[_key14];
+      }
+      return getDirtyPaths(editor, ...args);
+    },
+    shouldNormalize: function shouldNormalize$1() {
+      for (var _len15 = arguments.length, args = new Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
+        args[_key15] = arguments[_key15];
+      }
+      return shouldNormalize(editor, ...args);
+    },
+    // Editor interface
+    above: function above$1() {
+      for (var _len16 = arguments.length, args = new Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
+        args[_key16] = arguments[_key16];
+      }
+      return above(editor, ...args);
+    },
+    after: function after$1() {
+      for (var _len17 = arguments.length, args = new Array(_len17), _key17 = 0; _key17 < _len17; _key17++) {
+        args[_key17] = arguments[_key17];
+      }
+      return after(editor, ...args);
+    },
+    before: function before$1() {
+      for (var _len18 = arguments.length, args = new Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
+        args[_key18] = arguments[_key18];
+      }
+      return before(editor, ...args);
+    },
+    collapse: function collapse$1() {
+      for (var _len19 = arguments.length, args = new Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
+        args[_key19] = arguments[_key19];
+      }
+      return collapse(editor, ...args);
+    },
+    delete: function _delete() {
+      for (var _len20 = arguments.length, args = new Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
+        args[_key20] = arguments[_key20];
+      }
+      return deleteText(editor, ...args);
+    },
+    deselect: function deselect$1() {
+      for (var _len21 = arguments.length, args = new Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
+        args[_key21] = arguments[_key21];
+      }
+      return deselect(editor, ...args);
+    },
+    edges: function edges$1() {
+      for (var _len22 = arguments.length, args = new Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
+        args[_key22] = arguments[_key22];
+      }
+      return edges(editor, ...args);
+    },
+    elementReadOnly: function elementReadOnly$1() {
+      for (var _len23 = arguments.length, args = new Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
+        args[_key23] = arguments[_key23];
+      }
+      return elementReadOnly(editor, ...args);
+    },
+    end: function end$1() {
+      for (var _len24 = arguments.length, args = new Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
+        args[_key24] = arguments[_key24];
+      }
+      return end(editor, ...args);
+    },
+    first: function first$1() {
+      for (var _len25 = arguments.length, args = new Array(_len25), _key25 = 0; _key25 < _len25; _key25++) {
+        args[_key25] = arguments[_key25];
+      }
+      return first(editor, ...args);
+    },
+    fragment: function fragment$1() {
+      for (var _len26 = arguments.length, args = new Array(_len26), _key26 = 0; _key26 < _len26; _key26++) {
+        args[_key26] = arguments[_key26];
+      }
+      return fragment(editor, ...args);
+    },
+    getMarks: function getMarks() {
+      for (var _len27 = arguments.length, args = new Array(_len27), _key27 = 0; _key27 < _len27; _key27++) {
+        args[_key27] = arguments[_key27];
+      }
+      return marks(editor, ...args);
+    },
+    hasBlocks: function hasBlocks$1() {
+      for (var _len28 = arguments.length, args = new Array(_len28), _key28 = 0; _key28 < _len28; _key28++) {
+        args[_key28] = arguments[_key28];
+      }
+      return hasBlocks(editor, ...args);
+    },
+    hasInlines: function hasInlines$1() {
+      for (var _len29 = arguments.length, args = new Array(_len29), _key29 = 0; _key29 < _len29; _key29++) {
+        args[_key29] = arguments[_key29];
+      }
+      return hasInlines(editor, ...args);
+    },
+    hasPath: function hasPath$1() {
+      for (var _len30 = arguments.length, args = new Array(_len30), _key30 = 0; _key30 < _len30; _key30++) {
+        args[_key30] = arguments[_key30];
+      }
+      return hasPath(editor, ...args);
+    },
+    hasTexts: function hasTexts$1() {
+      for (var _len31 = arguments.length, args = new Array(_len31), _key31 = 0; _key31 < _len31; _key31++) {
+        args[_key31] = arguments[_key31];
+      }
+      return hasTexts(editor, ...args);
+    },
+    insertNodes: function insertNodes$1() {
+      for (var _len32 = arguments.length, args = new Array(_len32), _key32 = 0; _key32 < _len32; _key32++) {
+        args[_key32] = arguments[_key32];
+      }
+      return insertNodes(editor, ...args);
+    },
+    isBlock: function isBlock$1() {
+      for (var _len33 = arguments.length, args = new Array(_len33), _key33 = 0; _key33 < _len33; _key33++) {
+        args[_key33] = arguments[_key33];
+      }
+      return isBlock(editor, ...args);
+    },
+    isEdge: function isEdge$1() {
+      for (var _len34 = arguments.length, args = new Array(_len34), _key34 = 0; _key34 < _len34; _key34++) {
+        args[_key34] = arguments[_key34];
+      }
+      return isEdge(editor, ...args);
+    },
+    isEmpty: function isEmpty$1() {
+      for (var _len35 = arguments.length, args = new Array(_len35), _key35 = 0; _key35 < _len35; _key35++) {
+        args[_key35] = arguments[_key35];
+      }
+      return isEmpty(editor, ...args);
+    },
+    isEnd: function isEnd$1() {
+      for (var _len36 = arguments.length, args = new Array(_len36), _key36 = 0; _key36 < _len36; _key36++) {
+        args[_key36] = arguments[_key36];
+      }
+      return isEnd(editor, ...args);
+    },
+    isNormalizing: function isNormalizing$1() {
+      for (var _len37 = arguments.length, args = new Array(_len37), _key37 = 0; _key37 < _len37; _key37++) {
+        args[_key37] = arguments[_key37];
+      }
+      return isNormalizing(editor, ...args);
+    },
+    isStart: function isStart$1() {
+      for (var _len38 = arguments.length, args = new Array(_len38), _key38 = 0; _key38 < _len38; _key38++) {
+        args[_key38] = arguments[_key38];
+      }
+      return isStart(editor, ...args);
+    },
+    last: function last$1() {
+      for (var _len39 = arguments.length, args = new Array(_len39), _key39 = 0; _key39 < _len39; _key39++) {
+        args[_key39] = arguments[_key39];
+      }
+      return last(editor, ...args);
+    },
+    leaf: function leaf$1() {
+      for (var _len40 = arguments.length, args = new Array(_len40), _key40 = 0; _key40 < _len40; _key40++) {
+        args[_key40] = arguments[_key40];
+      }
+      return leaf(editor, ...args);
+    },
+    levels: function levels$1() {
+      for (var _len41 = arguments.length, args = new Array(_len41), _key41 = 0; _key41 < _len41; _key41++) {
+        args[_key41] = arguments[_key41];
+      }
+      return levels(editor, ...args);
+    },
+    liftNodes: function liftNodes$1() {
+      for (var _len42 = arguments.length, args = new Array(_len42), _key42 = 0; _key42 < _len42; _key42++) {
+        args[_key42] = arguments[_key42];
+      }
+      return liftNodes(editor, ...args);
+    },
+    mergeNodes: function mergeNodes$1() {
+      for (var _len43 = arguments.length, args = new Array(_len43), _key43 = 0; _key43 < _len43; _key43++) {
+        args[_key43] = arguments[_key43];
+      }
+      return mergeNodes(editor, ...args);
+    },
+    move: function move$1() {
+      for (var _len44 = arguments.length, args = new Array(_len44), _key44 = 0; _key44 < _len44; _key44++) {
+        args[_key44] = arguments[_key44];
+      }
+      return move(editor, ...args);
+    },
+    moveNodes: function moveNodes$1() {
+      for (var _len45 = arguments.length, args = new Array(_len45), _key45 = 0; _key45 < _len45; _key45++) {
+        args[_key45] = arguments[_key45];
+      }
+      return moveNodes(editor, ...args);
+    },
+    next: function next$1() {
+      for (var _len46 = arguments.length, args = new Array(_len46), _key46 = 0; _key46 < _len46; _key46++) {
+        args[_key46] = arguments[_key46];
+      }
+      return next(editor, ...args);
+    },
+    node: function node$1() {
+      for (var _len47 = arguments.length, args = new Array(_len47), _key47 = 0; _key47 < _len47; _key47++) {
+        args[_key47] = arguments[_key47];
+      }
+      return node(editor, ...args);
+    },
+    nodes: function nodes$1() {
+      for (var _len48 = arguments.length, args = new Array(_len48), _key48 = 0; _key48 < _len48; _key48++) {
+        args[_key48] = arguments[_key48];
+      }
+      return nodes(editor, ...args);
+    },
+    normalize: function normalize$1() {
+      for (var _len49 = arguments.length, args = new Array(_len49), _key49 = 0; _key49 < _len49; _key49++) {
+        args[_key49] = arguments[_key49];
+      }
+      return normalize(editor, ...args);
+    },
+    parent: function parent$1() {
+      for (var _len50 = arguments.length, args = new Array(_len50), _key50 = 0; _key50 < _len50; _key50++) {
+        args[_key50] = arguments[_key50];
+      }
+      return parent(editor, ...args);
+    },
+    path: function path$1() {
+      for (var _len51 = arguments.length, args = new Array(_len51), _key51 = 0; _key51 < _len51; _key51++) {
+        args[_key51] = arguments[_key51];
+      }
+      return path(editor, ...args);
+    },
+    pathRef: function pathRef$1() {
+      for (var _len52 = arguments.length, args = new Array(_len52), _key52 = 0; _key52 < _len52; _key52++) {
+        args[_key52] = arguments[_key52];
+      }
+      return pathRef(editor, ...args);
+    },
+    pathRefs: function pathRefs$1() {
+      for (var _len53 = arguments.length, args = new Array(_len53), _key53 = 0; _key53 < _len53; _key53++) {
+        args[_key53] = arguments[_key53];
+      }
+      return pathRefs(editor, ...args);
+    },
+    point: function point$1() {
+      for (var _len54 = arguments.length, args = new Array(_len54), _key54 = 0; _key54 < _len54; _key54++) {
+        args[_key54] = arguments[_key54];
+      }
+      return point(editor, ...args);
+    },
+    pointRef: function pointRef$1() {
+      for (var _len55 = arguments.length, args = new Array(_len55), _key55 = 0; _key55 < _len55; _key55++) {
+        args[_key55] = arguments[_key55];
+      }
+      return pointRef(editor, ...args);
+    },
+    pointRefs: function pointRefs$1() {
+      for (var _len56 = arguments.length, args = new Array(_len56), _key56 = 0; _key56 < _len56; _key56++) {
+        args[_key56] = arguments[_key56];
+      }
+      return pointRefs(editor, ...args);
+    },
+    positions: function positions$1() {
+      for (var _len57 = arguments.length, args = new Array(_len57), _key57 = 0; _key57 < _len57; _key57++) {
+        args[_key57] = arguments[_key57];
+      }
+      return positions(editor, ...args);
+    },
+    previous: function previous$1() {
+      for (var _len58 = arguments.length, args = new Array(_len58), _key58 = 0; _key58 < _len58; _key58++) {
+        args[_key58] = arguments[_key58];
+      }
+      return previous(editor, ...args);
+    },
+    range: function range$1() {
+      for (var _len59 = arguments.length, args = new Array(_len59), _key59 = 0; _key59 < _len59; _key59++) {
+        args[_key59] = arguments[_key59];
+      }
+      return range(editor, ...args);
+    },
+    rangeRef: function rangeRef$1() {
+      for (var _len60 = arguments.length, args = new Array(_len60), _key60 = 0; _key60 < _len60; _key60++) {
+        args[_key60] = arguments[_key60];
+      }
+      return rangeRef(editor, ...args);
+    },
+    rangeRefs: function rangeRefs$1() {
+      for (var _len61 = arguments.length, args = new Array(_len61), _key61 = 0; _key61 < _len61; _key61++) {
+        args[_key61] = arguments[_key61];
+      }
+      return rangeRefs(editor, ...args);
+    },
+    removeNodes: function removeNodes$1() {
+      for (var _len62 = arguments.length, args = new Array(_len62), _key62 = 0; _key62 < _len62; _key62++) {
+        args[_key62] = arguments[_key62];
+      }
+      return removeNodes(editor, ...args);
+    },
+    select: function select$1() {
+      for (var _len63 = arguments.length, args = new Array(_len63), _key63 = 0; _key63 < _len63; _key63++) {
+        args[_key63] = arguments[_key63];
+      }
+      return select(editor, ...args);
+    },
+    setNodes: function setNodes$1() {
+      for (var _len64 = arguments.length, args = new Array(_len64), _key64 = 0; _key64 < _len64; _key64++) {
+        args[_key64] = arguments[_key64];
+      }
+      return setNodes(editor, ...args);
+    },
+    setNormalizing: function setNormalizing$1() {
+      for (var _len65 = arguments.length, args = new Array(_len65), _key65 = 0; _key65 < _len65; _key65++) {
+        args[_key65] = arguments[_key65];
+      }
+      return setNormalizing(editor, ...args);
+    },
+    setPoint: function setPoint$1() {
+      for (var _len66 = arguments.length, args = new Array(_len66), _key66 = 0; _key66 < _len66; _key66++) {
+        args[_key66] = arguments[_key66];
+      }
+      return setPoint(editor, ...args);
+    },
+    setSelection: function setSelection$1() {
+      for (var _len67 = arguments.length, args = new Array(_len67), _key67 = 0; _key67 < _len67; _key67++) {
+        args[_key67] = arguments[_key67];
+      }
+      return setSelection(editor, ...args);
+    },
+    splitNodes: function splitNodes$1() {
+      for (var _len68 = arguments.length, args = new Array(_len68), _key68 = 0; _key68 < _len68; _key68++) {
+        args[_key68] = arguments[_key68];
+      }
+      return splitNodes(editor, ...args);
+    },
+    start: function start$1() {
+      for (var _len69 = arguments.length, args = new Array(_len69), _key69 = 0; _key69 < _len69; _key69++) {
+        args[_key69] = arguments[_key69];
+      }
+      return start(editor, ...args);
+    },
+    string: function string$1() {
+      for (var _len70 = arguments.length, args = new Array(_len70), _key70 = 0; _key70 < _len70; _key70++) {
+        args[_key70] = arguments[_key70];
+      }
+      return string(editor, ...args);
+    },
+    unhangRange: function unhangRange$1() {
+      for (var _len71 = arguments.length, args = new Array(_len71), _key71 = 0; _key71 < _len71; _key71++) {
+        args[_key71] = arguments[_key71];
+      }
+      return unhangRange(editor, ...args);
+    },
+    unsetNodes: function unsetNodes$1() {
+      for (var _len72 = arguments.length, args = new Array(_len72), _key72 = 0; _key72 < _len72; _key72++) {
+        args[_key72] = arguments[_key72];
+      }
+      return unsetNodes(editor, ...args);
+    },
+    unwrapNodes: function unwrapNodes$1() {
+      for (var _len73 = arguments.length, args = new Array(_len73), _key73 = 0; _key73 < _len73; _key73++) {
+        args[_key73] = arguments[_key73];
+      }
+      return unwrapNodes(editor, ...args);
+    },
+    void: function _void() {
+      for (var _len74 = arguments.length, args = new Array(_len74), _key74 = 0; _key74 < _len74; _key74++) {
+        args[_key74] = arguments[_key74];
+      }
+      return getVoid(editor, ...args);
+    },
+    withoutNormalizing: function withoutNormalizing$1() {
+      for (var _len75 = arguments.length, args = new Array(_len75), _key75 = 0; _key75 < _len75; _key75++) {
+        args[_key75] = arguments[_key75];
+      }
+      return withoutNormalizing(editor, ...args);
+    },
+    wrapNodes: function wrapNodes$1() {
+      for (var _len76 = arguments.length, args = new Array(_len76), _key76 = 0; _key76 < _len76; _key76++) {
+        args[_key76] = arguments[_key76];
+      }
+      return wrapNodes(editor, ...args);
+    },
+    shouldMergeNodesRemovePrevNode: function shouldMergeNodesRemovePrevNode$1() {
+      for (var _len77 = arguments.length, args = new Array(_len77), _key77 = 0; _key77 < _len77; _key77++) {
+        args[_key77] = arguments[_key77];
+      }
+      return shouldMergeNodesRemovePrevNode(editor, ...args);
+    }
+  };
+  return editor;
+};
+
+
+//# sourceMappingURL=index.es.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/clients/WebSocketClient.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/clients/WebSocketClient.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ WebSocketClient)
+/* harmony export */ });
+/* harmony import */ var _utils_log_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/log.js */ "./node_modules/webpack-dev-server/client/utils/log.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+var WebSocketClient = /*#__PURE__*/function () {
+  /**
+   * @param {string} url
+   */
+  function WebSocketClient(url) {
+    _classCallCheck(this, WebSocketClient);
+    this.client = new WebSocket(url);
+    this.client.onerror = function (error) {
+      _utils_log_js__WEBPACK_IMPORTED_MODULE_0__.log.error(error);
+    };
+  }
+
+  /**
+   * @param {(...args: any[]) => void} f
+   */
+  return _createClass(WebSocketClient, [{
+    key: "onOpen",
+    value: function onOpen(f) {
+      this.client.onopen = f;
+    }
+
+    /**
+     * @param {(...args: any[]) => void} f
+     */
+  }, {
+    key: "onClose",
+    value: function onClose(f) {
+      this.client.onclose = f;
+    }
+
+    // call f with the message string as the first argument
+    /**
+     * @param {(...args: any[]) => void} f
+     */
+  }, {
+    key: "onMessage",
+    value: function onMessage(f) {
+      this.client.onmessage = function (e) {
+        f(e.data);
+      };
+    }
+  }]);
+}();
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/index.js?protocol=ws%3A&hostname=0.0.0.0&port=3000&pathname=%2Fws&logging=info&overlay=true&reconnect=10&hot=true&live-reload=true":
+/*!***********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/index.js?protocol=ws%3A&hostname=0.0.0.0&port=3000&pathname=%2Fws&logging=info&overlay=true&reconnect=10&hot=true&live-reload=true ***!
+  \***********************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+var __resourceQuery = "?protocol=ws%3A&hostname=0.0.0.0&port=3000&pathname=%2Fws&logging=info&overlay=true&reconnect=10&hot=true&live-reload=true";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createSocketURL: () => (/* binding */ createSocketURL),
+/* harmony export */   getCurrentScriptSource: () => (/* binding */ getCurrentScriptSource),
+/* harmony export */   parseURL: () => (/* binding */ parseURL)
+/* harmony export */ });
+/* harmony import */ var webpack_hot_log_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! webpack/hot/log.js */ "./node_modules/webpack/hot/log.js");
+/* harmony import */ var webpack_hot_log_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(webpack_hot_log_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var webpack_hot_emitter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! webpack/hot/emitter.js */ "./node_modules/webpack/hot/emitter.js");
+/* harmony import */ var webpack_hot_emitter_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(webpack_hot_emitter_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _socket_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./socket.js */ "./node_modules/webpack-dev-server/client/socket.js");
+/* harmony import */ var _overlay_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./overlay.js */ "./node_modules/webpack-dev-server/client/overlay.js");
+/* harmony import */ var _utils_log_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/log.js */ "./node_modules/webpack-dev-server/client/utils/log.js");
+/* harmony import */ var _utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/sendMessage.js */ "./node_modules/webpack-dev-server/client/utils/sendMessage.js");
+/* harmony import */ var _progress_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./progress.js */ "./node_modules/webpack-dev-server/client/progress.js");
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+/* global __resourceQuery, __webpack_hash__ */
+/// <reference types="webpack/module" />
+
+
+
+
+
+
+
+
+/**
+ * @typedef {Object} OverlayOptions
+ * @property {boolean | (error: Error) => boolean} [warnings]
+ * @property {boolean | (error: Error) => boolean} [errors]
+ * @property {boolean | (error: Error) => boolean} [runtimeErrors]
+ * @property {string} [trustedTypesPolicyName]
+ */
+
+/**
+ * @typedef {Object} Options
+ * @property {boolean} hot
+ * @property {boolean} liveReload
+ * @property {boolean} progress
+ * @property {boolean | OverlayOptions} overlay
+ * @property {string} [logging]
+ * @property {number} [reconnect]
+ */
+
+/**
+ * @typedef {Object} Status
+ * @property {boolean} isUnloading
+ * @property {string} currentHash
+ * @property {string} [previousHash]
+ */
+
+/**
+ * @param {boolean | { warnings?: boolean | string; errors?: boolean | string; runtimeErrors?: boolean | string; }} overlayOptions
+ */
+var decodeOverlayOptions = function decodeOverlayOptions(overlayOptions) {
+  if (_typeof(overlayOptions) === "object") {
+    ["warnings", "errors", "runtimeErrors"].forEach(function (property) {
+      if (typeof overlayOptions[property] === "string") {
+        var overlayFilterFunctionString = decodeURIComponent(overlayOptions[property]);
+
+        // eslint-disable-next-line no-new-func
+        overlayOptions[property] = new Function("message", "var callback = ".concat(overlayFilterFunctionString, "\n        return callback(message)"));
+      }
+    });
+  }
+};
+
+/**
+ * @type {Status}
+ */
+var status = {
+  isUnloading: false,
+  // eslint-disable-next-line camelcase
+  currentHash: __webpack_require__.h()
+};
+
+/**
+ * @returns {string}
+ */
+var getCurrentScriptSource = function getCurrentScriptSource() {
+  // `document.currentScript` is the most accurate way to find the current script,
+  // but is not supported in all browsers.
+  if (document.currentScript) {
+    return document.currentScript.getAttribute("src");
+  }
+
+  // Fallback to getting all scripts running in the document.
+  var scriptElements = document.scripts || [];
+  var scriptElementsWithSrc = Array.prototype.filter.call(scriptElements, function (element) {
+    return element.getAttribute("src");
+  });
+  if (scriptElementsWithSrc.length > 0) {
+    var currentScript = scriptElementsWithSrc[scriptElementsWithSrc.length - 1];
+    return currentScript.getAttribute("src");
+  }
+
+  // Fail as there was no script to use.
+  throw new Error("[webpack-dev-server] Failed to get current script source.");
+};
+
+/**
+ * @param {string} resourceQuery
+ * @returns {{ [key: string]: string | boolean }}
+ */
+var parseURL = function parseURL(resourceQuery) {
+  /** @type {{ [key: string]: string }} */
+  var result = {};
+  if (typeof resourceQuery === "string" && resourceQuery !== "") {
+    var searchParams = resourceQuery.slice(1).split("&");
+    for (var i = 0; i < searchParams.length; i++) {
+      var pair = searchParams[i].split("=");
+      result[pair[0]] = decodeURIComponent(pair[1]);
+    }
+  } else {
+    // Else, get the url from the <script> this file was called with.
+    var scriptSource = getCurrentScriptSource();
+    var scriptSourceURL;
+    try {
+      // The placeholder `baseURL` with `window.location.href`,
+      // is to allow parsing of path-relative or protocol-relative URLs,
+      // and will have no effect if `scriptSource` is a fully valid URL.
+      scriptSourceURL = new URL(scriptSource, self.location.href);
+    } catch (error) {
+      // URL parsing failed, do nothing.
+      // We will still proceed to see if we can recover using `resourceQuery`
+    }
+    if (scriptSourceURL) {
+      result = scriptSourceURL;
+      result.fromCurrentScript = true;
+    }
+  }
+  return result;
+};
+var parsedResourceQuery = parseURL(__resourceQuery);
+var enabledFeatures = {
+  "Hot Module Replacement": false,
+  "Live Reloading": false,
+  Progress: false,
+  Overlay: false
+};
+
+/** @type {Options} */
+var options = {
+  hot: false,
+  liveReload: false,
+  progress: false,
+  overlay: false
+};
+if (parsedResourceQuery.hot === "true") {
+  options.hot = true;
+  enabledFeatures["Hot Module Replacement"] = true;
+}
+if (parsedResourceQuery["live-reload"] === "true") {
+  options.liveReload = true;
+  enabledFeatures["Live Reloading"] = true;
+}
+if (parsedResourceQuery.progress === "true") {
+  options.progress = true;
+  enabledFeatures.Progress = true;
+}
+if (parsedResourceQuery.overlay) {
+  try {
+    options.overlay = JSON.parse(parsedResourceQuery.overlay);
+  } catch (e) {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.error("Error parsing overlay options from resource query:", e);
+  }
+
+  // Fill in default "true" params for partially-specified objects.
+  if (_typeof(options.overlay) === "object") {
+    options.overlay = _objectSpread({
+      errors: true,
+      warnings: true,
+      runtimeErrors: true
+    }, options.overlay);
+    decodeOverlayOptions(options.overlay);
+  }
+  enabledFeatures.Overlay = options.overlay !== false;
+}
+if (parsedResourceQuery.logging) {
+  options.logging = parsedResourceQuery.logging;
+}
+if (typeof parsedResourceQuery.reconnect !== "undefined") {
+  options.reconnect = Number(parsedResourceQuery.reconnect);
+}
+
+/**
+ * @param {string} level
+ */
+var setAllLogLevel = function setAllLogLevel(level) {
+  // This is needed because the HMR logger operate separately from dev server logger
+  webpack_hot_log_js__WEBPACK_IMPORTED_MODULE_0___default().setLogLevel(level === "verbose" || level === "log" ? "info" : level);
+  (0,_utils_log_js__WEBPACK_IMPORTED_MODULE_4__.setLogLevel)(level);
+};
+if (options.logging) {
+  setAllLogLevel(options.logging);
+}
+var logEnabledFeatures = function logEnabledFeatures(features) {
+  var listEnabledFeatures = Object.keys(features);
+  if (!features || listEnabledFeatures.length === 0) {
+    return;
+  }
+  var logString = "Server started:";
+
+  // Server started: Hot Module Replacement enabled, Live Reloading enabled, Overlay disabled.
+  for (var i = 0; i < listEnabledFeatures.length; i++) {
+    var key = listEnabledFeatures[i];
+    logString += " ".concat(key, " ").concat(features[key] ? "enabled" : "disabled", ",");
+  }
+  // replace last comma with a period
+  logString = logString.slice(0, -1).concat(".");
+  _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info(logString);
+};
+logEnabledFeatures(enabledFeatures);
+self.addEventListener("beforeunload", function () {
+  status.isUnloading = true;
+});
+var overlay = typeof window !== "undefined" ? (0,_overlay_js__WEBPACK_IMPORTED_MODULE_3__.createOverlay)(_typeof(options.overlay) === "object" ? {
+  trustedTypesPolicyName: options.overlay.trustedTypesPolicyName,
+  catchRuntimeError: options.overlay.runtimeErrors
+} : {
+  trustedTypesPolicyName: false,
+  catchRuntimeError: options.overlay
+}) : {
+  send: function send() {}
+};
+
+/**
+ * @param {Options} options
+ * @param {Status} currentStatus
+ */
+var reloadApp = function reloadApp(_ref, currentStatus) {
+  var hot = _ref.hot,
+    liveReload = _ref.liveReload;
+  if (currentStatus.isUnloading) {
+    return;
+  }
+  var currentHash = currentStatus.currentHash,
+    previousHash = currentStatus.previousHash;
+  var isInitial = currentHash.indexOf(/** @type {string} */previousHash) >= 0;
+  if (isInitial) {
+    return;
+  }
+
+  /**
+   * @param {Window} rootWindow
+   * @param {number} intervalId
+   */
+  function applyReload(rootWindow, intervalId) {
+    clearInterval(intervalId);
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info("App updated. Reloading...");
+    rootWindow.location.reload();
+  }
+  var search = self.location.search.toLowerCase();
+  var allowToHot = search.indexOf("webpack-dev-server-hot=false") === -1;
+  var allowToLiveReload = search.indexOf("webpack-dev-server-live-reload=false") === -1;
+  if (hot && allowToHot) {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info("App hot update...");
+    webpack_hot_emitter_js__WEBPACK_IMPORTED_MODULE_1___default().emit("webpackHotUpdate", currentStatus.currentHash);
+    if (typeof self !== "undefined" && self.window) {
+      // broadcast update to window
+      self.postMessage("webpackHotUpdate".concat(currentStatus.currentHash), "*");
+    }
+  }
+  // allow refreshing the page only if liveReload isn't disabled
+  else if (liveReload && allowToLiveReload) {
+    var rootWindow = self;
+
+    // use parent window for reload (in case we're in an iframe with no valid src)
+    var intervalId = self.setInterval(function () {
+      if (rootWindow.location.protocol !== "about:") {
+        // reload immediately if protocol is valid
+        applyReload(rootWindow, intervalId);
+      } else {
+        rootWindow = rootWindow.parent;
+        if (rootWindow.parent === rootWindow) {
+          // if parent equals current window we've reached the root which would continue forever, so trigger a reload anyways
+          applyReload(rootWindow, intervalId);
+        }
+      }
+    });
+  }
+};
+var ansiRegex = new RegExp(["[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)", "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))"].join("|"), "g");
+
+/**
+ *
+ * Strip [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code) from a string.
+ * Adapted from code originally released by Sindre Sorhus
+ * Licensed the MIT License
+ *
+ * @param {string} string
+ * @return {string}
+ */
+var stripAnsi = function stripAnsi(string) {
+  if (typeof string !== "string") {
+    throw new TypeError("Expected a `string`, got `".concat(_typeof(string), "`"));
+  }
+  return string.replace(ansiRegex, "");
+};
+var onSocketMessage = {
+  hot: function hot() {
+    if (parsedResourceQuery.hot === "false") {
+      return;
+    }
+    options.hot = true;
+  },
+  liveReload: function liveReload() {
+    if (parsedResourceQuery["live-reload"] === "false") {
+      return;
+    }
+    options.liveReload = true;
+  },
+  invalid: function invalid() {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info("App updated. Recompiling...");
+
+    // Fixes #1042. overlay doesn't clear if errors are fixed but warnings remain.
+    if (options.overlay) {
+      overlay.send({
+        type: "DISMISS"
+      });
+    }
+    (0,_utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__["default"])("Invalid");
+  },
+  /**
+   * @param {string} hash
+   */
+  hash: function hash(_hash) {
+    status.previousHash = status.currentHash;
+    status.currentHash = _hash;
+  },
+  logging: setAllLogLevel,
+  /**
+   * @param {boolean} value
+   */
+  overlay: function overlay(value) {
+    if (typeof document === "undefined") {
+      return;
+    }
+    options.overlay = value;
+    decodeOverlayOptions(options.overlay);
+  },
+  /**
+   * @param {number} value
+   */
+  reconnect: function reconnect(value) {
+    if (parsedResourceQuery.reconnect === "false") {
+      return;
+    }
+    options.reconnect = value;
+  },
+  /**
+   * @param {boolean} value
+   */
+  progress: function progress(value) {
+    options.progress = value;
+  },
+  /**
+   * @param {{ pluginName?: string, percent: number, msg: string }} data
+   */
+  "progress-update": function progressUpdate(data) {
+    if (options.progress) {
+      _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info("".concat(data.pluginName ? "[".concat(data.pluginName, "] ") : "").concat(data.percent, "% - ").concat(data.msg, "."));
+    }
+    if ((0,_progress_js__WEBPACK_IMPORTED_MODULE_6__.isProgressSupported)()) {
+      if (typeof options.progress === "string") {
+        var progress = document.querySelector("wds-progress");
+        if (!progress) {
+          (0,_progress_js__WEBPACK_IMPORTED_MODULE_6__.defineProgressElement)();
+          progress = document.createElement("wds-progress");
+          document.body.appendChild(progress);
+        }
+        progress.setAttribute("progress", data.percent);
+        progress.setAttribute("type", options.progress);
+      }
+    }
+    (0,_utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__["default"])("Progress", data);
+  },
+  "still-ok": function stillOk() {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info("Nothing changed.");
+    if (options.overlay) {
+      overlay.send({
+        type: "DISMISS"
+      });
+    }
+    (0,_utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__["default"])("StillOk");
+  },
+  ok: function ok() {
+    (0,_utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__["default"])("Ok");
+    if (options.overlay) {
+      overlay.send({
+        type: "DISMISS"
+      });
+    }
+    reloadApp(options, status);
+  },
+  /**
+   * @param {string} file
+   */
+  "static-changed": function staticChanged(file) {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info("".concat(file ? "\"".concat(file, "\"") : "Content", " from static directory was changed. Reloading..."));
+    self.location.reload();
+  },
+  /**
+   * @param {Error[]} warnings
+   * @param {any} params
+   */
+  warnings: function warnings(_warnings, params) {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.warn("Warnings while compiling.");
+    var printableWarnings = _warnings.map(function (error) {
+      var _formatProblem = (0,_overlay_js__WEBPACK_IMPORTED_MODULE_3__.formatProblem)("warning", error),
+        header = _formatProblem.header,
+        body = _formatProblem.body;
+      return "".concat(header, "\n").concat(stripAnsi(body));
+    });
+    (0,_utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__["default"])("Warnings", printableWarnings);
+    for (var i = 0; i < printableWarnings.length; i++) {
+      _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.warn(printableWarnings[i]);
+    }
+    var overlayWarningsSetting = typeof options.overlay === "boolean" ? options.overlay : options.overlay && options.overlay.warnings;
+    if (overlayWarningsSetting) {
+      var warningsToDisplay = typeof overlayWarningsSetting === "function" ? _warnings.filter(overlayWarningsSetting) : _warnings;
+      if (warningsToDisplay.length) {
+        overlay.send({
+          type: "BUILD_ERROR",
+          level: "warning",
+          messages: _warnings
+        });
+      }
+    }
+    if (params && params.preventReloading) {
+      return;
+    }
+    reloadApp(options, status);
+  },
+  /**
+   * @param {Error[]} errors
+   */
+  errors: function errors(_errors) {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.error("Errors while compiling. Reload prevented.");
+    var printableErrors = _errors.map(function (error) {
+      var _formatProblem2 = (0,_overlay_js__WEBPACK_IMPORTED_MODULE_3__.formatProblem)("error", error),
+        header = _formatProblem2.header,
+        body = _formatProblem2.body;
+      return "".concat(header, "\n").concat(stripAnsi(body));
+    });
+    (0,_utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__["default"])("Errors", printableErrors);
+    for (var i = 0; i < printableErrors.length; i++) {
+      _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.error(printableErrors[i]);
+    }
+    var overlayErrorsSettings = typeof options.overlay === "boolean" ? options.overlay : options.overlay && options.overlay.errors;
+    if (overlayErrorsSettings) {
+      var errorsToDisplay = typeof overlayErrorsSettings === "function" ? _errors.filter(overlayErrorsSettings) : _errors;
+      if (errorsToDisplay.length) {
+        overlay.send({
+          type: "BUILD_ERROR",
+          level: "error",
+          messages: _errors
+        });
+      }
+    }
+  },
+  /**
+   * @param {Error} error
+   */
+  error: function error(_error) {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.error(_error);
+  },
+  close: function close() {
+    _utils_log_js__WEBPACK_IMPORTED_MODULE_4__.log.info("Disconnected!");
+    if (options.overlay) {
+      overlay.send({
+        type: "DISMISS"
+      });
+    }
+    (0,_utils_sendMessage_js__WEBPACK_IMPORTED_MODULE_5__["default"])("Close");
+  }
+};
+
+/**
+ * @param {{ protocol?: string, auth?: string, hostname?: string, port?: string, pathname?: string, search?: string, hash?: string, slashes?: boolean }} objURL
+ * @returns {string}
+ */
+var formatURL = function formatURL(objURL) {
+  var protocol = objURL.protocol || "";
+  if (protocol && protocol.substr(-1) !== ":") {
+    protocol += ":";
+  }
+  var auth = objURL.auth || "";
+  if (auth) {
+    auth = encodeURIComponent(auth);
+    auth = auth.replace(/%3A/i, ":");
+    auth += "@";
+  }
+  var host = "";
+  if (objURL.hostname) {
+    host = auth + (objURL.hostname.indexOf(":") === -1 ? objURL.hostname : "[".concat(objURL.hostname, "]"));
+    if (objURL.port) {
+      host += ":".concat(objURL.port);
+    }
+  }
+  var pathname = objURL.pathname || "";
+  if (objURL.slashes) {
+    host = "//".concat(host || "");
+    if (pathname && pathname.charAt(0) !== "/") {
+      pathname = "/".concat(pathname);
+    }
+  } else if (!host) {
+    host = "";
+  }
+  var search = objURL.search || "";
+  if (search && search.charAt(0) !== "?") {
+    search = "?".concat(search);
+  }
+  var hash = objURL.hash || "";
+  if (hash && hash.charAt(0) !== "#") {
+    hash = "#".concat(hash);
+  }
+  pathname = pathname.replace(/[?#]/g,
+  /**
+   * @param {string} match
+   * @returns {string}
+   */
+  function (match) {
+    return encodeURIComponent(match);
+  });
+  search = search.replace("#", "%23");
+  return "".concat(protocol).concat(host).concat(pathname).concat(search).concat(hash);
+};
+
+/**
+ * @param {URL & { fromCurrentScript?: boolean }} parsedURL
+ * @returns {string}
+ */
+var createSocketURL = function createSocketURL(parsedURL) {
+  var hostname = parsedURL.hostname;
+
+  // Node.js module parses it as `::`
+  // `new URL(urlString, [baseURLString])` parses it as '[::]'
+  var isInAddrAny = hostname === "0.0.0.0" || hostname === "::" || hostname === "[::]";
+
+  // why do we need this check?
+  // hostname n/a for file protocol (example, when using electron, ionic)
+  // see: https://github.com/webpack/webpack-dev-server/pull/384
+  if (isInAddrAny && self.location.hostname && self.location.protocol.indexOf("http") === 0) {
+    hostname = self.location.hostname;
+  }
+  var socketURLProtocol = parsedURL.protocol || self.location.protocol;
+
+  // When https is used in the app, secure web sockets are always necessary because the browser doesn't accept non-secure web sockets.
+  if (socketURLProtocol === "auto:" || hostname && isInAddrAny && self.location.protocol === "https:") {
+    socketURLProtocol = self.location.protocol;
+  }
+  socketURLProtocol = socketURLProtocol.replace(/^(?:http|.+-extension|file)/i, "ws");
+  var socketURLAuth = "";
+
+  // `new URL(urlString, [baseURLstring])` doesn't have `auth` property
+  // Parse authentication credentials in case we need them
+  if (parsedURL.username) {
+    socketURLAuth = parsedURL.username;
+
+    // Since HTTP basic authentication does not allow empty username,
+    // we only include password if the username is not empty.
+    if (parsedURL.password) {
+      // Result: <username>:<password>
+      socketURLAuth = socketURLAuth.concat(":", parsedURL.password);
+    }
+  }
+
+  // In case the host is a raw IPv6 address, it can be enclosed in
+  // the brackets as the brackets are needed in the final URL string.
+  // Need to remove those as url.format blindly adds its own set of brackets
+  // if the host string contains colons. That would lead to non-working
+  // double brackets (e.g. [[::]]) host
+  //
+  // All of these web socket url params are optionally passed in through resourceQuery,
+  // so we need to fall back to the default if they are not provided
+  var socketURLHostname = (hostname || self.location.hostname || "localhost").replace(/^\[(.*)\]$/, "$1");
+  var socketURLPort = parsedURL.port;
+  if (!socketURLPort || socketURLPort === "0") {
+    socketURLPort = self.location.port;
+  }
+
+  // If path is provided it'll be passed in via the resourceQuery as a
+  // query param so it has to be parsed out of the querystring in order for the
+  // client to open the socket to the correct location.
+  var socketURLPathname = "/ws";
+  if (parsedURL.pathname && !parsedURL.fromCurrentScript) {
+    socketURLPathname = parsedURL.pathname;
+  }
+  return formatURL({
+    protocol: socketURLProtocol,
+    auth: socketURLAuth,
+    hostname: socketURLHostname,
+    port: socketURLPort,
+    pathname: socketURLPathname,
+    slashes: true
+  });
+};
+var socketURL = createSocketURL(parsedResourceQuery);
+(0,_socket_js__WEBPACK_IMPORTED_MODULE_2__["default"])(socketURL, onSocketMessage, options.reconnect);
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/modules/logger/index.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/modules/logger/index.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./client-src/modules/logger/tapable.js":
+/*!**********************************************!*\
+  !*** ./client-src/modules/logger/tapable.js ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, __nested_webpack_exports__, __nested_webpack_require_372__) {
+
+__nested_webpack_require_372__.r(__nested_webpack_exports__);
+/* harmony export */ __nested_webpack_require_372__.d(__nested_webpack_exports__, {
+/* harmony export */   SyncBailHook: function() { return /* binding */ SyncBailHook; }
+/* harmony export */ });
+function SyncBailHook() {
+  return {
+    call: function call() {}
+  };
+}
+
+/**
+ * Client stub for tapable SyncBailHook
+ */
+// eslint-disable-next-line import/prefer-default-export
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack/lib/logging/Logger.js":
+/*!****************************************************!*\
+  !*** ./node_modules/webpack/lib/logging/Logger.js ***!
+  \****************************************************/
+/***/ (function(module) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+
+
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && "symbol" == typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && o.constructor === (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && o !== (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+function _toConsumableArray(r) {
+  return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
+}
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray(r, a) {
+  if (r) {
+    if ("string" == typeof r) return _arrayLikeToArray(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+  }
+}
+function _iterableToArray(r) {
+  if ("undefined" != typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && null != r[(typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).iterator] || null != r["@@iterator"]) return Array.from(r);
+}
+function _arrayWithoutHoles(r) {
+  if (Array.isArray(r)) return _arrayLikeToArray(r);
+}
+function _arrayLikeToArray(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
+function _classCallCheck(a, n) {
+  if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
+}
+function _defineProperties(e, r) {
+  for (var t = 0; t < r.length; t++) {
+    var o = r[t];
+    o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o);
+  }
+}
+function _createClass(e, r, t) {
+  return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
+    writable: !1
+  }), e;
+}
+function _toPropertyKey(t) {
+  var i = _toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : i + "";
+}
+function _toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[(typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+var LogType = Object.freeze({
+  error: (/** @type {"error"} */"error"),
+  // message, c style arguments
+  warn: (/** @type {"warn"} */"warn"),
+  // message, c style arguments
+  info: (/** @type {"info"} */"info"),
+  // message, c style arguments
+  log: (/** @type {"log"} */"log"),
+  // message, c style arguments
+  debug: (/** @type {"debug"} */"debug"),
+  // message, c style arguments
+
+  trace: (/** @type {"trace"} */"trace"),
+  // no arguments
+
+  group: (/** @type {"group"} */"group"),
+  // [label]
+  groupCollapsed: (/** @type {"groupCollapsed"} */"groupCollapsed"),
+  // [label]
+  groupEnd: (/** @type {"groupEnd"} */"groupEnd"),
+  // [label]
+
+  profile: (/** @type {"profile"} */"profile"),
+  // [profileName]
+  profileEnd: (/** @type {"profileEnd"} */"profileEnd"),
+  // [profileName]
+
+  time: (/** @type {"time"} */"time"),
+  // name, time as [seconds, nanoseconds]
+
+  clear: (/** @type {"clear"} */"clear"),
+  // no arguments
+  status: (/** @type {"status"} */"status") // message, arguments
+});
+module.exports.LogType = LogType;
+
+/** @typedef {typeof LogType[keyof typeof LogType]} LogTypeEnum */
+
+var LOG_SYMBOL = (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; })("webpack logger raw log method");
+var TIMERS_SYMBOL = (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; })("webpack logger times");
+var TIMERS_AGGREGATES_SYMBOL = (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; })("webpack logger aggregated times");
+var WebpackLogger = /*#__PURE__*/function () {
+  /**
+   * @param {(type: LogTypeEnum, args?: EXPECTED_ANY[]) => void} log log function
+   * @param {(name: string | (() => string)) => WebpackLogger} getChildLogger function to create child logger
+   */
+  function WebpackLogger(log, getChildLogger) {
+    _classCallCheck(this, WebpackLogger);
+    this[LOG_SYMBOL] = log;
+    this.getChildLogger = getChildLogger;
+  }
+
+  /**
+   * @param {...EXPECTED_ANY} args args
+   */
+  return _createClass(WebpackLogger, [{
+    key: "error",
+    value: function error() {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+      this[LOG_SYMBOL](LogType.error, args);
+    }
+
+    /**
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "warn",
+    value: function warn() {
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+      this[LOG_SYMBOL](LogType.warn, args);
+    }
+
+    /**
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "info",
+    value: function info() {
+      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+      }
+      this[LOG_SYMBOL](LogType.info, args);
+    }
+
+    /**
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "log",
+    value: function log() {
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+      this[LOG_SYMBOL](LogType.log, args);
+    }
+
+    /**
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "debug",
+    value: function debug() {
+      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+      }
+      this[LOG_SYMBOL](LogType.debug, args);
+    }
+
+    /**
+     * @param {EXPECTED_ANY} assertion assertion
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "assert",
+    value: function assert(assertion) {
+      if (!assertion) {
+        for (var _len6 = arguments.length, args = new Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+          args[_key6 - 1] = arguments[_key6];
+        }
+        this[LOG_SYMBOL](LogType.error, args);
+      }
+    }
+  }, {
+    key: "trace",
+    value: function trace() {
+      this[LOG_SYMBOL](LogType.trace, ["Trace"]);
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this[LOG_SYMBOL](LogType.clear);
+    }
+
+    /**
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "status",
+    value: function status() {
+      for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+      }
+      this[LOG_SYMBOL](LogType.status, args);
+    }
+
+    /**
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "group",
+    value: function group() {
+      for (var _len8 = arguments.length, args = new Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+      }
+      this[LOG_SYMBOL](LogType.group, args);
+    }
+
+    /**
+     * @param {...EXPECTED_ANY} args args
+     */
+  }, {
+    key: "groupCollapsed",
+    value: function groupCollapsed() {
+      for (var _len9 = arguments.length, args = new Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
+      }
+      this[LOG_SYMBOL](LogType.groupCollapsed, args);
+    }
+  }, {
+    key: "groupEnd",
+    value: function groupEnd() {
+      this[LOG_SYMBOL](LogType.groupEnd);
+    }
+
+    /**
+     * @param {string=} label label
+     */
+  }, {
+    key: "profile",
+    value: function profile(label) {
+      this[LOG_SYMBOL](LogType.profile, [label]);
+    }
+
+    /**
+     * @param {string=} label label
+     */
+  }, {
+    key: "profileEnd",
+    value: function profileEnd(label) {
+      this[LOG_SYMBOL](LogType.profileEnd, [label]);
+    }
+
+    /**
+     * @param {string} label label
+     */
+  }, {
+    key: "time",
+    value: function time(label) {
+      /** @type {Map<string | undefined, [number, number]>} */
+      this[TIMERS_SYMBOL] = this[TIMERS_SYMBOL] || new Map();
+      this[TIMERS_SYMBOL].set(label, process.hrtime());
+    }
+
+    /**
+     * @param {string=} label label
+     */
+  }, {
+    key: "timeLog",
+    value: function timeLog(label) {
+      var prev = this[TIMERS_SYMBOL] && this[TIMERS_SYMBOL].get(label);
+      if (!prev) {
+        throw new Error("No such label '".concat(label, "' for WebpackLogger.timeLog()"));
+      }
+      var time = process.hrtime(prev);
+      this[LOG_SYMBOL](LogType.time, [label].concat(_toConsumableArray(time)));
+    }
+
+    /**
+     * @param {string=} label label
+     */
+  }, {
+    key: "timeEnd",
+    value: function timeEnd(label) {
+      var prev = this[TIMERS_SYMBOL] && this[TIMERS_SYMBOL].get(label);
+      if (!prev) {
+        throw new Error("No such label '".concat(label, "' for WebpackLogger.timeEnd()"));
+      }
+      var time = process.hrtime(prev);
+      /** @type {Map<string | undefined, [number, number]>} */
+      this[TIMERS_SYMBOL].delete(label);
+      this[LOG_SYMBOL](LogType.time, [label].concat(_toConsumableArray(time)));
+    }
+
+    /**
+     * @param {string=} label label
+     */
+  }, {
+    key: "timeAggregate",
+    value: function timeAggregate(label) {
+      var prev = this[TIMERS_SYMBOL] && this[TIMERS_SYMBOL].get(label);
+      if (!prev) {
+        throw new Error("No such label '".concat(label, "' for WebpackLogger.timeAggregate()"));
+      }
+      var time = process.hrtime(prev);
+      /** @type {Map<string | undefined, [number, number]>} */
+      this[TIMERS_SYMBOL].delete(label);
+      /** @type {Map<string | undefined, [number, number]>} */
+      this[TIMERS_AGGREGATES_SYMBOL] = this[TIMERS_AGGREGATES_SYMBOL] || new Map();
+      var current = this[TIMERS_AGGREGATES_SYMBOL].get(label);
+      if (current !== undefined) {
+        if (time[1] + current[1] > 1e9) {
+          time[0] += current[0] + 1;
+          time[1] = time[1] - 1e9 + current[1];
+        } else {
+          time[0] += current[0];
+          time[1] += current[1];
+        }
+      }
+      this[TIMERS_AGGREGATES_SYMBOL].set(label, time);
+    }
+
+    /**
+     * @param {string=} label label
+     */
+  }, {
+    key: "timeAggregateEnd",
+    value: function timeAggregateEnd(label) {
+      if (this[TIMERS_AGGREGATES_SYMBOL] === undefined) return;
+      var time = this[TIMERS_AGGREGATES_SYMBOL].get(label);
+      if (time === undefined) return;
+      this[TIMERS_AGGREGATES_SYMBOL].delete(label);
+      this[LOG_SYMBOL](LogType.time, [label].concat(_toConsumableArray(time)));
+    }
+  }]);
+}();
+module.exports.Logger = WebpackLogger;
+
+/***/ }),
+
+/***/ "./node_modules/webpack/lib/logging/createConsoleLogger.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/webpack/lib/logging/createConsoleLogger.js ***!
+  \*****************************************************************/
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_12803__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+
+
+function _slicedToArray(r, e) {
+  return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
+}
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && r[(typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+function _arrayWithHoles(r) {
+  if (Array.isArray(r)) return r;
+}
+function _toConsumableArray(r) {
+  return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
+}
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray(r, a) {
+  if (r) {
+    if ("string" == typeof r) return _arrayLikeToArray(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+  }
+}
+function _iterableToArray(r) {
+  if ("undefined" != typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && null != r[(typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).iterator] || null != r["@@iterator"]) return Array.from(r);
+}
+function _arrayWithoutHoles(r) {
+  if (Array.isArray(r)) return _arrayLikeToArray(r);
+}
+function _arrayLikeToArray(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && "symbol" == typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && o.constructor === (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }) && o !== (typeof Symbol !== "undefined" ? Symbol : function (i) { return i; }).prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+var _require = __nested_webpack_require_12803__(/*! ./Logger */ "./node_modules/webpack/lib/logging/Logger.js"),
+  LogType = _require.LogType;
+
+/** @typedef {import("../../declarations/WebpackOptions").FilterItemTypes} FilterItemTypes */
+/** @typedef {import("../../declarations/WebpackOptions").FilterTypes} FilterTypes */
+/** @typedef {import("./Logger").LogTypeEnum} LogTypeEnum */
+
+/** @typedef {(item: string) => boolean} FilterFunction */
+/** @typedef {(value: string, type: LogTypeEnum, args?: EXPECTED_ANY[]) => void} LoggingFunction */
+
+/**
+ * @typedef {object} LoggerConsole
+ * @property {() => void} clear
+ * @property {() => void} trace
+ * @property {(...args: EXPECTED_ANY[]) => void} info
+ * @property {(...args: EXPECTED_ANY[]) => void} log
+ * @property {(...args: EXPECTED_ANY[]) => void} warn
+ * @property {(...args: EXPECTED_ANY[]) => void} error
+ * @property {(...args: EXPECTED_ANY[]) => void=} debug
+ * @property {(...args: EXPECTED_ANY[]) => void=} group
+ * @property {(...args: EXPECTED_ANY[]) => void=} groupCollapsed
+ * @property {(...args: EXPECTED_ANY[]) => void=} groupEnd
+ * @property {(...args: EXPECTED_ANY[]) => void=} status
+ * @property {(...args: EXPECTED_ANY[]) => void=} profile
+ * @property {(...args: EXPECTED_ANY[]) => void=} profileEnd
+ * @property {(...args: EXPECTED_ANY[]) => void=} logTime
+ */
+
+/**
+ * @typedef {object} LoggerOptions
+ * @property {false|true|"none"|"error"|"warn"|"info"|"log"|"verbose"} level loglevel
+ * @property {FilterTypes|boolean} debug filter for debug logging
+ * @property {LoggerConsole} console the console to log to
+ */
+
+/**
+ * @param {FilterItemTypes} item an input item
+ * @returns {FilterFunction | undefined} filter function
+ */
+var filterToFunction = function filterToFunction(item) {
+  if (typeof item === "string") {
+    var regExp = new RegExp("[\\\\/]".concat(item.replace(/[-[\]{}()*+?.\\^$|]/g, "\\$&"), "([\\\\/]|$|!|\\?)"));
+    return function (ident) {
+      return regExp.test(ident);
+    };
+  }
+  if (item && _typeof(item) === "object" && typeof item.test === "function") {
+    return function (ident) {
+      return item.test(ident);
+    };
+  }
+  if (typeof item === "function") {
+    return item;
+  }
+  if (typeof item === "boolean") {
+    return function () {
+      return item;
+    };
+  }
+};
+
+/**
+ * @enum {number}
+ */
+var LogLevel = {
+  none: 6,
+  false: 6,
+  error: 5,
+  warn: 4,
+  info: 3,
+  log: 2,
+  true: 2,
+  verbose: 1
+};
+
+/**
+ * @param {LoggerOptions} options options object
+ * @returns {LoggingFunction} logging function
+ */
+module.exports = function (_ref) {
+  var _ref$level = _ref.level,
+    level = _ref$level === void 0 ? "info" : _ref$level,
+    _ref$debug = _ref.debug,
+    debug = _ref$debug === void 0 ? false : _ref$debug,
+    console = _ref.console;
+  var debugFilters = /** @type {FilterFunction[]} */
+
+  typeof debug === "boolean" ? [function () {
+    return debug;
+  }] : /** @type {FilterItemTypes[]} */[].concat(debug).map(filterToFunction);
+  var loglevel = LogLevel["".concat(level)] || 0;
+
+  /**
+   * @param {string} name name of the logger
+   * @param {LogTypeEnum} type type of the log entry
+   * @param {EXPECTED_ANY[]=} args arguments of the log entry
+   * @returns {void}
+   */
+  var logger = function logger(name, type, args) {
+    var labeledArgs = function labeledArgs() {
+      if (Array.isArray(args)) {
+        if (args.length > 0 && typeof args[0] === "string") {
+          return ["[".concat(name, "] ").concat(args[0])].concat(_toConsumableArray(args.slice(1)));
+        }
+        return ["[".concat(name, "]")].concat(_toConsumableArray(args));
+      }
+      return [];
+    };
+    var debug = debugFilters.some(function (f) {
+      return f(name);
+    });
+    switch (type) {
+      case LogType.debug:
+        if (!debug) return;
+        if (typeof console.debug === "function") {
+          console.debug.apply(console, _toConsumableArray(labeledArgs()));
+        } else {
+          console.log.apply(console, _toConsumableArray(labeledArgs()));
+        }
+        break;
+      case LogType.log:
+        if (!debug && loglevel > LogLevel.log) return;
+        console.log.apply(console, _toConsumableArray(labeledArgs()));
+        break;
+      case LogType.info:
+        if (!debug && loglevel > LogLevel.info) return;
+        console.info.apply(console, _toConsumableArray(labeledArgs()));
+        break;
+      case LogType.warn:
+        if (!debug && loglevel > LogLevel.warn) return;
+        console.warn.apply(console, _toConsumableArray(labeledArgs()));
+        break;
+      case LogType.error:
+        if (!debug && loglevel > LogLevel.error) return;
+        console.error.apply(console, _toConsumableArray(labeledArgs()));
+        break;
+      case LogType.trace:
+        if (!debug) return;
+        console.trace();
+        break;
+      case LogType.groupCollapsed:
+        if (!debug && loglevel > LogLevel.log) return;
+        if (!debug && loglevel > LogLevel.verbose) {
+          if (typeof console.groupCollapsed === "function") {
+            console.groupCollapsed.apply(console, _toConsumableArray(labeledArgs()));
+          } else {
+            console.log.apply(console, _toConsumableArray(labeledArgs()));
+          }
+          break;
+        }
+      // falls through
+      case LogType.group:
+        if (!debug && loglevel > LogLevel.log) return;
+        if (typeof console.group === "function") {
+          console.group.apply(console, _toConsumableArray(labeledArgs()));
+        } else {
+          console.log.apply(console, _toConsumableArray(labeledArgs()));
+        }
+        break;
+      case LogType.groupEnd:
+        if (!debug && loglevel > LogLevel.log) return;
+        if (typeof console.groupEnd === "function") {
+          console.groupEnd();
+        }
+        break;
+      case LogType.time:
+        {
+          if (!debug && loglevel > LogLevel.log) return;
+          var _args = _slicedToArray(/** @type {[string, number, number]} */
+            args, 3),
+            label = _args[0],
+            start = _args[1],
+            end = _args[2];
+          var ms = start * 1000 + end / 1000000;
+          var msg = "[".concat(name, "] ").concat(label, ": ").concat(ms, " ms");
+          if (typeof console.logTime === "function") {
+            console.logTime(msg);
+          } else {
+            console.log(msg);
+          }
+          break;
+        }
+      case LogType.profile:
+        if (typeof console.profile === "function") {
+          console.profile.apply(console, _toConsumableArray(labeledArgs()));
+        }
+        break;
+      case LogType.profileEnd:
+        if (typeof console.profileEnd === "function") {
+          console.profileEnd.apply(console, _toConsumableArray(labeledArgs()));
+        }
+        break;
+      case LogType.clear:
+        if (!debug && loglevel > LogLevel.log) return;
+        if (typeof console.clear === "function") {
+          console.clear();
+        }
+        break;
+      case LogType.status:
+        if (!debug && loglevel > LogLevel.info) return;
+        if (typeof console.status === "function") {
+          if (!args || args.length === 0) {
+            console.status();
+          } else {
+            console.status.apply(console, _toConsumableArray(labeledArgs()));
+          }
+        } else if (args && args.length !== 0) {
+          console.info.apply(console, _toConsumableArray(labeledArgs()));
+        }
+        break;
+      default:
+        throw new Error("Unexpected LogType ".concat(type));
+    }
+  };
+  return logger;
+};
+
+/***/ }),
+
+/***/ "./node_modules/webpack/lib/logging/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/webpack/lib/logging/runtime.js ***!
+  \*****************************************************/
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_23778__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+
+
+function _extends() {
+  return _extends = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+    }
+    return n;
+  }, _extends.apply(null, arguments);
+}
+var _require = __nested_webpack_require_23778__(/*! tapable */ "./client-src/modules/logger/tapable.js"),
+  SyncBailHook = _require.SyncBailHook;
+var _require2 = __nested_webpack_require_23778__(/*! ./Logger */ "./node_modules/webpack/lib/logging/Logger.js"),
+  Logger = _require2.Logger;
+var createConsoleLogger = __nested_webpack_require_23778__(/*! ./createConsoleLogger */ "./node_modules/webpack/lib/logging/createConsoleLogger.js");
+
+/** @type {createConsoleLogger.LoggerOptions} */
+var currentDefaultLoggerOptions = {
+  level: "info",
+  debug: false,
+  console: console
+};
+var currentDefaultLogger = createConsoleLogger(currentDefaultLoggerOptions);
+
+/**
+ * @param {string} name name of the logger
+ * @returns {Logger} a logger
+ */
+module.exports.getLogger = function (name) {
+  return new Logger(function (type, args) {
+    if (module.exports.hooks.log.call(name, type, args) === undefined) {
+      currentDefaultLogger(name, type, args);
+    }
+  }, function (childName) {
+    return module.exports.getLogger("".concat(name, "/").concat(childName));
+  });
+};
+
+/**
+ * @param {createConsoleLogger.LoggerOptions} options new options, merge with old options
+ * @returns {void}
+ */
+module.exports.configureDefaultLogger = function (options) {
+  _extends(currentDefaultLoggerOptions, options);
+  currentDefaultLogger = createConsoleLogger(currentDefaultLoggerOptions);
+};
+module.exports.hooks = {
+  log: new SyncBailHook(["origin", "type", "args"])
+};
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nested_webpack_require_25855__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25855__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nested_webpack_require_25855__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nested_webpack_require_25855__.o(definition, key) && !__nested_webpack_require_25855__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__nested_webpack_require_25855__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__nested_webpack_require_25855__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __nested_webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+!function() {
+/*!********************************************!*\
+  !*** ./client-src/modules/logger/index.js ***!
+  \********************************************/
+__nested_webpack_require_25855__.r(__nested_webpack_exports__);
+/* harmony export */ __nested_webpack_require_25855__.d(__nested_webpack_exports__, {
+/* harmony export */   "default": function() { return /* reexport default export from named module */ webpack_lib_logging_runtime_js__WEBPACK_IMPORTED_MODULE_0__; }
+/* harmony export */ });
+/* harmony import */ var webpack_lib_logging_runtime_js__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25855__(/*! webpack/lib/logging/runtime.js */ "./node_modules/webpack/lib/logging/runtime.js");
+
+}();
+var __webpack_export_target__ = exports;
+for(var __webpack_i__ in __nested_webpack_exports__) __webpack_export_target__[__webpack_i__] = __nested_webpack_exports__[__webpack_i__];
+if(__nested_webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target__, "__esModule", { value: true });
+/******/ })()
+;
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/overlay.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/overlay.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createOverlay: () => (/* binding */ createOverlay),
+/* harmony export */   formatProblem: () => (/* binding */ formatProblem)
+/* harmony export */ });
+/* harmony import */ var ansi_html_community__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ansi-html-community */ "./node_modules/ansi-html-community/index.js");
+/* harmony import */ var ansi_html_community__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(ansi_html_community__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+// The error overlay is inspired (and mostly copied) from Create React App (https://github.com/facebookincubator/create-react-app)
+// They, in turn, got inspired by webpack-hot-middleware (https://github.com/glenjamin/webpack-hot-middleware).
+
+
+
+/**
+ * @type {(input: string, position: number) => string}
+ */
+var getCodePoint = String.prototype.codePointAt ? function (input, position) {
+  return input.codePointAt(position);
+} : function (input, position) {
+  return (input.charCodeAt(position) - 0xd800) * 0x400 + input.charCodeAt(position + 1) - 0xdc00 + 0x10000;
+};
+
+/**
+ * @param {string} macroText
+ * @param {RegExp} macroRegExp
+ * @param {(input: string) => string} macroReplacer
+ * @returns {string}
+ */
+var replaceUsingRegExp = function replaceUsingRegExp(macroText, macroRegExp, macroReplacer) {
+  macroRegExp.lastIndex = 0;
+  var replaceMatch = macroRegExp.exec(macroText);
+  var replaceResult;
+  if (replaceMatch) {
+    replaceResult = "";
+    var replaceLastIndex = 0;
+    do {
+      if (replaceLastIndex !== replaceMatch.index) {
+        replaceResult += macroText.substring(replaceLastIndex, replaceMatch.index);
+      }
+      var replaceInput = replaceMatch[0];
+      replaceResult += macroReplacer(replaceInput);
+      replaceLastIndex = replaceMatch.index + replaceInput.length;
+      // eslint-disable-next-line no-cond-assign
+    } while (replaceMatch = macroRegExp.exec(macroText));
+    if (replaceLastIndex !== macroText.length) {
+      replaceResult += macroText.substring(replaceLastIndex);
+    }
+  } else {
+    replaceResult = macroText;
+  }
+  return replaceResult;
+};
+var references = {
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&apos;",
+  "&": "&amp;"
+};
+
+/**
+ * @param {string} text text
+ * @returns {string}
+ */
+function encode(text) {
+  if (!text) {
+    return "";
+  }
+  return replaceUsingRegExp(text, /[<>'"&]/g, function (input) {
+    var result = references[input];
+    if (!result) {
+      var code = input.length > 1 ? getCodePoint(input, 0) : input.charCodeAt(0);
+      result = "&#".concat(code, ";");
+    }
+    return result;
+  });
+}
+
+/**
+ * @typedef {Object} StateDefinitions
+ * @property {{[event: string]: { target: string; actions?: Array<string> }}} [on]
+ */
+
+/**
+ * @typedef {Object} Options
+ * @property {{[state: string]: StateDefinitions}} states
+ * @property {object} context;
+ * @property {string} initial
+ */
+
+/**
+ * @typedef {Object} Implementation
+ * @property {{[actionName: string]: (ctx: object, event: any) => object}} actions
+ */
+
+/**
+ * A simplified `createMachine` from `@xstate/fsm` with the following differences:
+ *
+ *  - the returned machine is technically a "service". No `interpret(machine).start()` is needed.
+ *  - the state definition only support `on` and target must be declared with { target: 'nextState', actions: [] } explicitly.
+ *  - event passed to `send` must be an object with `type` property.
+ *  - actions implementation will be [assign action](https://xstate.js.org/docs/guides/context.html#assign-action) if you return any value.
+ *  Do not return anything if you just want to invoke side effect.
+ *
+ * The goal of this custom function is to avoid installing the entire `'xstate/fsm'` package, while enabling modeling using
+ * state machine. You can copy the first parameter into the editor at https://stately.ai/viz to visualize the state machine.
+ *
+ * @param {Options} options
+ * @param {Implementation} implementation
+ */
+function createMachine(_ref, _ref2) {
+  var states = _ref.states,
+    context = _ref.context,
+    initial = _ref.initial;
+  var actions = _ref2.actions;
+  var currentState = initial;
+  var currentContext = context;
+  return {
+    send: function send(event) {
+      var currentStateOn = states[currentState].on;
+      var transitionConfig = currentStateOn && currentStateOn[event.type];
+      if (transitionConfig) {
+        currentState = transitionConfig.target;
+        if (transitionConfig.actions) {
+          transitionConfig.actions.forEach(function (actName) {
+            var actionImpl = actions[actName];
+            var nextContextValue = actionImpl && actionImpl(currentContext, event);
+            if (nextContextValue) {
+              currentContext = _objectSpread(_objectSpread({}, currentContext), nextContextValue);
+            }
+          });
+        }
+      }
+    }
+  };
+}
+
+/**
+ * @typedef {Object} ShowOverlayData
+ * @property {'warning' | 'error'} level
+ * @property {Array<string  | { moduleIdentifier?: string, moduleName?: string, loc?: string, message?: string }>} messages
+ * @property {'build' | 'runtime'} messageSource
+ */
+
+/**
+ * @typedef {Object} CreateOverlayMachineOptions
+ * @property {(data: ShowOverlayData) => void} showOverlay
+ * @property {() => void} hideOverlay
+ */
+
+/**
+ * @param {CreateOverlayMachineOptions} options
+ */
+var createOverlayMachine = function createOverlayMachine(options) {
+  var hideOverlay = options.hideOverlay,
+    showOverlay = options.showOverlay;
+  return createMachine({
+    initial: "hidden",
+    context: {
+      level: "error",
+      messages: [],
+      messageSource: "build"
+    },
+    states: {
+      hidden: {
+        on: {
+          BUILD_ERROR: {
+            target: "displayBuildError",
+            actions: ["setMessages", "showOverlay"]
+          },
+          RUNTIME_ERROR: {
+            target: "displayRuntimeError",
+            actions: ["setMessages", "showOverlay"]
+          }
+        }
+      },
+      displayBuildError: {
+        on: {
+          DISMISS: {
+            target: "hidden",
+            actions: ["dismissMessages", "hideOverlay"]
+          },
+          BUILD_ERROR: {
+            target: "displayBuildError",
+            actions: ["appendMessages", "showOverlay"]
+          }
+        }
+      },
+      displayRuntimeError: {
+        on: {
+          DISMISS: {
+            target: "hidden",
+            actions: ["dismissMessages", "hideOverlay"]
+          },
+          RUNTIME_ERROR: {
+            target: "displayRuntimeError",
+            actions: ["appendMessages", "showOverlay"]
+          },
+          BUILD_ERROR: {
+            target: "displayBuildError",
+            actions: ["setMessages", "showOverlay"]
+          }
+        }
+      }
+    }
+  }, {
+    actions: {
+      dismissMessages: function dismissMessages() {
+        return {
+          messages: [],
+          level: "error",
+          messageSource: "build"
+        };
+      },
+      appendMessages: function appendMessages(context, event) {
+        return {
+          messages: context.messages.concat(event.messages),
+          level: event.level || context.level,
+          messageSource: event.type === "RUNTIME_ERROR" ? "runtime" : "build"
+        };
+      },
+      setMessages: function setMessages(context, event) {
+        return {
+          messages: event.messages,
+          level: event.level || context.level,
+          messageSource: event.type === "RUNTIME_ERROR" ? "runtime" : "build"
+        };
+      },
+      hideOverlay: hideOverlay,
+      showOverlay: showOverlay
+    }
+  });
+};
+
+/**
+ *
+ * @param {Error} error
+ */
+var parseErrorToStacks = function parseErrorToStacks(error) {
+  if (!error || !(error instanceof Error)) {
+    throw new Error("parseErrorToStacks expects Error object");
+  }
+  if (typeof error.stack === "string") {
+    return error.stack.split("\n").filter(function (stack) {
+      return stack !== "Error: ".concat(error.message);
+    });
+  }
+};
+
+/**
+ * @callback ErrorCallback
+ * @param {ErrorEvent} error
+ * @returns {void}
+ */
+
+/**
+ * @param {ErrorCallback} callback
+ */
+var listenToRuntimeError = function listenToRuntimeError(callback) {
+  window.addEventListener("error", callback);
+  return function cleanup() {
+    window.removeEventListener("error", callback);
+  };
+};
+
+/**
+ * @callback UnhandledRejectionCallback
+ * @param {PromiseRejectionEvent} rejectionEvent
+ * @returns {void}
+ */
+
+/**
+ * @param {UnhandledRejectionCallback} callback
+ */
+var listenToUnhandledRejection = function listenToUnhandledRejection(callback) {
+  window.addEventListener("unhandledrejection", callback);
+  return function cleanup() {
+    window.removeEventListener("unhandledrejection", callback);
+  };
+};
+
+// Styles are inspired by `react-error-overlay`
+
+var msgStyles = {
+  error: {
+    backgroundColor: "rgba(206, 17, 38, 0.1)",
+    color: "#fccfcf"
+  },
+  warning: {
+    backgroundColor: "rgba(251, 245, 180, 0.1)",
+    color: "#fbf5b4"
+  }
+};
+var iframeStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  width: "100vw",
+  height: "100vh",
+  border: "none",
+  "z-index": 9999999999
+};
+var containerStyle = {
+  position: "fixed",
+  boxSizing: "border-box",
+  left: 0,
+  top: 0,
+  right: 0,
+  bottom: 0,
+  width: "100vw",
+  height: "100vh",
+  fontSize: "large",
+  padding: "2rem 2rem 4rem 2rem",
+  lineHeight: "1.2",
+  whiteSpace: "pre-wrap",
+  overflow: "auto",
+  backgroundColor: "rgba(0, 0, 0, 0.9)",
+  color: "white"
+};
+var headerStyle = {
+  color: "#e83b46",
+  fontSize: "2em",
+  whiteSpace: "pre-wrap",
+  fontFamily: "sans-serif",
+  margin: "0 2rem 2rem 0",
+  flex: "0 0 auto",
+  maxHeight: "50%",
+  overflow: "auto"
+};
+var dismissButtonStyle = {
+  color: "#ffffff",
+  lineHeight: "1rem",
+  fontSize: "1.5rem",
+  padding: "1rem",
+  cursor: "pointer",
+  position: "absolute",
+  right: 0,
+  top: 0,
+  backgroundColor: "transparent",
+  border: "none"
+};
+var msgTypeStyle = {
+  color: "#e83b46",
+  fontSize: "1.2em",
+  marginBottom: "1rem",
+  fontFamily: "sans-serif"
+};
+var msgTextStyle = {
+  lineHeight: "1.5",
+  fontSize: "1rem",
+  fontFamily: "Menlo, Consolas, monospace"
+};
+
+// ANSI HTML
+
+var colors = {
+  reset: ["transparent", "transparent"],
+  black: "181818",
+  red: "E36049",
+  green: "B3CB74",
+  yellow: "FFD080",
+  blue: "7CAFC2",
+  magenta: "7FACCA",
+  cyan: "C3C2EF",
+  lightgrey: "EBE7E3",
+  darkgrey: "6D7891"
+};
+ansi_html_community__WEBPACK_IMPORTED_MODULE_0___default().setColors(colors);
+
+/**
+ * @param {string} type
+ * @param {string  | { file?: string, moduleName?: string, loc?: string, message?: string; stack?: string[] }} item
+ * @returns {{ header: string, body: string }}
+ */
+var formatProblem = function formatProblem(type, item) {
+  var header = type === "warning" ? "WARNING" : "ERROR";
+  var body = "";
+  if (typeof item === "string") {
+    body += item;
+  } else {
+    var file = item.file || "";
+    // eslint-disable-next-line no-nested-ternary
+    var moduleName = item.moduleName ? item.moduleName.indexOf("!") !== -1 ? "".concat(item.moduleName.replace(/^(\s|\S)*!/, ""), " (").concat(item.moduleName, ")") : "".concat(item.moduleName) : "";
+    var loc = item.loc;
+    header += "".concat(moduleName || file ? " in ".concat(moduleName ? "".concat(moduleName).concat(file ? " (".concat(file, ")") : "") : file).concat(loc ? " ".concat(loc) : "") : "");
+    body += item.message || "";
+  }
+  if (Array.isArray(item.stack)) {
+    item.stack.forEach(function (stack) {
+      if (typeof stack === "string") {
+        body += "\r\n".concat(stack);
+      }
+    });
+  }
+  return {
+    header: header,
+    body: body
+  };
+};
+
+/**
+ * @typedef {Object} CreateOverlayOptions
+ * @property {string | null} trustedTypesPolicyName
+ * @property {boolean | (error: Error) => void} [catchRuntimeError]
+ */
+
+/**
+ *
+ * @param {CreateOverlayOptions} options
+ */
+var createOverlay = function createOverlay(options) {
+  /** @type {HTMLIFrameElement | null | undefined} */
+  var iframeContainerElement;
+  /** @type {HTMLDivElement | null | undefined} */
+  var containerElement;
+  /** @type {HTMLDivElement | null | undefined} */
+  var headerElement;
+  /** @type {Array<(element: HTMLDivElement) => void>} */
+  var onLoadQueue = [];
+  /** @type {TrustedTypePolicy | undefined} */
+  var overlayTrustedTypesPolicy;
+
+  /**
+   *
+   * @param {HTMLElement} element
+   * @param {CSSStyleDeclaration} style
+   */
+  function applyStyle(element, style) {
+    Object.keys(style).forEach(function (prop) {
+      element.style[prop] = style[prop];
+    });
+  }
+
+  /**
+   * @param {string | null} trustedTypesPolicyName
+   */
+  function createContainer(trustedTypesPolicyName) {
+    // Enable Trusted Types if they are available in the current browser.
+    if (window.trustedTypes) {
+      overlayTrustedTypesPolicy = window.trustedTypes.createPolicy(trustedTypesPolicyName || "webpack-dev-server#overlay", {
+        createHTML: function createHTML(value) {
+          return value;
+        }
+      });
+    }
+    iframeContainerElement = document.createElement("iframe");
+    iframeContainerElement.id = "webpack-dev-server-client-overlay";
+    iframeContainerElement.src = "about:blank";
+    applyStyle(iframeContainerElement, iframeStyle);
+    iframeContainerElement.onload = function () {
+      var contentElement = /** @type {Document} */
+      (/** @type {HTMLIFrameElement} */
+      iframeContainerElement.contentDocument).createElement("div");
+      containerElement = /** @type {Document} */
+      (/** @type {HTMLIFrameElement} */
+      iframeContainerElement.contentDocument).createElement("div");
+      contentElement.id = "webpack-dev-server-client-overlay-div";
+      applyStyle(contentElement, containerStyle);
+      headerElement = document.createElement("div");
+      headerElement.innerText = "Compiled with problems:";
+      applyStyle(headerElement, headerStyle);
+      var closeButtonElement = document.createElement("button");
+      applyStyle(closeButtonElement, dismissButtonStyle);
+      closeButtonElement.innerText = "×";
+      closeButtonElement.ariaLabel = "Dismiss";
+      closeButtonElement.addEventListener("click", function () {
+        // eslint-disable-next-line no-use-before-define
+        overlayService.send({
+          type: "DISMISS"
+        });
+      });
+      contentElement.appendChild(headerElement);
+      contentElement.appendChild(closeButtonElement);
+      contentElement.appendChild(containerElement);
+
+      /** @type {Document} */
+      (/** @type {HTMLIFrameElement} */
+      iframeContainerElement.contentDocument).body.appendChild(contentElement);
+      onLoadQueue.forEach(function (onLoad) {
+        onLoad(/** @type {HTMLDivElement} */contentElement);
+      });
+      onLoadQueue = [];
+
+      /** @type {HTMLIFrameElement} */
+      iframeContainerElement.onload = null;
+    };
+    document.body.appendChild(iframeContainerElement);
+  }
+
+  /**
+   * @param {(element: HTMLDivElement) => void} callback
+   * @param {string | null} trustedTypesPolicyName
+   */
+  function ensureOverlayExists(callback, trustedTypesPolicyName) {
+    if (containerElement) {
+      containerElement.innerHTML = overlayTrustedTypesPolicy ? overlayTrustedTypesPolicy.createHTML("") : "";
+      // Everything is ready, call the callback right away.
+      callback(containerElement);
+      return;
+    }
+    onLoadQueue.push(callback);
+    if (iframeContainerElement) {
+      return;
+    }
+    createContainer(trustedTypesPolicyName);
+  }
+
+  // Successful compilation.
+  function hide() {
+    if (!iframeContainerElement) {
+      return;
+    }
+
+    // Clean up and reset internal state.
+    document.body.removeChild(iframeContainerElement);
+    iframeContainerElement = null;
+    containerElement = null;
+  }
+
+  // Compilation with errors (e.g. syntax error or missing modules).
+  /**
+   * @param {string} type
+   * @param {Array<string  | { moduleIdentifier?: string, moduleName?: string, loc?: string, message?: string }>} messages
+   * @param {string | null} trustedTypesPolicyName
+   * @param {'build' | 'runtime'} messageSource
+   */
+  function show(type, messages, trustedTypesPolicyName, messageSource) {
+    ensureOverlayExists(function () {
+      headerElement.innerText = messageSource === "runtime" ? "Uncaught runtime errors:" : "Compiled with problems:";
+      messages.forEach(function (message) {
+        var entryElement = document.createElement("div");
+        var msgStyle = type === "warning" ? msgStyles.warning : msgStyles.error;
+        applyStyle(entryElement, _objectSpread(_objectSpread({}, msgStyle), {}, {
+          padding: "1rem 1rem 1.5rem 1rem"
+        }));
+        var typeElement = document.createElement("div");
+        var _formatProblem = formatProblem(type, message),
+          header = _formatProblem.header,
+          body = _formatProblem.body;
+        typeElement.innerText = header;
+        applyStyle(typeElement, msgTypeStyle);
+        if (message.moduleIdentifier) {
+          applyStyle(typeElement, {
+            cursor: "pointer"
+          });
+          // element.dataset not supported in IE
+          typeElement.setAttribute("data-can-open", true);
+          typeElement.addEventListener("click", function () {
+            fetch("/webpack-dev-server/open-editor?fileName=".concat(message.moduleIdentifier));
+          });
+        }
+
+        // Make it look similar to our terminal.
+        var text = ansi_html_community__WEBPACK_IMPORTED_MODULE_0___default()(encode(body));
+        var messageTextNode = document.createElement("div");
+        applyStyle(messageTextNode, msgTextStyle);
+        messageTextNode.innerHTML = overlayTrustedTypesPolicy ? overlayTrustedTypesPolicy.createHTML(text) : text;
+        entryElement.appendChild(typeElement);
+        entryElement.appendChild(messageTextNode);
+
+        /** @type {HTMLDivElement} */
+        containerElement.appendChild(entryElement);
+      });
+    }, trustedTypesPolicyName);
+  }
+  var overlayService = createOverlayMachine({
+    showOverlay: function showOverlay(_ref3) {
+      var _ref3$level = _ref3.level,
+        level = _ref3$level === void 0 ? "error" : _ref3$level,
+        messages = _ref3.messages,
+        messageSource = _ref3.messageSource;
+      return show(level, messages, options.trustedTypesPolicyName, messageSource);
+    },
+    hideOverlay: hide
+  });
+  if (options.catchRuntimeError) {
+    /**
+     * @param {Error | undefined} error
+     * @param {string} fallbackMessage
+     */
+    var handleError = function handleError(error, fallbackMessage) {
+      var errorObject = error instanceof Error ? error : new Error(error || fallbackMessage);
+      var shouldDisplay = typeof options.catchRuntimeError === "function" ? options.catchRuntimeError(errorObject) : true;
+      if (shouldDisplay) {
+        overlayService.send({
+          type: "RUNTIME_ERROR",
+          messages: [{
+            message: errorObject.message,
+            stack: parseErrorToStacks(errorObject)
+          }]
+        });
+      }
+    };
+    listenToRuntimeError(function (errorEvent) {
+      // error property may be empty in older browser like IE
+      var error = errorEvent.error,
+        message = errorEvent.message;
+      if (!error && !message) {
+        return;
+      }
+
+      // if error stack indicates a React error boundary caught the error, do not show overlay.
+      if (error && error.stack && error.stack.includes("invokeGuardedCallbackDev")) {
+        return;
+      }
+      handleError(error, message);
+    });
+    listenToUnhandledRejection(function (promiseRejectionEvent) {
+      var reason = promiseRejectionEvent.reason;
+      handleError(reason, "Unknown promise rejection reason");
+    });
+  }
+  return overlayService;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/progress.js":
+/*!************************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/progress.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   defineProgressElement: () => (/* binding */ defineProgressElement),
+/* harmony export */   isProgressSupported: () => (/* binding */ isProgressSupported)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
+function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
+function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
+function _wrapNativeSuper(t) { var r = "function" == typeof Map ? new Map() : void 0; return _wrapNativeSuper = function _wrapNativeSuper(t) { if (null === t || !_isNativeFunction(t)) return t; if ("function" != typeof t) throw new TypeError("Super expression must either be null or a function"); if (void 0 !== r) { if (r.has(t)) return r.get(t); r.set(t, Wrapper); } function Wrapper() { return _construct(t, arguments, _getPrototypeOf(this).constructor); } return Wrapper.prototype = Object.create(t.prototype, { constructor: { value: Wrapper, enumerable: !1, writable: !0, configurable: !0 } }), _setPrototypeOf(Wrapper, t); }, _wrapNativeSuper(t); }
+function _construct(t, e, r) { if (_isNativeReflectConstruct()) return Reflect.construct.apply(null, arguments); var o = [null]; o.push.apply(o, e); var p = new (t.bind.apply(t, o))(); return r && _setPrototypeOf(p, r.prototype), p; }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _isNativeFunction(t) { try { return -1 !== Function.toString.call(t).indexOf("[native code]"); } catch (n) { return "function" == typeof t; } }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
+function _classPrivateMethodInitSpec(e, a) { _checkPrivateRedeclaration(e, a), a.add(e); }
+function _checkPrivateRedeclaration(e, t) { if (t.has(e)) throw new TypeError("Cannot initialize the same private elements twice on an object"); }
+function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
+function isProgressSupported() {
+  return "customElements" in self && !!HTMLElement.prototype.attachShadow;
+}
+function defineProgressElement() {
+  var _WebpackDevServerProgress;
+  if (customElements.get("wds-progress")) {
+    return;
+  }
+  var _WebpackDevServerProgress_brand = /*#__PURE__*/new WeakSet();
+  var WebpackDevServerProgress = /*#__PURE__*/function (_HTMLElement) {
+    function WebpackDevServerProgress() {
+      var _this;
+      _classCallCheck(this, WebpackDevServerProgress);
+      _this = _callSuper(this, WebpackDevServerProgress);
+      _classPrivateMethodInitSpec(_this, _WebpackDevServerProgress_brand);
+      _this.attachShadow({
+        mode: "open"
+      });
+      _this.maxDashOffset = -219.99078369140625;
+      _this.animationTimer = null;
+      return _this;
+    }
+    _inherits(WebpackDevServerProgress, _HTMLElement);
+    return _createClass(WebpackDevServerProgress, [{
+      key: "connectedCallback",
+      value: function connectedCallback() {
+        _assertClassBrand(_WebpackDevServerProgress_brand, this, _reset).call(this);
+      }
+    }, {
+      key: "attributeChangedCallback",
+      value: function attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "progress") {
+          _assertClassBrand(_WebpackDevServerProgress_brand, this, _update).call(this, Number(newValue));
+        } else if (name === "type") {
+          _assertClassBrand(_WebpackDevServerProgress_brand, this, _reset).call(this);
+        }
+      }
+    }], [{
+      key: "observedAttributes",
+      get: function get() {
+        return ["progress", "type"];
+      }
+    }]);
+  }(/*#__PURE__*/_wrapNativeSuper(HTMLElement));
+  _WebpackDevServerProgress = WebpackDevServerProgress;
+  function _reset() {
+    var _this$getAttribute, _Number;
+    clearTimeout(this.animationTimer);
+    this.animationTimer = null;
+    var typeAttr = (_this$getAttribute = this.getAttribute("type")) === null || _this$getAttribute === void 0 ? void 0 : _this$getAttribute.toLowerCase();
+    this.type = typeAttr === "circular" ? "circular" : "linear";
+    var innerHTML = this.type === "circular" ? _circularTemplate.call(_WebpackDevServerProgress) : _linearTemplate.call(_WebpackDevServerProgress);
+    this.shadowRoot.innerHTML = innerHTML;
+    this.initialProgress = (_Number = Number(this.getAttribute("progress"))) !== null && _Number !== void 0 ? _Number : 0;
+    _assertClassBrand(_WebpackDevServerProgress_brand, this, _update).call(this, this.initialProgress);
+  }
+  function _circularTemplate() {
+    return "\n        <style>\n        :host {\n            width: 200px;\n            height: 200px;\n            position: fixed;\n            right: 5%;\n            top: 5%;\n            transition: opacity .25s ease-in-out;\n            z-index: 2147483645;\n        }\n\n        circle {\n            fill: #282d35;\n        }\n\n        path {\n            fill: rgba(0, 0, 0, 0);\n            stroke: rgb(186, 223, 172);\n            stroke-dasharray: 219.99078369140625;\n            stroke-dashoffset: -219.99078369140625;\n            stroke-width: 10;\n            transform: rotate(90deg) translate(0px, -80px);\n        }\n\n        text {\n            font-family: 'Open Sans', sans-serif;\n            font-size: 18px;\n            fill: #ffffff;\n            dominant-baseline: middle;\n            text-anchor: middle;\n        }\n\n        tspan#percent-super {\n            fill: #bdc3c7;\n            font-size: 0.45em;\n            baseline-shift: 10%;\n        }\n\n        @keyframes fade {\n            0% { opacity: 1; transform: scale(1); }\n            100% { opacity: 0; transform: scale(0); }\n        }\n\n        .disappear {\n            animation: fade 0.3s;\n            animation-fill-mode: forwards;\n            animation-delay: 0.5s;\n        }\n\n        .hidden {\n            display: none;\n        }\n        </style>\n        <svg id=\"progress\" class=\"hidden noselect\" viewBox=\"0 0 80 80\">\n        <circle cx=\"50%\" cy=\"50%\" r=\"35\"></circle>\n        <path d=\"M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0\"></path>\n        <text x=\"50%\" y=\"51%\">\n            <tspan id=\"percent-value\">0</tspan>\n            <tspan id=\"percent-super\">%</tspan>\n        </text>\n        </svg>\n      ";
+  }
+  function _linearTemplate() {
+    return "\n        <style>\n        :host {\n            position: fixed;\n            top: 0;\n            left: 0;\n            height: 4px;\n            width: 100vw;\n            z-index: 2147483645;\n        }\n\n        #bar {\n            width: 0%;\n            height: 4px;\n            background-color: rgb(186, 223, 172);\n        }\n\n        @keyframes fade {\n            0% { opacity: 1; }\n            100% { opacity: 0; }\n        }\n\n        .disappear {\n            animation: fade 0.3s;\n            animation-fill-mode: forwards;\n            animation-delay: 0.5s;\n        }\n\n        .hidden {\n            display: none;\n        }\n        </style>\n        <div id=\"progress\"></div>\n        ";
+  }
+  function _update(percent) {
+    var element = this.shadowRoot.querySelector("#progress");
+    if (this.type === "circular") {
+      var path = this.shadowRoot.querySelector("path");
+      var value = this.shadowRoot.querySelector("#percent-value");
+      var offset = (100 - percent) / 100 * this.maxDashOffset;
+      path.style.strokeDashoffset = offset;
+      value.textContent = percent;
+    } else {
+      element.style.width = "".concat(percent, "%");
+    }
+    if (percent >= 100) {
+      _assertClassBrand(_WebpackDevServerProgress_brand, this, _hide).call(this);
+    } else if (percent > 0) {
+      _assertClassBrand(_WebpackDevServerProgress_brand, this, _show).call(this);
+    }
+  }
+  function _show() {
+    var element = this.shadowRoot.querySelector("#progress");
+    element.classList.remove("hidden");
+  }
+  function _hide() {
+    var _this2 = this;
+    var element = this.shadowRoot.querySelector("#progress");
+    if (this.type === "circular") {
+      element.classList.add("disappear");
+      element.addEventListener("animationend", function () {
+        element.classList.add("hidden");
+        _assertClassBrand(_WebpackDevServerProgress_brand, _this2, _update).call(_this2, 0);
+      }, {
+        once: true
+      });
+    } else if (this.type === "linear") {
+      element.classList.add("disappear");
+      this.animationTimer = setTimeout(function () {
+        element.classList.remove("disappear");
+        element.classList.add("hidden");
+        element.style.width = "0%";
+        _this2.animationTimer = null;
+      }, 800);
+    }
+  }
+  customElements.define("wds-progress", WebpackDevServerProgress);
+}
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/socket.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/socket.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   client: () => (/* binding */ client),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _clients_WebSocketClient_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./clients/WebSocketClient.js */ "./node_modules/webpack-dev-server/client/clients/WebSocketClient.js");
+/* harmony import */ var _utils_log_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/log.js */ "./node_modules/webpack-dev-server/client/utils/log.js");
+/* provided dependency */ var __webpack_dev_server_client__ = __webpack_require__(/*! ./node_modules/webpack-dev-server/client/clients/WebSocketClient.js */ "./node_modules/webpack-dev-server/client/clients/WebSocketClient.js");
+/* global __webpack_dev_server_client__ */
+
+
+
+
+// this WebsocketClient is here as a default fallback, in case the client is not injected
+/* eslint-disable camelcase */
+var Client =
+// eslint-disable-next-line no-nested-ternary
+typeof __webpack_dev_server_client__ !== "undefined" ? typeof __webpack_dev_server_client__.default !== "undefined" ? __webpack_dev_server_client__.default : __webpack_dev_server_client__ : _clients_WebSocketClient_js__WEBPACK_IMPORTED_MODULE_0__["default"];
+/* eslint-enable camelcase */
+
+var retries = 0;
+var maxRetries = 10;
+
+// Initialized client is exported so external consumers can utilize the same instance
+// It is mutable to enforce singleton
+// eslint-disable-next-line import/no-mutable-exports
+var client = null;
+var timeout;
+
+/**
+ * @param {string} url
+ * @param {{ [handler: string]: (data?: any, params?: any) => any }} handlers
+ * @param {number} [reconnect]
+ */
+var socket = function initSocket(url, handlers, reconnect) {
+  client = new Client(url);
+  client.onOpen(function () {
+    retries = 0;
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    if (typeof reconnect !== "undefined") {
+      maxRetries = reconnect;
+    }
+  });
+  client.onClose(function () {
+    if (retries === 0) {
+      handlers.close();
+    }
+
+    // Try to reconnect.
+    client = null;
+
+    // After 10 retries stop trying, to prevent logspam.
+    if (retries < maxRetries) {
+      // Exponentially increase timeout to reconnect.
+      // Respectfully copied from the package `got`.
+      // eslint-disable-next-line no-restricted-properties
+      var retryInMs = 1000 * Math.pow(2, retries) + Math.random() * 100;
+      retries += 1;
+      _utils_log_js__WEBPACK_IMPORTED_MODULE_1__.log.info("Trying to reconnect...");
+      timeout = setTimeout(function () {
+        socket(url, handlers, reconnect);
+      }, retryInMs);
+    }
+  });
+  client.onMessage(
+  /**
+   * @param {any} data
+   */
+  function (data) {
+    var message = JSON.parse(data);
+    if (handlers[message.type]) {
+      handlers[message.type](message.data, message.params);
+    }
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (socket);
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/utils/log.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/utils/log.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   log: () => (/* binding */ log),
+/* harmony export */   setLogLevel: () => (/* binding */ setLogLevel)
+/* harmony export */ });
+/* harmony import */ var _modules_logger_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/logger/index.js */ "./node_modules/webpack-dev-server/client/modules/logger/index.js");
+/* harmony import */ var _modules_logger_index_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_modules_logger_index_js__WEBPACK_IMPORTED_MODULE_0__);
+
+var name = "webpack-dev-server";
+// default level is set on the client side, so it does not need
+// to be set by the CLI or API
+var defaultLevel = "info";
+
+// options new options, merge with old options
+/**
+ * @param {false | true | "none" | "error" | "warn" | "info" | "log" | "verbose"} level
+ * @returns {void}
+ */
+function setLogLevel(level) {
+  _modules_logger_index_js__WEBPACK_IMPORTED_MODULE_0___default().configureDefaultLogger({
+    level: level
+  });
+}
+setLogLevel(defaultLevel);
+var log = _modules_logger_index_js__WEBPACK_IMPORTED_MODULE_0___default().getLogger(name);
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack-dev-server/client/utils/sendMessage.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/webpack-dev-server/client/utils/sendMessage.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* global __resourceQuery WorkerGlobalScope */
+
+// Send messages to the outside, so plugins can consume it.
+/**
+ * @param {string} type
+ * @param {any} [data]
+ */
+function sendMsg(type, data) {
+  if (typeof self !== "undefined" && (typeof WorkerGlobalScope === "undefined" || !(self instanceof WorkerGlobalScope))) {
+    self.postMessage({
+      type: "webpack".concat(type),
+      data: data
+    }, "*");
+  }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (sendMsg);
+
+/***/ }),
+
+/***/ "./node_modules/webpack/hot/dev-server.js":
+/*!************************************************!*\
+  !*** ./node_modules/webpack/hot/dev-server.js ***!
+  \************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+/* globals __webpack_hash__ */
+if (true) {
+	/** @type {undefined|string} */
+	var lastHash;
+	var upToDate = function upToDate() {
+		return /** @type {string} */ (lastHash).indexOf(__webpack_require__.h()) >= 0;
+	};
+	var log = __webpack_require__(/*! ./log */ "./node_modules/webpack/hot/log.js");
+	var check = function check() {
+		module.hot
+			.check(true)
+			.then(function (updatedModules) {
+				if (!updatedModules) {
+					log(
+						"warning",
+						"[HMR] Cannot find update. " +
+							(typeof window !== "undefined"
+								? "Need to do a full reload!"
+								: "Please reload manually!")
+					);
+					log(
+						"warning",
+						"[HMR] (Probably because of restarting the webpack-dev-server)"
+					);
+					if (typeof window !== "undefined") {
+						window.location.reload();
+					}
+					return;
+				}
+
+				if (!upToDate()) {
+					check();
+				}
+
+				__webpack_require__(/*! ./log-apply-result */ "./node_modules/webpack/hot/log-apply-result.js")(updatedModules, updatedModules);
+
+				if (upToDate()) {
+					log("info", "[HMR] App is up to date.");
+				}
+			})
+			.catch(function (err) {
+				var status = module.hot.status();
+				if (["abort", "fail"].indexOf(status) >= 0) {
+					log(
+						"warning",
+						"[HMR] Cannot apply update. " +
+							(typeof window !== "undefined"
+								? "Need to do a full reload!"
+								: "Please reload manually!")
+					);
+					log("warning", "[HMR] " + log.formatError(err));
+					if (typeof window !== "undefined") {
+						window.location.reload();
+					}
+				} else {
+					log("warning", "[HMR] Update failed: " + log.formatError(err));
+				}
+			});
+	};
+	var hotEmitter = __webpack_require__(/*! ./emitter */ "./node_modules/webpack/hot/emitter.js");
+	hotEmitter.on("webpackHotUpdate", function (currentHash) {
+		lastHash = currentHash;
+		if (!upToDate() && module.hot.status() === "idle") {
+			log("info", "[HMR] Checking for updates on the server...");
+			check();
+		}
+	});
+	log("info", "[HMR] Waiting for update signal from WDS...");
+} else // removed by dead control flow
+{}
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack/hot/emitter.js":
+/*!*********************************************!*\
+  !*** ./node_modules/webpack/hot/emitter.js ***!
+  \*********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var EventEmitter = __webpack_require__(/*! events */ "./node_modules/events/events.js");
+module.exports = new EventEmitter();
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack/hot/log-apply-result.js":
+/*!******************************************************!*\
+  !*** ./node_modules/webpack/hot/log-apply-result.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+/**
+ * @param {(string | number)[]} updatedModules updated modules
+ * @param {(string | number)[] | null} renewedModules renewed modules
+ */
+module.exports = function (updatedModules, renewedModules) {
+	var unacceptedModules = updatedModules.filter(function (moduleId) {
+		return renewedModules && renewedModules.indexOf(moduleId) < 0;
+	});
+	var log = __webpack_require__(/*! ./log */ "./node_modules/webpack/hot/log.js");
+
+	if (unacceptedModules.length > 0) {
+		log(
+			"warning",
+			"[HMR] The following modules couldn't be hot updated: (They would need a full reload!)"
+		);
+		unacceptedModules.forEach(function (moduleId) {
+			log("warning", "[HMR]  - " + moduleId);
+		});
+	}
+
+	if (!renewedModules || renewedModules.length === 0) {
+		log("info", "[HMR] Nothing hot updated.");
+	} else {
+		log("info", "[HMR] Updated modules:");
+		renewedModules.forEach(function (moduleId) {
+			if (typeof moduleId === "string" && moduleId.indexOf("!") !== -1) {
+				var parts = moduleId.split("!");
+				log.groupCollapsed("info", "[HMR]  - " + parts.pop());
+				log("info", "[HMR]  - " + moduleId);
+				log.groupEnd("info");
+			} else {
+				log("info", "[HMR]  - " + moduleId);
+			}
+		});
+		var numberIds = renewedModules.every(function (moduleId) {
+			return typeof moduleId === "number";
+		});
+		if (numberIds)
+			log(
+				"info",
+				'[HMR] Consider using the optimization.moduleIds: "named" for module names.'
+			);
+	}
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack/hot/log.js":
+/*!*****************************************!*\
+  !*** ./node_modules/webpack/hot/log.js ***!
+  \*****************************************/
+/***/ ((module) => {
+
+/** @typedef {"info" | "warning" | "error"} LogLevel */
+
+/** @type {LogLevel} */
+var logLevel = "info";
+
+function dummy() {}
+
+/**
+ * @param {LogLevel} level log level
+ * @returns {boolean} true, if should log
+ */
+function shouldLog(level) {
+	var shouldLog =
+		(logLevel === "info" && level === "info") ||
+		(["info", "warning"].indexOf(logLevel) >= 0 && level === "warning") ||
+		(["info", "warning", "error"].indexOf(logLevel) >= 0 && level === "error");
+	return shouldLog;
+}
+
+/**
+ * @param {(msg?: string) => void} logFn log function
+ * @returns {(level: LogLevel, msg?: string) => void} function that logs when log level is sufficient
+ */
+function logGroup(logFn) {
+	return function (level, msg) {
+		if (shouldLog(level)) {
+			logFn(msg);
+		}
+	};
+}
+
+/**
+ * @param {LogLevel} level log level
+ * @param {string|Error} msg message
+ */
+module.exports = function (level, msg) {
+	if (shouldLog(level)) {
+		if (level === "info") {
+			console.log(msg);
+		} else if (level === "warning") {
+			console.warn(msg);
+		} else if (level === "error") {
+			console.error(msg);
+		}
+	}
+};
+
+/**
+ * @param {Error} err error
+ * @returns {string} formatted error
+ */
+module.exports.formatError = function (err) {
+	var message = err.message;
+	var stack = err.stack;
+	if (!stack) {
+		return message;
+	} else if (stack.indexOf(message) < 0) {
+		return message + "\n" + stack;
+	}
+	return stack;
+};
+
+var group = console.group || dummy;
+var groupCollapsed = console.groupCollapsed || dummy;
+var groupEnd = console.groupEnd || dummy;
+
+module.exports.group = logGroup(group);
+
+module.exports.groupCollapsed = logGroup(groupCollapsed);
+
+module.exports.groupEnd = logGroup(groupEnd);
+
+/**
+ * @param {LogLevel} level log level
+ */
+module.exports.setLogLevel = function (level) {
+	logLevel = level;
+};
+
+
+/***/ }),
+
+/***/ "./src/AbcMusic.tsx":
+/*!**************************!*\
+  !*** ./src/AbcMusic.tsx ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Music__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Music */ "./src/Music.tsx");
+/* harmony import */ var abcjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! abcjs */ "./node_modules/abcjs/index.js");
+/* harmony import */ var abcjs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(abcjs__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+var AbcMusicViewer = function () {
+    var abcRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+        var m = _Music__WEBPACK_IMPORTED_MODULE_1__["default"].Instance;
+        if (abcRef.current && m) {
+            abcjs__WEBPACK_IMPORTED_MODULE_2___default().renderAbc(abcRef.current, m.abc);
+        }
+    }, []);
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { ref: abcRef }));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AbcMusicViewer);
+
+
+/***/ }),
+
 /***/ "./src/App.tsx":
 /*!*********************!*\
   !*** ./src/App.tsx ***!
@@ -53596,27 +72582,216 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var abcjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! abcjs */ "./node_modules/abcjs/index.js");
-/* harmony import */ var abcjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(abcjs__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Music__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Music */ "./src/Music.tsx");
+/* harmony import */ var _SlateEditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SlateEditor */ "./src/SlateEditor.tsx");
+/* harmony import */ var _AbcMusic__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AbcMusic */ "./src/AbcMusic.tsx");
+
+
 
 
 var App = function () {
-    var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("X:1\nT:Cooley's\nM:4/4\nL:1/8\nK:Emin\n|:D2|EB{c}BA B2 EB|~B2 AB dBAG|FDAD BDAD|FDAD dAFD|\nEBBA B2 EB|B2 AB defg|afe^c dBAF|DEFD E2:|"), notation = _a[0], setNotation = _a[1];
-    var paperEl = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-        if (paperEl.current) {
-            var parsed = abcjs__WEBPACK_IMPORTED_MODULE_1___default().renderAbc(paperEl.current, notation, {});
-        }
-    }, [notation]);
-    var handleNotationChange = function (event) {
-        setNotation(event.target.value);
-    };
+    _Music__WEBPACK_IMPORTED_MODULE_1__["default"].Instance; // Ensure the singleton is initialized
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null,
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("textarea", { style: { width: '100%', height: '200px' }, value: notation, onChange: handleNotationChange }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { ref: paperEl })));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_SlateEditor__WEBPACK_IMPORTED_MODULE_2__["default"], null),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_AbcMusic__WEBPACK_IMPORTED_MODULE_3__["default"], null)));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
 
+
+/***/ }),
+
+/***/ "./src/Music.tsx":
+/*!***********************!*\
+  !*** ./src/Music.tsx ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Music: () => (/* binding */ Music),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var abcjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! abcjs */ "./node_modules/abcjs/index.js");
+/* harmony import */ var abcjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(abcjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _resources_music_abc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./resources/music.abc */ "./src/resources/music.abc");
+
+
+var Music = /** @class */ (function () {
+    function Music(abc) {
+        this._abcText = '';
+        this._abcText = abc;
+    }
+    Object.defineProperty(Music.prototype, "abc", {
+        get: function () {
+            return this._abcText;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Music, "Instance", {
+        get: function () {
+            if (this._instance === null) {
+                this._instance = Music.LoadDefault();
+            }
+            return this._instance;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Music.LoadDefault = function () {
+        return new Music(Music.normalizeMusic(_resources_music_abc__WEBPACK_IMPORTED_MODULE_1__));
+    };
+    Music.normalizeMusic = function (rawAbc) {
+        // assume only one entry
+        var tune = abcjs__WEBPACK_IMPORTED_MODULE_0___default().parseOnly(rawAbc)[0];
+        return rawAbc;
+    };
+    Music._instance = null;
+    return Music;
+}());
+
+;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Music);
+
+
+/***/ }),
+
+/***/ "./src/SlateEditor.tsx":
+/*!*****************************!*\
+  !*** ./src/SlateEditor.tsx ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var slate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! slate */ "./node_modules/slate/dist/index.es.js");
+/* harmony import */ var slate_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! slate-react */ "./node_modules/slate-react/dist/index.es.js");
+/* harmony import */ var slate_history__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! slate-history */ "./node_modules/slate-history/dist/index.es.js");
+/* harmony import */ var _Music__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Music */ "./src/Music.tsx");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+
+
+
+
+var SlateEditor = function () {
+    var editor = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () { return (0,slate_history__WEBPACK_IMPORTED_MODULE_3__.withHistory)((0,slate_react__WEBPACK_IMPORTED_MODULE_2__.withReact)((0,slate__WEBPACK_IMPORTED_MODULE_1__.createEditor)())); }, []);
+    var initialValue = [
+        {
+            children: [{ text: _Music__WEBPACK_IMPORTED_MODULE_4__.Music.Instance.abc }],
+        },
+    ];
+    var dummyDiv = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+    var decorate = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (entry) {
+        var ranges = [];
+        var node = entry[0];
+        var path = entry[1];
+        if (slate__WEBPACK_IMPORTED_MODULE_1__.Text.isText(node) && dummyDiv.current) {
+            var tune = undefined;
+            if (tune && tune.length > 0) {
+                var lines = tune[0].lines;
+                for (var _i = 0, lines_1 = lines; _i < lines_1.length; _i++) {
+                    var line = lines_1[_i];
+                    for (var _a = 0, _b = line.staff; _a < _b.length; _a++) {
+                        var staff = _b[_a];
+                        for (var _c = 0, _d = staff.voices; _c < _d.length; _c++) {
+                            var voice = _d[_c];
+                            for (var _e = 0, voice_1 = voice; _e < voice_1.length; _e++) {
+                                var element = voice_1[_e];
+                                if (element.el_type === 'note') {
+                                    var start = element.startChar;
+                                    var end = element.endChar;
+                                    if (start !== -1 && end !== -1) {
+                                        ranges.push({
+                                            anchor: { path: path, offset: start },
+                                            focus: { path: path, offset: end },
+                                            highlight: true,
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ranges;
+    }, []);
+    var renderLeaf = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (props) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(Leaf, __assign({}, props));
+    }, []);
+    var handleChange = function (value) {
+        var isAstChange = editor.operations.some(function (op) { return 'set_selection' !== op.type; });
+        if (isAstChange) {
+            var content = value.map(function (node) { return slate__WEBPACK_IMPORTED_MODULE_1__.Editor.string(editor, [value.indexOf(node)]); }).join('\n');
+        }
+    };
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null,
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(slate_react__WEBPACK_IMPORTED_MODULE_2__.Slate, { editor: editor, initialValue: initialValue, onChange: handleChange },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(slate_react__WEBPACK_IMPORTED_MODULE_2__.Editable, { renderLeaf: renderLeaf, decorate: decorate })),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { ref: dummyDiv, style: { display: 'none' } })));
+};
+var Leaf = function (_a) {
+    var attributes = _a.attributes, children = _a.children, leaf = _a.leaf;
+    if (leaf.highlight) {
+        children = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: { color: 'red' } }, children);
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", __assign({}, attributes), children);
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SlateEditor);
+
+
+/***/ }),
+
+/***/ "./src/index.tsx":
+/*!***********************!*\
+  !*** ./src/index.tsx ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
+/* harmony import */ var _App__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./App */ "./src/App.tsx");
+
+
+
+var rootElement = document.getElementById('root');
+if (!rootElement)
+    throw new Error('Failed to find the root element');
+var root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(rootElement);
+root.render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().StrictMode), null,
+    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_App__WEBPACK_IMPORTED_MODULE_2__["default"], null)));
+
+
+/***/ }),
+
+/***/ "./src/resources/music.abc":
+/*!*********************************!*\
+  !*** ./src/resources/music.abc ***!
+  \*********************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = "%abc\r\n%%pageheight 11in\r\n%%staffwidth 7.667in\r\n%%stretchlast no\r\n%%leftmargin .5in\r\n%%scale 0.43\r\n%%vocalfont Times-BoldItalic 13.0\r\n\r\nX:1\r\nT:SymphonyNo. 7 (2)\r\nM:2/4\r\nC:Ludwig van Beethoven\r\nS:De Clarke\r\nR:March\r\n%abc2mtex: yes\r\n%%staves [(1 2) (3 4) (5 6) (7 8)] [(9 10) (11 12) 13] [14 15 16 17 18]\r\nL:1/8\r\nQ:1/4=76\r\nK:C\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:1                 nm=\"Flute I\"            snm=\"Fl. I\"     stv=8\r\nV:2                 nm=\"Flute II\"           snm=\"Fl. II\"\r\nV:3                 nm=\"Oboe I\"             snm=\"Ob. I\"\r\nV:4                 nm=\"Oboe II\"            snm=\"Ob. II\"\r\nV:5                 nm=\"Clarinet I in A\"    snm=\"Cl. I\"\r\nV:6                 nm=\"Clarinet II in A\"   snm=\"Cl. II\"\r\nV:7     clef=bass   nm=\"Bassoon I\"          snm=\"Bsn. I\"\r\nV:8     clef=bass   nm=\"Bassoon II\"         snm=\"Bsn. II\"\r\nV:9                 nm=\"Horn I in E\"        snm=\"Cor. I\"    stv=5\r\nV:10                nm=\"Horn II in E\"       snm=\"Cor. II\"\r\nV:11                nm=\"Trumpet I in D\"     snm=\"Tr. I\"\r\nV:12                nm=\"Trumpet II in D\"    snm=\"Tr. II\"\r\nV:13    clef=bass   nm=\"Timpani in A & E\"   snm=\"Tp.\"\r\nV:14                nm=\"Violin I\"           snm=\"Vl. I\"     stv=6\r\nV:15                nm=\"Violin II\"          snm=\"Vl. II\"\r\nV:16    clef=alto   nm=\"Viola\"              snm=\"Vla.\"\r\nV:17    clef=bass   nm=\"ViolonCello I\"      snm=\"VC. I\"\r\nV:18    clef=bass   nm=\"Double Bass\"        snm=\"DB\"\r\nV:19    clef=bass   nm=\"ViolonCello II\"     snm=\"VC. II\"\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:1     % Flute I\r\n%%MIDI channel 1\r\n%%MIDI program 73       % General MIDI Flute\r\n%%MIDI transpose 0\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 2\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\r\n     z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 |\r\n% page 3\r\n                                         z4                 |   z4               |\\\r\nz4             | z4                  |   z2         ^g2     |   z2    a2         |\\\r\nw:             |                     |              cresc.  |\r\ne'2  .e'.e'    | (.e'2       .e'2)   |   e'2        .e'.e'  | (.e'2  .e'2)       |\\\r\nw:ff           |\r\ne'2  .e'.^f'   |\r\n                 (.g'2       .g'2)   |   g'2        .g'.g'  |   g'2   z2         |\\\r\ng2   .g.a      | (.b2        .b2)    |  ^f'2        .f'.^g' | (.a'2  .a'2)       |\\\r\ne'2  .e'.e'    | (.e'2       .e'2)   |   e'2       .^f'.^g' |\r\n% page 4\r\n                                                                a'2   z2         |\\\r\nz4             | z4                  |  ^f'2        .f'.^g' | (.a'2  .a'2)       |\\\r\nw:             |                     |   dimin.             |\r\ne'2  .e'.e'    | (.e'2       .e'2)   |   e'2       .^f'.^g' |   a'2   z2         |\\\r\nw:sempre~dimin.|                     |                      |   p                |\r\nz4             | z4                  |\r\nz4             ||\\\r\nK:A\r\n                 z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz2   =g'2-     | =g'4-               |\r\nw:    p{<      |\r\n% page 5\r\n                                       (=g'2         f'2-   |   f'2   e'2)       |\\\r\nw:                                                          |   *     <{         |\r\n(d'2  c'2      | b2          ^d'2    |   e'2)        z2     |   z4               |\\\r\nw:{>           |  *           >}     |\r\nz4             | z4                  |   z4                 |   z4               |\\\r\nz4             |\r\n                 z4                  |   z4                 |   z4               |\\\r\nz4             | z4                  |   z4                 |   z4               |\\\r\nz4             | z4                  |   z4                 |\r\n% page 6\r\n                                                                z4               |\\\r\nz4             | e'4-                | ((3e'=f'e' (3=g'f'a) | (=c'2   e'd'       |\\\r\nw:             | dolce~dimin.        |                      |   p                |\r\n=c'2) z2       ||\\\r\nK:C\r\nf'3      f'    |((3f'e').d' (3.c'.b.a|  (g2          a).b   |   c'2- ((3c'd'e')  |\r\nf'3      f'    |(3.f'.e'.d' (3.c'.b.a|   gz          z2     |\\\r\nw:cresc.       |   f *   *     sf    |\r\nz4             | z4                  |   z4                 |   z2   .e'.e'      |\\\r\nw:             |                     |                      |         ff         |\r\n(c'4           | b4)                 | {bc'}d'2-  ((3d'c'b) |\r\nw:p~dolce      |\r\n% page 7\r\n                                                               (bc')  c'2        |\\\r\n(c'3     d')   |(^d'e').e'.e'        |{=d'e'}f'2- ((3f'e'd')|  (d'e') e'2        |\\\r\n(e'3    ^f'    | e'2         ^d')z   | (=d'3            e'  |\r\n                                                                d'^c'=c')  z     |\\\r\n(c'4           | b2           c'2)   | {bc'}d'2-  ((3d'c'b) | (3.a(ab (3.c')(c'd'|\\\r\n(e'3)   ^f'    | e'2         ^d')z   |((3=d'b^c'   (3d'e'd')|\r\n                                                               (d'^c'=c')  z     |\\\r\n(c'4           | b2           c'2)   | {bc'}d'2-  ((3d'c'b) |   a2    z2         |\\\r\n a2- ((3ab^c') |(^c'd')       d'2    |   d'2-     ((3d'e'f')|\r\n% page 8\r\n                                                               (f'e') e'2        |\\\r\n(3aaa ((3ab^c')|((3^c'd').d'  d'2    | (3d'd'd'   ((3d'e'f')|((3f'e').e' z2      |\\\r\nw:cresc.       |                     |                      | dimin.             |\r\n((3e'f').f' z2 |\\\r\n((3f'e').e' z2 | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n ^g2    .g.a   | b2           bc'    |   d'2         d'e'   |\\\r\nw:p~cresc.     |\r\nL:1/16\r\n                                                             (f'2e'^d' e').e.^f.^g|\\\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|\r\nw:ff           |\r\n                                                                c'bc'd'  e'e^f^g |\\\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|   a4       z4      |\\\r\nL:1/8\r\n z4            | z4                  |\\\r\n z4            ||\\\r\nK:A\r\n                 z4                  |\r\n% page 10\r\n                                       z4                   |\\\r\n z4            | z4                  | z4                   |\\\r\n z4            | z4                  | z4                   |\\\r\n z2  (=g'2-    | =g'4-               |  =g'2         f'2-   |   f'2   e'2        |\r\nw:    p{<      |                     |                      |   *     <}         |\r\n d'2   c'2     | d'2          e'2    | c'4)                 |\\\r\nw:{>           |                     | >}                   |\r\n(d'2   e'2     | c'4)                |(d'2           e'2)   |\\\r\nw:dimin.       |\r\n a2   (.a.a)   | (.a2        .a2)    | a2          (.a.a)   | (.a2   .a2)        |\\\r\nw:pp           |\r\n b2    .a.b    ||\\\r\nw:ff           |\r\nK:C\r\n                 =c' z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n b2    .a.b    |  c' z        z2     | z4                   |   z2    z  e'      |\\\r\nw:ff           |\r\n e'2  (.e'.e') | (.e'2       .e'2)   | z4                   |   z4               |\\\r\nw:pp           |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n e'2  (.e'.e') |\r\nw:pp           |\r\n                 (.^d'2      .=d'2)  | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |]\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:2     % Flute II\r\n%%MIDI channel 1\r\n%%MIDI program 73       % General MIDI Flute\r\n%%MIDI transpose 0\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 2\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\r\n     z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 |\r\n% page 3\r\n                                      z4                 |   z4              |\\\r\nz4          | z4                  |   z4                 |   z4              |\\\r\ne2   .e.e   | (.e2  .e2)          |   e2         .e.e    | (.e2  .e2)        |\\\r\nw:ff        |\r\ne2   .e.^f  |\r\n              (.g2  .g2)          |   g2         .g.g    |   g2   z2         |\\\r\ng2   .g.a   | (.b2  .b2)          |  ^f2         .f.^g   | (.a2  .a2)        |\\\r\ne2   .e.e   | (.e2  .e2)          |   e2        .^f.^g   |\r\n% page 4\r\n                                                             a2   z2         |\\\r\nz4          | z4                  |  ^f2         .f.^g   | (.a2  .a2)        |\\\r\nw:          |                     |   dimin.             |\r\ne2   .e.e   | (.e2  .e2)          |   e2         .^f.^g  |   a2   z2         |\\\r\nw:sempre~dimin.|                  |                      |   p               |\r\nz4          | z4                  |\r\nz4          ||\\\r\nK:A\r\n              z4                  |   z4                 |\\\r\nz4          | z4                  |   z4                 |\\\r\nz4          | z4                  |   z4                 |\\\r\nz2    e'2-  | e'4-                |\r\nw:    p{<   |\r\n% page 5\r\n                                     (e'2         d'2-   |   d'2  c'2)       |\\\r\nw:                                                       |   *     <{        |\r\n(b2   a2    | g2     f2           |   e2)         z2     |   z4              |\\\r\nw:{>        |  *     >}           |\r\nz4          | z4                  |   z4                 |   z4              |\\\r\nz4          |\r\n              z4                  |   z4                 |   z4              |\\\r\nz4          | z4                  |   z4                 |   z4              |\\\r\nz4          | z4                  |   z4                 |\r\n% page 6\r\n                                                             z4              |\\\r\nz4          | z4                  |   z4                 |   z4              |\\\r\nz4          ||\\\r\nK:C\r\nz4          | z4                  |   z4                 |   z4              |\r\nz4          | z4                  |   z4                 |\\\r\nz4          | z4                  |   z4                 |   z2   .e.e       |\\\r\nw:          |                     |                      |         ff        |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 8\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\\\r\nz4 | z4 |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\nL:1/16\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|\r\nw:ff           |\r\n                                                                c'bc'd'  e'e^f^g |\\\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|   a4       z4      |\\\r\nL:1/8\r\n z4            | z4                  |\\\r\nz4             ||\\\r\nK:A\r\n                 z4                  |\r\n% page 10\r\n                                         z4                 |\\\r\nz4             | z4                  |   z4                 |\\\r\nz4             | z4                  |   z4                 |\\\r\nz2   (e'2-     | e'4-                |   e'2         d'2-   |   d'2  c'2        |\r\nw:    p{<      |                     |                      |   *     <{        |\r\n f2    e2      | f2           g2     | a4)                  |\\\r\nw:{>           |                     | >}                   |\r\n(f2    g2      | a4)                 |(f2            g2)    |\\\r\nw:dimin.       |\r\n a2    z2      | z4                  | z4                   |   z4               |\\\r\nw:pp           |\r\n d2   .=c.d    ||\\\r\nw:ff           |\r\nK:C\r\n                 e   z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n d2    .c.d    |  e  z        z2     | z4                   |   b2     .a.b      |\\\r\nw:ff           |                     |                      |   p                |\r\n c'2  (.c'.c') | (.b2        .b2)    | z4                   |   z4               |\\\r\nw:pp           |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |]\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:3     % Oboe I\r\n%%MIDI channel 2\r\n%%MIDI program 68       % General MIDI Oboe\r\n%%MIDI transpose 0\r\n% page 1\r\nK:C\r\ne4-       | e4-        |\\\r\nw: f{>    |\r\ne2     z2 | z4         | z4 | z4 |\\\r\nw: >}pp   |\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 |\r\n% page 2\r\n                              z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        |\r\n            z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz2   g2   | z2      b2 |\r\nw:  cresc.|\r\n% page 3\r\n                                               z2         ^f2             | z2         a2       |\\\r\nz2       e2            | z2         e2       | z2         e2              | z2         e2       |\\\r\ne2  .e.e               | (.e2  .e2)          | e2        .e.e             | (.e2      .e2)      |\\\r\nw:ff                   |\r\ne2  .e.^f              |\r\n                         (.g2  .g2)          | g2        .g.g             |   g2       z2       |\\\r\ng2  .g.a               | (.b2  .b2)          | ^f2       .f.^g            | (.a2      .a2)      |\\\r\ne2  .e.e               | (.e2  .e2)          | e2        .^f.^g           |\r\n% page 4\r\n                                                                              a2       z2       |\\\r\n=g2     .g.a           | (.b2 .b2)           | ^f2       .f.^g            | (.a2      .a2)      |\\\r\nw:dimin.               |\r\ne2      .e.e           | (.e2      .e2)      | e2        .^f.^g           |    a2      z2       |\\\r\nw:sempre~dimin.        |                     |                            |   p                 |\r\ne2     .^f.^g          | a2      z2          |\r\nz4                     ||\\\r\nK:A\r\n                         z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz2           =g2-      |     =g4-            |\r\nw:           p{<       |\r\n% page 5\r\n                                               (   =g2      f)z           | z4                  |\\\r\nw:                                                  *       <{            |\r\nz2      (   c'2        |    b2        a2     |     g2 )   z2              | z4                  |\\\r\nw:          {>         |    *         >}     |\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     |\r\n                              e4-            | (    e2    fe)             |      e4-            |\\\r\nw:                            cresc.         |\r\n(   e2     (3gfe)      | z4                  | z4                         | z4                  |\\\r\nz4                     |      e4-            | (   e2     fe)             |\r\nw:                     |      cresc.         |\r\n% page 6\r\n                                                                                 e4-            |\\\r\n(   e2     (3gfe)      | e4-                 | ((3e=fe    (3=gfA)         | (=c2      ed        |\\\r\nw:                     | dimin.              |                            |  p                  |\r\n =c2)      z2          ||\\\r\nK:C\r\nf3              f      | ((3fe).d   (3.c.B.A | (G2        A).B            | c2-      ((3cde)    |\r\nf3              f      | (3.f.e.d   (3.c.B.A | Gz         z2              |\\\r\nw:cresc.               |    f * *      sf    |\r\nz4                     | z4                  | z4                         | z2       .e.e       |\\\r\nw:                     |                     |                            |         ff          |\r\n(c4            | B4)                 | {Bc}d2-    ((3dcB)   |\r\nw:p~dolce      |\r\n% page 7\r\n                                                               (Bc)   c2         |\\\r\n(c3      d)    |(^de).e.e            |{=de}f2-    ((3fed)   |  (de)   e2         |\\\r\n(e3     ^f     | e2          ^d)z    | (=d3             e   |\r\n                                                                d^c=c)     z     |\\\r\n(c4            | B2           c2)    | {Bc}d2-    ((3dcB)   | (3.A(AB (3.c)(cd   |\\\r\n(e3)    ^f     | e2          ^d)z    |((3=dB^c     (3ded)   |\r\n                                                               (d^c=c)     z     |\\\r\n(c4            | B2           c2)    | {Bc}d2-    ((3dcB)   |   A2    z2         |\\\r\n A2- ((3AB^c)  |(^cd)         d2     |   d2-      ((3def)   |\r\n% page 8\r\n                                                               (fe)   e2         |\\\r\n(3AAA ((3AB^c) |((3^cd).d     d2     | (3ddd      ((3def)   |((3fe).e    z2      |\\\r\nw:cresc.       |                     |                      | dimin.             |\r\n((3ef).f    z2 |\\\r\n((3fe).e    z2 | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                d2    .d.e       |\\\r\nw:                                                              pp               |\r\n f4-           | f4-                 |   f4-                |\\\r\nw:cresc.       |\r\nL:1/16\r\n                                                              (f2e^d   e).e.^f.^g|\\\r\n abc'b   ac'ba | e^f^ga       bcde   |   dBcd        edcB   |\r\nw:ff           |\r\n                                                                cBcd     ee^f^g  |\\\r\n abc'b   ac'ba | e^f^ga       bcde   |   dBcd        edcB   |   A4       z4      |\\\r\nL:1/8\r\n e2     .^f.^g | a z          z2     |\\\r\nw:p            |\r\nz4             ||\\\r\nK:A\r\n                 z4                  |\r\n% page 10\r\n                                       z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz2      =g2-   | =g4-                | (   =g2      f)z     | z4                 |\r\nw:      p{<    |                     |      *       <{      |\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\n z4            | z4                  | z4                   |   z4               |\\\r\n b2   .a.b     ||\\\r\nw:ff           |\r\nK:C\r\n                 =c' z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n b2    .a.b    |  c' z        z2     | z4                   |  ^g2     .^f.g     |\\\r\nw:ff           |                     |                      |   p                |\r\n a2   (.a.a)   | (.^g2       .g2)    | z4                   |   z4               |\\\r\nw:pp           |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n=g2   (.g.a)   |\r\nw:pp           |\r\n                 (.b2        .b2)    | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n e2    .^f.^g  |  a2          z2     | z4                   |   z4               |\\\r\nw:pp           |\r\n z4            |  e4-                | e4-                  |   e  z    z2       |]\r\nw:             |  f{>                | >}                   |   pp               |\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:4     % Oboe II\r\n%%MIDI channel 2\r\n%%MIDI program 68       % General MIDI Oboe\r\n%%MIDI transpose 0\r\n% page 1\r\nK:C\r\nc4-       | c4-        |\\\r\nw: f{>    |\r\nc2     z2 | z4         | z4 | z4 |\\\r\nw: >}pp   |\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 |\r\n% page 2\r\n                              z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        |\r\n            z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz4        | z4         | z4 | z4 |\\\r\nz2     e2   |   z2 ^d2  |\r\nw:    cresc.|\r\n% page 3\r\n                           z2 =d2    | z2   =c2  |\\\r\nz2     c2   |   z2  c2  |  z2  B2    | z2    c2  |\\\r\ne2    .e.e  | (.e2 .e2) |  e2 .e.e   | (.e2 .e2) |\\\r\nw:ff        |\r\ne2    .e.^f |\r\n              (.g2 .g2) |  g2 .g.g   |   g2  z2  |\\\r\nG2    .G.A  | (.B2 .B2) | ^F2 .F.^G  | (.A2 .A2) |\\\r\ne2    .e.e  | (.e2 .e2) |  e2 .^f.^g |\r\n% page 4\r\n                                         a2  z2  |\\\r\nz4          |   z4      |  z4        | z4        |\\\r\nz4          |   z4      |  z4        | z4        |\\\r\ne2    .e.e  |   e2  z2  |\r\nz4          ||\\\r\nK:A\r\n                z4      |  z4        |\\\r\nz4          |   z4      |  z4        |\\\r\nz4          |   z4      |  z4        |\\\r\nz2     e2-  |   e4-     |\r\n% page 5\r\n                          (e2  d) z  | z4        |\\\r\nz2    (a2   |   g2  f2  |  e2) z2    | z4        |\\\r\nz4          |   z4      |  z4        | z4        |\\\r\nz4          |\r\n              (_B4      | =B4)       | ( _B4     |\\\r\nw:             cresc.   |\r\n  B4)       |   z4      |  z4        | z4        |\\\r\nz4          | (_B4      | =B4)       |\r\nw:          |  cresc.   |\r\n% page 6\r\n                                       ( _B4     |\\\r\n  B4)       | z4        |  z4        | z4        |\\\r\n z4         ||\\\r\nK:C\r\nz4          | z4        |  z4        | z4        |\r\nz4          | z4        |  z4        |\\\r\nz4          | z4        |  z4        | z2   .e.e |\\\r\nw:          |           |            |       ff  |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 8\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\\\r\nz4 | z4 |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                d2    .d.e       |\\\r\nw:                                                              pp               |\r\n f4-           | f4-                 |   f4-                |\\\r\nw:cresc.       |\r\nL:1/16\r\n                                                              (f2e^d   e).E.^F.^G|\\\r\n ABcB    AcBA  | E^F^GA       Bcde   |   dBcd        edcB   |\r\nw:ff           |\r\n                                                                cBcd     eE^F^G  |\\\r\n ABcB    AcBA  | e^f^ga       bcde   |   dBcd        edcB   |   A4       z4      |\\\r\nL:1/8\r\n e2     .e.e   | e z          z2     |\\\r\nw:p            |\r\nz4             ||\\\r\nK:A\r\n                 z4                  |\r\n% page 10\r\n                                        z4                  |\\\r\nz4             | z4                  |  z4                  |\\\r\nz4             | z4                  |  z4                  |\\\r\nz2       e2-   | e4-                 |   (e2  d) z          | z4                 |\r\nw:      p{<    |                     |    *       <{        |\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\n z4            | z4                  | z4                   |   z4               |\\\r\n d2   .=c.d    ||\\\r\nw:ff           |\r\nK:C\r\n                  e  z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n d2    .c.d    |  e  z        z2     | z4                   |   z4               |\\\r\nw:ff           |                     |                      |                    |\r\n z4            |  z4                 | B2        (.B.B)     |  (.c2     .c2)     |\\\r\nw:             |                     | pp                   |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | d2        (.d.d)     |  (.^c2    .=c2)    |\\\r\nw:                                   | pp                   |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n e2    .e.e    |  e2          z2     | z4                   |   z4               |\\\r\nw:pp\r\n z4            |  c4-                | c4-                  |   c  z    z2       |]\r\nw:             |  f{>                | >}                   |   pp\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:5     % Clarinet I in A; play minor third lower than written\r\n%%MIDI channel 3\r\n%%MIDI program 71       % General MIDI Clarinet\r\n%%MIDI transpose -3\r\n% page 1\r\nK:C\r\nc4-          | c4-         |\\\r\nw: f{>         *\r\nc2     z2    | z4          | z4 | z4 |\\\r\nw: >}pp\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 |\r\n% page 2\r\n               z4          |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           |\r\n               z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          |\r\n% page 3\r\n                                                 z4                         | z4                   |\\\r\nz4                      | z4                   | z4                         | z4                   |\\\r\ng2   .g.g               | (.g2   .g2)          | g2    .g.g                 | (.g2   .g2)          |\\\r\nw:ff\r\ng2   .g.a               |\r\n                          (._b2 .b2)           | _b2  .b.b                  |   _b2  z2            |\\\r\n_b2 .b.c'               | (.d'2  .d'2)         | a2    .a.=b                | (.c'2  .c'2)         |\\\r\ng2   .g.g               | (.g2   .g2)          | g2    .a.=b                |\r\n% page 4\r\n                                                                                c'2   z2           |\\\r\n_b2 .b.c'               | (.d'2  .d'2)         | a2    .a.=b                | (.c'2  .c'2)         |\\\r\nw:dimin.                |\r\ng2   .g.g               | (.g2   .g2)          | g2    .a.=b                |   c'2   z2           |\\\r\nw:sempre~dimin.         |                      |                            |   p\r\nf2   .f.f               | _e2    z2            |\r\nz2       g2-            ||\\\r\nw:       dolce\r\n                            (g2        =e2     | c2            e2)          |\\\r\n(e2         d2-         |    d2         c2     | B2            c2           |\\\r\nw:*         {<          |\r\n d2         e2          |    f2         g2     | f2            ec')         |\\\r\nw:                      |    <}         {>     | *             * >}\r\n(   c'2     g2          |    e2         g2 )   |\r\nw:  *       {<          |\r\n% page 5\r\n                                                 (   g2         a2-         |    a2          g2 ) |\\\r\nw:                                                                          |    *         <{\r\n(   f2      e2          |    d2        ^f2     |     g4 )                   | c'3           c'    |\\\r\nw:  {>                  |    *        >}\r\n((3c'b).a (3.g.^f.e     | (d2       e).^f      | g2-       ((3gab)          | c'3           c'    |\\\r\n((3c'ba (3g^fg)         |\r\n                               g4-             | (    g2    ag)             |      g4-            |\\\r\nw:                             cresc.          |\r\n(    g2     (3bag)      |      g4-             | ((3gfe     (3gfA)          | (c2         d2      |\\\r\nw:                      |      dimin.          |                            |  p                  |\r\ne2          (3f^fg)     |      g4-             | (    g2    ag)             |\r\nw:cresc.                |\r\n% page 6\r\n                                                                                   g4-            |\\\r\n(    g2     (3bag)      | z4                   | z4                         | z4                  |\\\r\nz4                      ||\\\r\nz4                      | z4                   | z4                         | z4                  |\r\nz4                      | z4                   | z4                         |\\\r\nz4                      | z4                   | z4                         | z2         .g.g     |\\\r\nw:                      |                      |                            |            ff       |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 8\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\\\r\nz4 | z4 |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n B2     .B.c   | d2           d_e    |   f2          fg     |\\\r\nw:cresc.       |\r\nL:1/16\r\n                                                             (_a2g^f   g).G.=A.B |\\\r\n cd_ed   cedc  | GABc         d_efg  |   fd_ef       gfed   |\r\nw:ff           |\r\n                                                               _edef     gGAB    |\\\r\n cd_ed   cedc  | GABc         d_efg  |   fd_ef       gfed   |   c4       z4      |\\\r\nL:1/8\r\n f2     .f.f   | _ez          z2     |\\\r\nw:p\r\nz2       g2-   ||  (g2       =e2     |\r\nw:       dolce |\r\n% page 10\r\n                                        c2            e2)   |\\\r\n(e2      d2-   |    d2        c2     |  B2            c2    |\\\r\nw:*      {<    |\r\n d2      e2    |    f2        g2     |  f2            ec')  |\\\r\nw:<}     {>    |                     |  *             * >}\r\n(   c'2  g2    |    e2        g2 )   | (g2            a2-   |    a2          g2   |\r\nw:  *    {<    |                     |                      |    *         <{     |\r\n f2    e2      | f2           g2     | e4)                  |\\\r\nw:{>           |                     | >}                   |\r\n(f2    g2      | e4)                 |(f2            g2)    |\\\r\nw:dimin.       |\r\n c2   (.c.c)   | (.c2        .c2)    | c2          (.c.c)   | (.c2   .c2)        |\\\r\nw:pp\r\n f2    ._e.f   ||\\\r\nw:ff\r\n                  g  z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n f2    ._e.f   |  g  z        z2     | z4                   |   z4               |\\\r\nw:ff           |                     |                      |                    |\r\n z4            |  z4                 | g2        (.g.g)     |  (.g2     .g2)     |\\\r\nw:             |                     | pp                   |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | a2        (.a.b)     |  (.c'2    .c'2)    |\\\r\nw:                                   | pp                   |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n f2    .f.f    | _e2          z2     | z4                   |   z4               |\\\r\nw:pp\r\n z4            |  c4-                | c4-                  |   c  z    z2       |]\r\nw:             |  f{>                | >}                   |   pp\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:6     % Clarinet II in A; play minor third lower than written\r\n%%MIDI channel 3\r\n%%MIDI program 71       % General MIDI Clarinet\r\n%%MIDI transpose -3\r\n% page 1\r\nK:C\r\nG4-          | G4-         |\\\r\nw: f{>         *\r\nG2 z2        | z4          | z4 | z4 |\\\r\nw: >}pp\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 |\r\n% page 2\r\n               z4          |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           |\r\n               z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          |\r\n% page 3\r\n                                                 z4                         | z4                   |\\\r\nz4                      | z4                   | z4                         | z4                   |\\\r\nG2   .G.G               | (.G2   .G2)          | G2    .G.G                 | (.G2   .G2)          |\\\r\nw:ff\r\nG2   .G.A               |\r\n                          (._B2 .B2)           | _B2  .B.B                  |   _B2  z2            |\\\r\n_B2 .B.c                | (.d2  .d2)           | A2    .A.=B                | (.c2  .c2)           |\\\r\nG2   .G.G               | (.G2   .G2)          | G2    .A.=B                |\r\n% page 4\r\n                                                                                c2   z2            |\\\r\n_B2 .B.c                | (.d2  .d2)           | A2    .A.=B                | (.c2  .c2)           |\\\r\nw:dimin.                |\r\nG2   .G.G               | (.G2   .G2)          | G2    .A.=B                |   c2   z2            |\\\r\nw:sempre~dimin.         |                      |                            |   p\r\nd2   .d.d               | c2    z2             |\r\nz4                      ||\\\r\n                          z4                   | z4                         |\\\r\n z2       F2-           |  F2         E2       | D2          E2             |\\\r\n F2       G2            |  A2         B2       | d2          ce             |\\\r\n( e2      e2            |  c2         e2   )   |\r\n% page 5\r\n                                                 ( e2        f2-            |  f2          e2   ) |\\\r\n( d2      c2            |  B2        A2        |   B4   )                   | z4                  |\\\r\nz4                      | z4                   | z4                         | z4                  |\\\r\nz4                      |\r\n                          ( _d4                |   =d4   )                  | ( _d4               |\\\r\nw:                          cresc.             |\r\n  =d4   )               |   _d3        _B      | A2         (3zAF           | (E2         B2      |\\\r\nw:                      |   dimin.             |\r\nc2          (3d^de)     | ( _d4                |   =d4   )                  |\r\nw:cresc.                |\r\n% page 6\r\n                                                                              ( _d4               |\\\r\n  =d4   )               | z4                   | z4                         | z4                  |\\\r\nz4                      ||\\\r\nz4                      | z4                   | z4                         | z4                  |\r\nz4                      | z4                   | z4                         |\\\r\nz4                      | z4                   | z4                         | z2         .G.G     |\\\r\nw:                      |                      |                            |            ff       |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 8\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\\\r\nz4 | z4 |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n B2     .B.c   | d2           d_e    |   f2          fg     |\\\r\nw:cresc.       |\r\nL:1/16\r\n                                                             (_a2g^f   g).G.=A.B |\\\r\n cd_ed   cedc  | GABc         d_efg  |   fd_ef       gfed   |\r\nw:ff           |\r\n                                                               _edef     gGAB    |\\\r\n cd_ed   cedc  | GABc         d_efg  |   fd_ef       gfed   |   c4       z4      |\\\r\nL:1/8\r\n d2     .d.d   | c z          z2     |\\\r\nw:p\r\nz4             || z4                 |\r\n% page 10\r\n                                         z4                 |\\\r\n z2      F2-   |  F2          E2     |   D2          E2     |\\\r\nw:       {<\r\n F2      G2    |  A2          B2     |   d2          ce     |\\\r\nw:<}     {>    |                     |   *           * >}   |\r\n( e2     e2    |  c2          e2 )   |  (e2         f2-     |  f2          e2     |\r\nw:*      {<    |                     |                      |  *           <}     |\r\n A2    G2      | A2           B2     | c4)                  |\\\r\nw:{>           |                     | >}                   |\r\n(A2    B2      | c4)                 |(A2            B2)    |\\\r\nw:dimin.       |\r\n c2   (.c.c)   | (.c2        .c2)    | c2          (.c.c)   | (.c2   .c2)        |\\\r\nw:pp\r\n d2    .c.d    ||\\\r\nw:ff\r\n                 _e  z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n d2    .c.d    | _e  z        z2     | z4                   |   z4               |\\\r\nw:ff           |                     |                      |                    |\r\n z4            |  z4                 | B2        (.B.B)     |  (.c2     .c2)     |\\\r\nw:             |                     | pp                   |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | d2        (.d.d)     |  (.c2     .c2)     |\\\r\nw:                                   | pp                   |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n d2    .d.d    |  c2          z2     | z4                   |   z4               |\\\r\nw:pp\r\n z4            |  G4-                | G4-                  |   G  z    z2       |]\r\nw:             |  f{>                | >}                   |   pp\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:7     % Bassoon I\r\n%%MIDI channel 4\r\n%%MIDI program 70       % General MIDI Bassoon\r\n%%MIDI transpose -24\r\n% page 1\r\nK:C\r\nc'4-         | c'4-        |\\\r\nw: f{>         *\r\nc'2     z2   | z4          | z4 | z4 |\\\r\nw: >}pp\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 |\r\n% page 2\r\n                                  z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           |\r\n               z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz2 e'2       | z2 ^f'2     |\r\nw: cresc.    |\r\n% page 3\r\n                                                z2         d'2             | z2         e'2      |\\\r\nz2        e'2           | z2         e'2      | z2         d'2             | z2         c'2      |\\\r\ne'2  .e'.e'             | (.e'2 .e'2)         | e'2   .e'.e'               | (.e'2 .e'2)         |\\\r\nw:ff\r\ne'2  .e'.^f'            |\r\n                          (.g'2 .g'2)         | g'2   .g'.g'               |   g'2  z2           |\\\r\ng2   .g.a               | (.b2  .b2)          | ^f2  .f.^g                 | (.a2  .a2)          |\\\r\ne'2  .e'.e'             | (.e'2 .e'2)         | e'2   .^f.^g               |\r\n% page 4\r\n                                                                               a2   z2           |\\\r\n=g2 .g.a                | (.b2  .b2)          | ^f2  .f.^g                 | (.a2  .a2)          |\\\r\nw:dimin.                |\r\ne'2  .e'.e'             | (.e'2 .e'2)         | e2        .^f.^g           |    a2      z2       |\\\r\nw:sempre~dimin.         |                     |                            |   p\r\nd'2  .d'.d'             | c'2    z2           |\r\nz2       e'2-           ||\\\r\nw:       dolce\r\nK:A\r\n                         (e'2    c'2           | a2         c'2)            |\\\r\n(c'2     b2-            | b2     a2            | g2         a2              |\\\r\nw:*      {<             |\r\n b2      c'2            | d'2    e'2           | d'2        c'e')           |\\\r\nw:                      | <}     {>            |  *         *  >}\r\n(e'4                    | c'2    e'2)          |\r\nw:      {<              |                      |\r\n% page 5\r\n                                                 (e'2 f'2-                  | f'2  e'2)           |\\\r\nw:                                                                          |    *         <{     |\r\n(d'2  c'2               | b2     ^d'2          | e'2   g2)                  | (a4                 |\\\r\nw:  {>                  |    *        >}\r\ng4                      | a4                   | g4                         | a4)                 |\\\r\n(g2   b2)               |\r\n                          (_b4                 | =b4)                       | (_b4                |\\\r\nw:                        cresc.               |\r\n=b4)                    | _b2  e'2-            | ((3e'd'c' (3e'd'f)         | (a2   b2            |\\\r\nw:                      | dimin.               |                            |   p\r\nc'2 (3d'^d'e')          | (_b4                 | =b4)                       |\r\nw:cresc.                |\r\n% page 6\r\n                                                                              (_b4                |\\\r\n=b4)                    | _b2  (e'2            | =f'2  a2                   | =g2   b2            |\\\r\nw:                      | dimin.               |                            |  p\r\n=c'2) z2                ||\\\r\nK:C\r\nz4                      | z4                   | f'3          f'            | ((3f'e').d' (3c'.b.a|\r\n(g2       bd')          |(3.f'.e'.d' (3.c'.b.a | gz         z2              |\\\r\nw:cresc.                | f * *      sf        |\r\nz4                      | z4                   | z4                         | z2     .e'.e'       |\\\r\nw:                      |                      |                            |         ff          |\r\n(c'4           | b4)                 | {bc'}d'2-  ((3d'c'b) |\r\nw:p~dolce      |\r\n% page 7\r\n                                                               (bc')  c'2        |\\\r\n(c'3     d')   |(^d'e').e'.e'        |{=d'e'}f'2- ((3f'e'd')|  (d'e') e'2        |\\\r\n(e'3    ^f'    | e'2         ^d')z   | (=d'3            e'  |\r\n                                                                d'^c'=c')  z     |\\\r\n(c'4           | b2           c'2)   | {bc'}d'2-  ((3d'c'b) | (3.a(ab (3.c')(c'd'|\\\r\n(e'3)   ^f'    | e'2         ^d')z   |((3=d'b^c'   (3d'e'd')|\r\n                                                               (d'^c'=c')  z     |\\\r\n(c'4           | b2           c'2)   | {bc'}d'2-  ((3d'c'b) |   a2    z2         |\\\r\n a2- ((3ab^c') |(^c'd')       d'2    |   d'2-     ((3d'e'f')|\r\n% page 8\r\n                                                               (f'e') e'2        |\\\r\n(3aaa ((3ab^c')|((3^c'd').d'  d'2    | (3d'd'd'   ((3d'e'f')|((3f'e').e' z2      |\\\r\nw:cresc.       |                     |                      | dimin.             |\r\n((3e'f').f' z2 |\\\r\n((3f'e').e' z2 | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                d'2   .d'.e'     |\\\r\nw:                                                              pp               |\r\n f'4-          | f'4                 |   f'4                |\\\r\nw:p~cresc.     |\r\nL:1/16\r\n                                                             (f'2e'^d' e').e.^f.^g|\\\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|\r\nw:ff           |\r\n                                                                c'bc'd'  e'e^f^g |\\\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|   a4       z4      |\\\r\nL:1/8\r\n d'2    .d'.d' | c' z         z2     |\\\r\nw:p            |\r\nz2       e'2-  ||\\\r\nw:       dolce\r\nK:A\r\n                (e'2    c'2          |\r\n% page 10\r\n                                       a2         c'2)      |\\\r\n(c'2     b2-   | b2     a2           | g2         a2        |\\\r\nw:*      {<    |\r\n b2      c'2   | d'2    e'2          | d'2        c'e')     |\\\r\nw:<}     {>    |                     |  *         *  >}\r\n(e'4           | c'2    e'2)         | (e'2 f'2-            | f'2  e'2            |\r\nw:      {=<    |                     |                      |  *    <{            |\r\n d'2   c'2     | d'2          e'2    | c'4)                 |\\\r\nw:{>           |                     | >}                   |\r\n(d'2   e'2     | c'4)                |(d'2           e'2)   |\\\r\nw:dimin.       |\r\n a2   (.a.a)   | (.a2        .a2)    | a2          (.a.a)   | (.a2   .a2)        |\\\r\nw:pp\r\n d'2   .=c'.d' ||\\\r\nw:ff\r\nK:C\r\n                 .e' z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n d'2   .c'.d'  |  e' z        z2     | z4                   |   z4               |\\\r\nw:ff           |                     |                      |                    |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n c'2  (.c'.c') | (.c'2       .c'2)   | z4                   |   z4               |\\\r\nw:pp           |\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n c'2  (.c'.c') | (.d'2       .c'2)   | z4                   |   z4               |\\\r\nw:pp\r\n d'2   .d'.d'  |  c'2         z2     | z4                   |   z4               |\\\r\nw:pp\r\n z4            |  c'4-               | c'4-                 |   c' z    z2       |]\r\nw:             |  f{>                | >}                   |   pp\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:8     % Bassoon II\r\n%%MIDI channel 4\r\n%%MIDI program 70       % General MIDI Bassoon\r\n%%MIDI transpose -24\r\n% page 1\r\nK:C\r\na4-          | a4-         |\\\r\nw: f{>         *\r\na2      z2   | z4          | z4 | z4 |\\\r\nw: >}pp\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 |\r\n% page 2\r\n                                  z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           |\r\n               z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz2 c'2       | z2 b2       |\r\nw: cresc.    |\r\n% page 3\r\n                                                z2         b2              | z2         a2       |\\\r\nz2        a2            | z2         a2       | z2         b2              | z2         a2       |\\\r\ne2  .e.e                | (.e2 .e2)           | e2   .e.e                  | (.e2 .e2)           |\\\r\nw:ff\r\ne2  .e.^f               |\r\n                          (.g2 .g2)           | g2   .g.g                  |   g2  z2            |\\\r\ng2   .g.a               | (.b2  .b2)          | ^f2  .f.^g                 | (.a2  .a2)          |\\\r\ne2  .e.e                | (.e2 .e2)           | e2   .^f.^g                |\r\n% page 4\r\n                                                                               a2   z2           |\\\r\n=g2 .g.a                | (.b2  .b2)          | ^f2  .f.^g                 | (.a2  .a2)          |\\\r\nw:dimin.                |\r\ne2  .e.e                | (.e2 .e2)           | z4                         |   z4                |\\\r\nw:sempre~dimin.         |\r\nb2  .b.b                | a2    z2            |\r\nz4                      ||\\\r\nK:A\r\n                          z4                   | z4                         |\\\r\n(z2      d2-            | d2     c2            | B2         c2              |\\\r\nw:        {<            |\r\nd2       e2             | f2     g2            |   b2       ac')            |\\\r\nw:                      | <}     {>            |   *        * >}            |\r\n(c'4                    | a2    c'2)           |\r\nw:      {<              |                      |\r\n% page 5\r\n                                                 (c'2 d'2-                  | d'2  c'2)           |\\\r\nw:                                                                          |    *         <{     |\r\n(b2  a2                 | g2     f2            | g2   e2)                   | (f4                 |\\\r\nw:  {>                  |    *        >}\r\ne4                      | f4                   | e4                         | f4)                 |\\\r\n(e2   b2)               |\r\n                          (_b4                 | =b4)                       | (_b4                |\\\r\nw:                        cresc.               |\r\n=b4)                    | _b2  c2              | d4                         | (c2   e2            |\\\r\nw:                      | dimin.               |                            |   p\r\na2 (3b^bc')             | (_b4                 | =b4)                       |\r\nw:cresc.                |\r\n% page 6\r\n                                                                              (_b4                |\\\r\n=b4)                    | _b2  (b2             | a2  =f2                    | e2   =f2            |\\\r\nw:                      | dimin.               |                            |  p\r\ne2) z2                  ||\\\r\nK:C\r\nz4                      | z4                   | z4                         | z4                  |\r\nz4                      | z4                   | z4                         |\\\r\nz4                      | z4                   | z4                         | z2     .e'.e'       |\\\r\nw:                      |                      |                            |         ff          |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 8\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\\\r\nz4 | z4 |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                d'2   .d'.e'     |\\\r\nw:                                                              pp               |\r\n f'4-          | f'4                 |   f'4                |\\\r\nw:p~cresc.     |\r\nL:1/16\r\n                                                             (f'2e'^d' e').e.^f.^g|\\\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|\r\nw:ff           |\r\n                                                                c'bc'd'  e'e^f^g |\\\r\n abc'b   ac'ba | e^f^ga       bc'd'e'|   d'bc'd'     e'd'c'b|   a4       z4      |\\\r\nL:1/8\r\n b2     .b.b   | a  z         z2     |\\\r\nw:p            |\r\nz4             ||\\\r\nK:A\r\n                 z4                   |\r\n% page 10\r\n                                        z4                         |\\\r\n(z2      d2-   | d2     c2            | B2         c2              |\\\r\nw:        {<   |\r\nd2       e2    | f2     g2            |   b2       ac')            |\\\r\nw:<}     {>    |                      |   *        * >}            |\r\n(c'4           | a2    c'2)           | (c'2 d'2-                  | d'2  c'2            |\r\nw:      {=<    |                      |                            |    *         <{     |\r\n f2    e2      | f2           g2     | a4)                  |\\\r\nw:{>           |                     | >}                   |\r\n(f2    g2      | a4)                 |(f2            g2)    |\\\r\nw:dimin.       |\r\n A2   (.A.A)   | (.A2        .A2)    | A2          (.A.A)   | (.A2   .A2)        |\\\r\nw:pp\r\n b2    .a.b    ||\\\r\nw:ff\r\nK:C\r\n                 =c' z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n b2    .a.b    |  c' z        z2     | z4                   |   z4               |\\\r\nw:ff           |                     |                      |                    |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n a2   (.a.a)   | (.g2        .g2)    | z4                   |   z4               |\\\r\nw:pp           |\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n a2   (.a.a)   | (.^g2       .a2)    | z4                   |   z4               |\\\r\nw:pp\r\n b2    .b.b    |  a2          z2     | z4                   |   z4               |\\\r\nw:pp\r\n z4            |  a4-                | a4-                  |   a  z    z2       |]\r\nw:             |  f{>                | >}                   |   pp\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:9     % Horn I in E; down a minor 6th?\r\n%%MIDI channel 5\r\n%%MIDI program 60       % General MIDI French Horn\r\n%%MIDI transpose -8\r\n% page 1\r\nK:C\r\nc4-          | c4-         |\\\r\nw: f{>         *\r\nc2     z2    | z4          | z4 | z4 |\\\r\nw: >}pp\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 |\r\n% page 2\r\n               z4          |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           |\r\n               z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          |\r\n% page 3\r\n                                                 z4                         | z4                   |\\\r\nz4                      | z4                   | z2         c2              | z2          f2       |\\\r\nw:                      |                      |            cresc.          |\r\nc2   .c.c               | (.c2   .c2)          | c2        .c.c             | (.c2   .c2)          |\\\r\nw:ff\r\nc2   .c.d               |\r\n                          (._e2 .e2)           | _e2  .e.e                  |   _e2  z2            |\\\r\n_e2 .e.f                | (.g2   .g2)          | d2    .d.=e                | (.f2   .f2)          |\\\r\nc2   .c.c               | (.c2   .c2)          | c2    .d.e                 |\r\n% page 4\r\n                                                                                f2        z2       |\\\r\n_e2      .e.f           | (.g2       .g2     ) | d2        .d.=e            | (.f2       .f2     ) |\\\r\nw:dimin.                |\r\nc2       .c.c           | (.c2       .c2)      | c2        .d.e             |   f2        z2       |\\\r\nw:sempre~dimin.         |                      |                            |   p                  |\r\nc2       .c.c           | c2          z2       |\r\nz4                     ||\\\r\n                         z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  |\r\n% page 5\r\n                                               z4                         | z4                  |\\\r\nz4                     | g4                  | c4-                        | c4-                 |\\\r\nw:                     | p                   |\r\nc4                     | z4                  | z4                         | z4                  |\\\r\nz4                     |\r\n                         c4-                 | (c2           dc)          | c4-                 |\\\r\nw:                       cresc.              |\r\n(c2 (3edc)             | c4                  | d4                         | c2            c2    |\\\r\nw:                     | dimin.              |                            | *              p\r\nc4                     | c4-                 | (c2         dc)            |\r\nw:cresc.               |\r\n% page 6\r\n                                                                            c4-                 |\\\r\n(c2 (3edc)             | c4                  | f4                         | _e2           e2    |\\\r\nw:                     | dimin.              |                            |  p\r\n_e4-                   ||\\\r\n_e4-                   | _e4-                | _e4-                       | _e4                 |\r\nw:                     | pp                  |                            | pp\r\n_e3           e        | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         | .G.G          z2    |\\\r\nw:                     |                     |                            | ff                  |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 8\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\\\r\nz4 | z4 |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n z4            | z4                  |   z4                 |   z   c3           |\\\r\nw:             |                     |                      |      cresc.        |\r\n c2     .c.c   | (.c2        .c2)    |   c2         .c.c    |\r\nw:ff           |\r\n                                                               (.c2     .c2)     |\\\r\n c2     .c.c   | (.c2        .c2)    |   c2         .d.e    |   f2       z2      |\\\r\n c2     .c.c   | c  z         z2     |\\\r\nw:p            |\r\nz4             ||z4                  |\r\n% page 10\r\n                                       z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   | z4                  |\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\n z4            | z4                  | z4                   |   z4               |\\\r\n_e2   (.e.e)   ||\\\r\nw:ff\r\n                 _e  z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n_e2    .e.e    | _e  z        z2     | z4                   |   z4               |\\\r\nw:ff           |                     |                      |                    |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n c2   (.c.d)   | (._e2       .e2)    | z4                   |   z4               |\\\r\nw:pp           |\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n c2   (.c.c)   | (.c2        .c2)    | z4                   |   z4               |\\\r\nw:pp\r\n c2    .c.c    |  c2          z2     | z4                   |   z4               |\\\r\nw:pp\r\n z4            |  c4-                | c4-                  |   c  z    z2       |]\r\nw:             |  f{>                | >}                   |   pp\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:10    % Horn II in E; down a minor 6th?\r\n%%MIDI channel 5\r\n%%MIDI program 60       % General MIDI French Horn\r\n%%MIDI transpose -8\r\n% page 1\r\nK:C\r\nC4-          | C4-         |\\\r\nw: f{>         *\r\nC2     z2    | z4          | z4 | z4 |\\\r\nw: >}pp\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 |\r\n% page 2\r\n               z4          |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           |\r\n               z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          | z4 | z4 |\\\r\nz4           | z4          |\r\n% page 3\r\n                                                 z4                         | z4                   |\\\r\nz4                      | z4                   | z2         C2              | z2          f2       |\\\r\nw:                      |                      |            cresc.          |\r\nC2   .C.C               | (.C2   .C2)          | C2    .C.C                 | (.C2   .C2)          |\\\r\nw:ff\r\nC2   .c.d               |\r\n                          (._e2 .e2)           | _e2  .e.e                  |   _e2       z2       |\\\r\n_e2  .e.f               | (.g2   .g2)          | d2    .d.=e                | (.f2       .f2)      |\\\r\nC2   .C.C               | (.C2   .C2)          | C2    .d.e                 |\r\n% page 4\r\n                                                                                f2        z2       |\\\r\nz4                      | z4                   | z4                         |   z4                 |\\\r\n%w\r\nC2   .C.C               | (.C2   .C2)          | C2        z2               |   z4                 |\\\r\nw:sempre~dimin.         |\r\nC2   .C.C               | c2     z2            |\r\nz4                     ||\\\r\n                          z4                   | z4                         |\\\r\nz4                      | z4                   | z4                         |\\\r\nz4                      | z4                   | z4                         |\\\r\nz4                      | z4                   |\r\n% page 5\r\n                                                 z4                         | z4                  |\\\r\nz4                     | G4                    | C4-                        | C4-                 |\\\r\nw:                     | p                     |\r\nC4                     | f3              f     | ((3fe).d    (3.c.B.A       | (G2           A).B  |\\\r\nc2-      ((3cBc)       |\r\n                         c4-                   | (c2           dc)          | c4-                 |\\\r\nw:                       cresc.                |\r\n(c2 (3edc)             | z4                    | z4                         | z2            C2    |\\\r\nw:                     |                       |                            |                p\r\nC4                     | c4-                   | (c2           dc)          |\r\nw:cresc.               |\r\n% page 6\r\n                                                                              c4-                 |\\\r\n(c2 (3edc)             | c2          C2        | z4                         | z4                  |\\\r\nw:                     | dimin.                |\r\nz4                     ||\\\r\nz4                     | c2          z2        | z4                         | c2            z2    |\r\nw:                     | pp                    |                            | pp\r\nz4                     | z4                    | z4                         |\\\r\nz4                     | z4                    | z4                         | .G,.G,        z2    |\\\r\nw:                     |                       |                            | ff                  |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 8\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\\\r\nz4 | z4 |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n z4            | z4                  |   z4                 |   z   C3           |\\\r\nw:             |                     |                      |      cresc.        |\r\n c2     .c.c   | (.c2        .c2)    |   c2         .c.c    |\r\nw:ff           |\r\n                                                               (.c2     .c2)     |\\\r\n c2     .c.c   | (.c2        .c2)    |   c2         .d.e    |   f2       z2      |\\\r\n C2     .C.C   | c  z         z2     |\\\r\nw:p            |\r\n z4            ||z4                  |\r\n% page 10\r\n                                       z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   | z4                 |\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\n z4            | z4                  | z4                   |   z4               |\\\r\n_e2   (.e.e)   ||\\\r\nw:ff\r\n                 _e  z        z2     |\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n_e2    .e.e    | _e  z        z2     | z4                   |   z4               |\\\r\nw:ff           |                     |                      |                    |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            | (.c2        .c2)    | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n c2   (.c.c)   | (.G2        .c2)    | z4                   |   z4               |\\\r\nw:pp\r\n C2    .C.C    |  c2          z2     | z4                   |   z4               |\\\r\nw:pp\r\n z4            |  C4-                | C4-                  |   C  z    z2       |]\r\nw:             |  f{>                | >}                   |   pp\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:11    % Trumpet I in D; play major second higher than written\r\n%%MIDI channel 6\r\n%%MIDI program 56       % General MIDI Trumpet\r\n%%MIDI transpose +2\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 2\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\r\n     z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 |\r\n% page 3\r\n                                               z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nG2      z2             | d2        z2        | d2        z2               | G2         z2       |\\\r\nw:ff\r\nG2      z2             |\r\n                         z2        d2        | z4                         | d2         z2       |\\\r\nd2      z2             | z4                  | d2        z2               | G2         z2       |\\\r\nG2      z2             | d2        G2        | d2        dd               |\r\n% page 4\r\n                                                                            G2         z2       |\\\r\nd2      z2             | z4                  | d2        z2               | G2         z2       |\\\r\nw:dimin.               |\r\nG2      z2             | d2        G2        | d2        dd               | G2         z2       |\\\r\nw:                     | p                   |                            |   p\r\nz4                     | z4                  |\r\nz4                     ||\\\r\n                         z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz2      G2-            | G4-                 |\r\nw:      p{<\r\n% page 5\r\n                                               G4-                        | G4-                 |\\\r\nw:                                                                        | <}\r\nG4                     | z4                  | z4                         | z4                  |\\\r\nw:{>}\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     |\r\n                         z4                  | z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         |\r\n% page 6\r\n                                                                            z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     ||\\\r\nz4                     | f2          z2      | z4                         | f2            z2    |\r\nw:                     | pp                  |                            | pp\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         | .d.d          z2    |\\\r\nw:                     |                     |                            | ff                  |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\n  G2     z2    |   z2         GG     |   G2          z2     |\r\nw:p            |\r\n% page 8\r\n                                                                z2       GG      |\\\r\n  Gz     GG    |   Gz         GG     |   Gz          GG     |   GG       z2      |\\\r\nw:cresc.       |                     |                      |  dimin.            |\r\n  GG     z2    |\\\r\n  GG     z2    |   z4                |\r\nw:pp           |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n z4            | z4                  |   z4                 |   z   d3           |\\\r\nw:             |                     |                      |      cresc.        |\r\n d2     .d.d   | (.d2        .d2)    |   d2         .d.d    |\r\nw:ff           |\r\n                                                               (.d2     .d2)     |\\\r\n d2     .d.d   | (.d2        .d2)    |   d2         .d.d    |   G2       z2      |\\\r\n z4            | z4                  |\\\r\n z4            ||z4                  |\r\n% page 10\r\n                                       z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz2      G2-    | G4-                 | G4-                  | G4-                |\r\nw:      p{<    |                     |                      | <}                 |\r\nG4             | z4                  | z4                   |\\\r\nw:{>}          |\r\nz4             | z4                  | z4                   |\\\r\n z4            | G2          (.G.G)  | G2           z2      | G2        (.G.G)   |\\\r\nw:             | pp                  |\r\n z4            ||\\\r\n                  d  z        z2     |\r\nw:                f\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n z4            |  d  z        z2     | z4                   |   z4               |\\\r\nw:             |  f                  |                      |                    |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |]\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:12    % Trumpet II in D; play major second higher than written\r\n%%MIDI channel 6\r\n%%MIDI program 56       % General MIDI Trumpet\r\n%%MIDI transpose +2\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 2\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\r\n     z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 |\r\n% page 3\r\n                                               z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nG,2     z2             | d2        z2        | d2        z2               | G,2        z2       |\\\r\nw:ff\r\nG,2     z2             |\r\n                         z2        d2        | z4                         | d2         z2       |\\\r\nd2      z2             | z4                  | d2        z2               | G,2        z2       |\\\r\nG,2     z2             | d2        G,2       | d2        dd               |\r\n% page 4\r\n                                                                            G,2        z2       |\\\r\nd2      z2             | z4                  | d2        z2               | G,2        z2       |\\\r\nw:dimin.               |\r\nG,2     z2             | d2        G,2       | d2        dd               | G,2        z2       |\\\r\nw:                     | p                   |                            |   p\r\nz4                     | z4                  |\r\nz4                     ||\\\r\n                         z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz2      G,2-           | G,4-                |\r\nw:      p{<\r\n% page 5\r\n                                               G,4-                       | G,4-                |\\\r\nw:                                                                        | <}\r\nG,4                    | z4                  | z4                         | z4                  |\\\r\nw:{>}\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     |\r\n                         z4                  | z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         |\r\n% page 6\r\n                                                                            z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     ||\\\r\nz4                     | f2          z2      | z4                         | f2            z2    |\r\nw:                     | pp                  |                            | pp\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         | .d.d          z2    |\\\r\nw:                     |                     |                            | ff                  |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\n  G,2    z2    |   z2         G,G,   |   G,2         z2     |\r\nw:p            |\r\n% page 8\r\n                                                                z2       G,G,    |\\\r\n  G,z    G,G,  |   G,z        G,G,   |   G,z         G,G,   |   G,G,     z2      |\\\r\nw:cresc.       |                     |                      |  dimin.            |\r\n  G,G,   z2    |\\\r\n  G,G,   z2    |   z4                |\r\nw:pp           |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n z4            | z4                  |   z4                 |   z   d3           |\\\r\nw:             |                     |                      |      cresc.        |\r\n d2     .d.d   | (.d2        .d2)    |   d2         .d.d    |\r\nw:ff           |\r\n                                                               (.d2     .d2)     |\\\r\n d2     .d.d   | (.d2        .d2)    |   d2         .d.d    |   G,2      z2      |\\\r\n z4            | z4                  |\\\r\n z4            ||z4                  |\r\n% page 10\r\n                                       z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz2      G,2-   | G,4-                | G,4-                 | G,4-               |\r\nw:      p{<    |                     |                      | <}                 |\r\nG,4            | z4                  | z4                   |\\\r\nw:{>}          |\r\nz4             | z4                  | z4                   |\\\r\n z4            | G,2        (.G,.G,) | G,2          z2      | G,2       (.G,.G,) |\\\r\nw:             | pp                  |\r\n z4            ||\\\r\n                  d  z        z2     |\r\nw:                f\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n z4            |  d  z        z2     | z4                   |   z4               |\\\r\nw:             |  f                  |                      |                    |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |]\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:13    % Timpani in A and E\r\n%%MIDI channel 7\r\n%%MIDI program 47       % General MIDI Timpani\r\n%%MIDI transpose -24\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 2\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 |\r\n     z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 |\r\n% page 3\r\n                                               z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nA2      z2             | e2        z2        | e2        z2               | A2         z2       |\\\r\nw:ff\r\nA2      z2             |\r\n                         z2        e2        | z4                         | e2         z2       |\\\r\ne2      z2             | z4                  | e2        z2               | A2         z2       |\\\r\nA2      z2             | e2        A2        | e2        ee               |\r\n% page 4\r\n                                                                            A2         z2       |\\\r\ne2      z2             | z4                  | e2        z2               | A2         z2       |\\\r\nw:dimin.               |\r\nA2      z2             | e2        A2        | e2        ee               | A2         z2       |\\\r\nw:                     | p                   |                            |   p\r\nz4 | z4 |\r\nz4                     ||\\\r\n                         z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  |\r\n% page 5\r\n                                               z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     |\r\n                         z4                  | z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     | z4                  | z4                         |\r\n% page 6\r\n                                                                            z4                  |\\\r\nz4                     | z4                  | z4                         | z4                  |\\\r\nz4                     ||\\\r\nz4                     | e2          z2      | z4                         | e2           z2     |\r\nw:                     | pp                  |                            | pp\r\nz4                     | z4                  | z4                         |\\\r\nz4                     | z4                  | z4                         | .e.e          z2    |\\\r\nw:                     |                     |                            | ff                  |\r\nz4 | z4 | z4 |\r\n% page 7\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\n  A2     z2    |   z2         AA     |   A2          z2     |\r\nw:p            |\r\n% page 8\r\n                                                                z2       AA      |\\\r\n  Az     AA    |   Az         AA     |   Az          AA     |   AA       z2      |\\\r\nw:cresc.       |                     |                      |  dimin.            |\r\n  AA     z2    |\\\r\n  AA     z2    |   z4                |\r\nw:pp           |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |\r\n                                         z4                 |\\\r\n z4            | z4                  |   z4                 |   z4               |\\\r\n z4            | z4                  |   z4                 |\r\n% page 9\r\n                                                                z4               |\\\r\n z4            | z4                  |   z4                 |\\\r\nL:1/16\r\n                                                                z2  ee   eeee    |\\\r\nw:                                                                 cresc.        |\r\nL:1/8\r\n e2     .e.e   |   e2         e2     |   e2         .e.e    |\r\nw:ff           |\r\n                                                                 e2      e2      |\\\r\n e2     .e.e   |   e2         e2     |   e2         .e.e    |    A2      z2      |\\\r\n z4            | z4                  |\\\r\nz4             ||z4                  |\r\n% page 10\r\n                                       z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   | z4                 |\r\nz4             | z4                  | z4                   |\\\r\nz4             | z4                  | z4                   |\\\r\n z4            | A2           AA     | A2           z2      | A2          AA     |\\\r\nw:             | pp                  |\r\n z4            ||\\\r\n                  e  z        z2     |\r\nw:                f\r\n% page 11\r\n                                       z4                   |   z4               |\\\r\n z4            |  e  z        z2     | z4                   |   z4               |\\\r\nw:             |  f                  |                      |                    |\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |\r\n                  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |\\\r\n z4            |  z4                 | z4                   |   z4               |]\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:14    % Violin I\r\n%%MIDI channel 8\r\n%%MIDI program 40       % General MIDI Violin\r\n%%MIDI transpose 0\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 |\r\n% page 2\r\n               z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\ne2  .e.e      | (.e2     .e2)     | e2     .e.e         | (.e2   .e2)      |\\\r\nw:p % cresc. poco a poco\r\ne2  .e.^f     |\r\n                (.g2     .g2)     | g2     .g.g         |  g2    z2        |\\\r\ng2  .g.a      | (.b2     .b2)     | ^f2    .f.^g        | (.a2   .a2)      |\\\r\ne2  .e.e      | (.e2     .e2)     | e2     .^f.^g       |  a2    z2        |\\\r\n=g2 .g.a      | (.b2     .b2)     |\r\nw:f\r\n% page 3\r\n                                    ^f2    .f.^g        | (.a2   .a2)      |\\\r\nw:                                  pi\\`u~f             |\r\ne2  .e.e      | (.e2     .e2)     | e2     .^f.^g       |  a2    z2        |\\\r\nc'4           | b4                | ({bc'}d'3 c'/b/)    | (bc')   c'2      |\\\r\nw:ff\r\nc'3 (c/d/)    |\r\n                (^de).e.e         | {=de}(f3 e/d/)      | (de)   e2        |\\\r\n(e2  e'2      | ^d'4)             | (=d'b/^c'/ d'e'/d'/)| (d'^c') =c'2     |\\\r\n(c'4          | b2       c'2)     | ({bc'}d'3 c'/b/)    |\r\n% page 4\r\n                                                          .a(A/B/ .c)(c/d/ |\\\r\n(e2) e'2)     | ^d'4              | (=d'b/^c'/ d'e'/d'/)| (d'^c')  =c'2    |\\\r\nw:dimin.      |\r\n(c'4          | b2       c'2)     | ({bc'}d'3 c'/b/)    | a2     z2        |\\\r\nw:sempre~dimin.|                  |                     |  p\r\n({Bc}d3 c/B/) | A2       z2       |\r\nz2   ((3edB)  ||\\\r\nw:      p\r\nK:A\r\n               ((3ecA   (3cAE)    | ((3AEC  (3cAE)      |\\\r\n((3cFD (3BFD) |((3BFD   (3ACA)    | ((3B,DG (3ACA       |\\\r\nw:* * *   {<  |\r\n(3DFB   (3cEc | (3FAd  (3eGe)     | ((3dGB (3Aca)       |\\\r\nw:            | * * <} {>         |  * * * * * >}\r\n((3acA (3ec=G | (3c=GE  (3ecG)    |\r\nw:* * * {<    |                   |\r\n% page 5\r\n                                    ((3ec=G (3Fde       | (3fdF  (3Ece    |\\\r\nw:                                                      | * * *  * * <}\r\n(3dBE) ((3EAc)| ((3BGE (3FA^d)    | ((3eBG  (3eBG       | (3fBA  (3fBA)   |\\\r\nw:{>          |  * * * * * >}\r\n((3eBG (3eBG  | (3^dAF (3BAF)     | ((3EGB  (3GBe)      | ((3fBA (3fBA)   |\\\r\n((3eBG (3eBG) |\r\n                ((3e_B=G (3EGB    | (3E^G=B (3eBG)      | ((3e_B=G (3EGB  |\\\r\nw:                cresc.          |\r\n(3E^G=B (3eBG)| ((3e_B=G (3EGB)   | ((3F=BF) ((3FBd     | (3cAE  (3DGB)   |\\\r\nw:            | dimin.            |                     |   p\r\n((3EAc (3d^de)| ((3e_B=G (3EGB    | (3E^G=B (3eBG)      |\r\nw:cresc.      |\r\n% page 6\r\n                                                          ((3e_B=G (3EGB  |\\\r\n(3E^G=B (3eBG)| ((3e_B=G (3EGB    | (3A=fA)  ((3Adf     | (3e=c=G  (3=FBd)|\\\r\nw:            |   dimin.          |                     |   p\r\n((3E=ce (3ce=g) ||\\\r\nK:C\r\n((3Bdg  (3Bdg)| ((3ceg   (3ceg)   | ((3Bdg   (3Bdg)     | ((3ceg   (3ceg) |\r\n((3Bdg  (3Bdg)| z2       (3zz.a   | (3.g.f.e (3.d.c.B   |\\\r\nw:cresc.      |               f   |    * * * sf         |\r\n(3.A.G.F (3.E.D.C | (3B,zz z2     | z2       .E.E       | z4              |\\\r\nw:                |               |          ff         |\r\nL:1/16\r\n z.c.A.c  .e.c.A.c | E2  z2     z4       | z.B.^G.B  .e.B.G.B   |\r\nw:p                |\r\n% page 7\r\n                                                                  E2  z2    z4       |\\\r\n z.c.=G.c .e.c.A.c | G,2 z2     z4       | z.d.B.d   .g.d.B.d   | G2  z2    z4       |\\\r\n z.G.E.G  .c.E.C.^F|^F2  z2     z4       | z.A.^F.A  .d.A.E.B   |\r\nw:                 | sempre~p            |\r\n                                                                  E2  z2    z4       |\\\r\n z.c.A.c  .e.c.A.c | E2  z2     z4       | z.B.E.B   .e.B.E.d   | [E2c2] z2 z4       |\\\r\n z.E.B,.E .B.E.C.^F|^F2  z2     z4       | z.^F.D.F  .A.D.B,.E  |\r\n                                                                  E2  z2    z4       |\\\r\n z.c.A.c  .e.c.A.c | E2  z2     z4       | z.B.E.B   .e.B.E.d   | [E2^c2]z2 z4       |\\\r\nz.^c.=G.c .e.c.G.e | F2  z2     z4       | z.F.D.F   .B.F.D.d   |\r\n% page 8\r\n                                                                  [E2^c2]z2 z4       |\\\r\n z.^c.G.c .e.c.G.e | f2  z2     z4       | z.F.D.F   .B.F.D.d   | ^c2 z2    z4       |\\\r\nw:cresc.           |                     |                      | dimin.             |\r\n z.F.D.F  .B.F.D.^G|\\\r\nL:1/8\r\n A2       .A.B     | (.c2      .c2)      |\r\nw:pp               |\r\n                                             B2      .B.^c      | .d.=c.B.A          |\\\r\nL:1/16\r\n =GABA     GAG^F   | E^FGA      B^c^de   |  eAB^c    =dBed      | =cBcd     eE^F^G   |\\\r\nw:sempre~pp        |\r\nL:1/8\r\n A2        z2      | z4                  |\r\n                                             z4                 | z2        z  ^f-   |\\\r\n ^f  e2       b-   | b   e2         b-   |  b  a2       b       |\\\r\nw:sempre~pp        |\r\nL:1/16\r\n                                                                  .c'2.a2  .^g.g.a.b |\\\r\n a4        z4      | z4        z.^f.=g.a |\r\nL:1/8\r\n                                             gG       c2-       |\\\r\n c2       .c.d     | (.e2      .e2)      |\\\r\nL:1/16\r\n                                            Bcdc      BdcB      |  ABcd     e^f^ga   |\\\r\n=GA_BA     GBAG    | =FGA_B \\\r\nL:1/8\r\n                                ca-      |  a  g2       g-      |\r\n% page 9\r\n                                                                   g   =f2      f    |\\\r\nL:1/16\r\n fdef      dBcd    |  B^GAB     GABc     |  def^g     abc'^c'   |  d'e'e'e'  e'e'e'e'|\\\r\nw:   cresc.        |\r\nL:1/8\r\n[e2e'2] .[ee'].[ee']| (.[e2e'2] .[e2e'2])| [e2e'2] .[ee'].[ee'] |\r\nw:ff                |\r\n                                                                  (.[e2e'2] .[e2e'2]) |\\\r\n[e2e'2] .[ee'].[ee']| (.[e2e'2] .[e2e'2])| [e2e'2]   .^f.^g     |    a2      z2      |\\\r\nL:1/16\r\n dBcd    edcB       |\\\r\nw:p\r\nL:1/8\r\n                      A2           z2    |\\\r\nz2   ((3edB)  ||\\\r\nw:\r\nK:A\r\n               ((3ecA   (3cAE     |\r\n% page 10\r\n                                     (3AEC  (3cAE)      |\\\r\n((3cFD (3BFD) |((3BFD   (3ACA)    | ((3B,DG (3ACA)      |\\\r\nw:* * *   {<  |\r\n((3DFB  (3cEc | (3FAd  (3eGe)     | ((3dGB (3Aca)       |\\\r\nw:* * <} {>   |                   |  * * *  * * >}\r\n((3acA (3ec=G | (3c=GE  (3ecG)    | ((3ec=G (3Fde       | (3fdF  (3Ece)   |\r\nw:            |  * * *   {<       |                     | * * *  * * <}\r\n((3dAF  (3E=Gc| (3dAF  (3EBe      |  (3cAE (3cAE        |\\\r\nw:{>          |                   |  * * *  * * >}\r\n (3dAF  (3eBE | (3cAE  (3cAE)     | ((3dAF (3eBe)       |\\\r\nw:dimin.\r\n  A4-         |  A4-              |   A4-               |  A4             |\\\r\nw:pp          |\r\n [DB]z [db]z ||\\\r\nw:ff\r\nK:C\r\n                 [e2c'2] z2       |\r\n% page 11\r\n                                      ^G2   .^F.G       |  A z     z2     |\\\r\nw:                                    p                 |\r\n [DB]z [db]z  |  [e2c'2] z2       |   ^G2   .^F.G       |  z4             |\\\r\nw:ff          |                   |   p                 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n z2     A2    |   z2     E2       |    z2     E2        |  z2      A2     |\\\r\nw:      p     |\r\n z2     E2    |   z2     E2       |    D2     CD        |  E2      z2     |\\\r\n z2     C2    |\r\n                  z2     B2       |    z2     E2        |  z2      A2     |\\\r\n z2     C2    |   D2     C2       |    D2     DD        |  C2      z2     |\\\r\n z4           |   z4              |    D2     DD        |  C2      z2     |\\\r\n C2  \\\r\n%%MIDI program 40       % General MIDI Violin\r\n        e2    |  .^f.^g  a2       |    z4               |  z4             |]\r\nw:            |  f{> *   >}       |\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:15    % Violin II\r\n%%MIDI channel 9        % separate from Violin I because of pizzicato section\r\n%%MIDI program 40       % General MIDI Violin\r\n%%MIDI transpose 0\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nz4 | z4 | z4 | z4 |\\\r\nE2  .E.E      | (.E2     .E2)     | E2     .E.E         |\r\nw:p\r\n% page 2\r\n                                                          (.E2   .E2)      |\\\r\nE2  .E.^F     | (.G2     .G2)     | G2     .G.G         |  G2    z2        |\\\r\nG2  .G.A      | (.B2     .B2)     | ^F2    .F.^G        | (.A2   .A2)      |\\\r\nE2  .E.E      | (.E2     .E2)     | E2     .^F.^G       |  A2    z2        |\r\n=G2 .G.A      | (.B2     .B2)     | ^F2    .F.^G        | (.A2   .A2)      |\\\r\nw:pp\r\nE2  .E.E      | (.E2     .E2)     | E2     .^F.^G       |  A2    z2        |\\\r\n(c4           | B4)               | ({Bc}d3 c/B/)       | (Bc)   c2        |\\\r\n%w:cresc. poco a poco\r\nc3    (c/d/)  |\r\n                (^de).e.e         | ({=de}f3 e/d/)      | (de)   e2        |\\\r\n(e4           | ^d4)              | (=dB/^c/ de/d/)     | (d^c)  =c2       |\\\r\n(c4           | B2       c2)      | ({Bc}d3 c/B/)       | .A(A/B/ .c)(c/d/ |\\\r\n(e4)          | ^d4)              |\r\nw:f\r\n% page 3\r\n                                    (=dB/^c/ de/d/)     | (d^c)  =c2       |\\\r\nw:                                  pi\\`u~f             |\r\n(c4           | B2       c2)      | ({Bc}d3 c/B/)       | A2     z2        |\\\r\nz (AcE)       | z (BdE)           | z (Bd^G)            | z (ceA)          |\\\r\nw:ff\r\nz (AcC)       |\r\n                z (ceE)           | z (BdG)             | z (ceG)          |\\\r\nz (ceE)       | z (^dbB)          | z (B=dD)            | z (^caA)         |\\\r\nz (=ceE)      | z (BeE)           | z (BeE)             |\r\n% page 4\r\n                                                          z (ceE)          |\\\r\nz (ceE)       | z (^dbB)          | z (B=dD)            | z (^caA)         |\\\r\nw:dimin.      |\r\nz (=ceE)      | z (BeE)           | z (Be[Ed])          | [E2c2] z2        |\\\r\nw:s.~d.       |                   |                     |   p\r\nz4 | z4 |\r\n({B,^C}D3 ^C/B,/) ||\\\r\nw:p\r\nK:A\r\n                A,4-              | A,4                 |\\\r\nB,4-          | (B,2    A,2       | G,2     A,2)        |\\\r\nw:{=<         |\r\n(A,2    =G,2  | A,2     B,2)      | (B,2   A,[=G,=G])   |\\\r\nw:            | <}      {>        | *      *  >}\r\n[=G,2=G2] [G,2-G2-] | [=G,4-=G4-] |\r\nw:*       {<        |             |\r\n% page 5\r\n                                    [=G,=G][A,G] [A,2-F2-] | [A,2F2] A,2  |\\\r\nw:                                                         | *       <}   |\r\n(A,B,C)(C     | G,B,)(B,A,)       | (G,2    ([B,2-G2])  | [B,4A4])        |\\\r\nw:{>          | * *   * >}\r\n([B,4G4]      | [B,4A4])          | ([B,4G4]            | [B,4A4])        |\\\r\n([B,2G2] G,2) |\r\n                (=G,4             | ^G,4)               | (=G,4           |\\\r\nw:                cresc.          |\r\n^G,4)         | (=G,2    =G2      | F)(FDF)             | (CE)(ED         |\\\r\nw:            |  dimin.           |                     |  p\r\nC)(C   (3D^DE)| (=G,4             | ^G,4)               |\r\nw:cresc.      |\r\n% page 6\r\n                                                          (=G,4           |\\\r\n^G,4)         | (=G,2    =G2      | A)(A,=FA)           | (F=G)(GB,)      |\\\r\nw:            |  dimin.           |                     |  p\r\n(=C2   ([=G,2-E2]) ||\\\r\nK:C\r\n([G,4-F4])    | [G,4E4])          | ([G,4-F4]           | ([G,4-E4])      |\r\n[G,4F4])      | z2       (3zz.A   | (3.G.F.E (3.D.C.B,  |\\\r\nw:cresc.      |               f   |    * * * sf         |\r\n(3.A,.G.F (3.E.D.C | (3B,zz z2    | z2       .B,.B,     | z4              |\\\r\nw:                |               |          ff         |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n A,2      AA       | ^G,2      ^G,2      | [B,2^G2] [B,G][B,G]  |\r\nw:p                |\r\n% page 7\r\n                                                                  [C2A2]    [C2A2]   |\\\r\n=G,2      G,[A,A]  | [C2E2]    [C2E2]    | [B,2D2]  [B,D][B,D]  | [C2E2]    z2       |\\\r\n[C2E2]   [CE][C^F] | [B,2^F2]  [B,2F2B2] | [A,2D2]  [A,D][B,E]  |\r\n                                                                  [A,2E2]  [A,2E2A2] |\\\r\n[C2A2]   [CA]A,    | ^G,z      [CA]A,    | [B,2^G2] AB          | [CE] z   z2        |\\\r\n[B,2E2]  [B,E][C^F]| [B,2^F2]  [B,2F2B2] | [A,2D2]  [A,D][B,E]  |\r\n                                                                  [A,2E2]  [A,2E2A2] |\\\r\n[C2A2]   [CA]A,    | ^G,z      [CA]A,    | [B,2^G2] AB          | [C2E2]   z2        |\\\r\n[C2E2]   [CE][CE]  | [D2F2]    z2        | [D2F2]   [DF][DF]    |\r\n% page 8\r\n                                                                  [^C2E2]  z2        |\\\r\n[^CE][CE][CE] z    | [DF][DF][DF] z      | [DF][DF][DF] z       | z2       [^CE][^CE]|\\\r\nw:cresc.           |                     |                      | dimin.             |\r\n%%MIDI program 40       % General MIDI Violin\r\n z2      [DF]d     |\\\r\nL:1/16   % gonna presume these next are not staccati\r\n=cded    cdcB      | ABcd      e^f^ga    |\r\nw:pp               |\r\n                                            ^ge^fg   aba=g      |  ^ffga   bB^c^d    |\\\r\nL:1/8\r\n e2      .e.^f     | (.g2      .g2)      |  ^f2      .f.^g      |  .a.=f.ed-         |\\\r\nw:sempre~pp        |\r\n d   c2      e-    | e  A2        e-     |\r\n                                             e  d2       e      |  .^f.e \\\r\nL:1/16\r\n                                                                          .^dd.e.f   |\\\r\nL:1/8\r\n g2       z2       | z4                  |   z4                 |   z4               |\\\r\nL:1/16\r\n z4      z.^c.d.e  | d4         z4       |\r\n                                             z4      zB=cd      |\\\r\n efgf     efed     | cdef      gabc'     |\\\r\nL:1/8\r\n                                             ^f2     .f.^g      |   a2     a2-       |\\\r\n a  =g2       g-   | g   =f2      f      |\\\r\nL:1/16\r\n                                             gGED    ^CEAG      |\r\n% page 9\r\n                                                                    FGAB  ^cdef      |\\\r\n% this next bit is quite awkward -- abc needs a notation for measured tremolos (& unmeasured)\r\n f[^G,F][G,F][G,F] [G,F][G,F][G,F][G,F]  |\\\r\nw:   cresc.        |\r\n                     [^G,F][G,F][G,F][G,F] [G,F][G,F][G,F][G,F] |\\\r\n                                            [^G,F][G,F][G,F][G,F] [G,F][G,F][G,F][G,F] |\\\r\n                                                                   [^G,F]BBB BBed    |\\\r\nL:1/8\r\n[E2=c2] .[Ec].[Ec] |(.[E2B2]    .[E2B2]) | [B2^g2]   .[Bg].[Bg] |\r\nw:ff               |\r\n                                                                  (.[c2a2]  .[c2a2]) |\\\r\n[c2a2]  .[ca].[ca] | (.[d2b2]   .[c2a2]) | [B2^g2]  .[A^f].[Bg] |   [c2a2]     z2    |\\\r\n z4                | z4                  |\\\r\nL:1/16\r\n DB,^CD  EDCB,     ||\\\r\nw:p\r\nL:1/8\r\nK:A\r\n                A,4-              |\r\n% page 10\r\n                                    A,4                 |\\\r\nB,4-          | (B,2    A,2       | G,2     A,2)        |\\\r\nw:{=<         |\r\n(A,2    =G,2  | A,2     B,2)      | (B,2   A,[=G,=G])   |\\\r\nw:=<}    {>   |                   | *      >}           |\r\n[=G,2=G2] [G,2-G2-] | [=G,4-=G4-] | [=G,=G][A,G] [A,2-F2-] | [A,2F2] A,2  |\r\nw:*       {<        |             |                        | *       <}   |\r\n(A,2    =G,2  | A,2     B,2)      | (A,3   =G,          |\\\r\nw:{>          |                   |  *          >}\r\n A,2     B,2) |(A,3    =G,        |  A,2    B,2)        |\\\r\nw:dimin.      |\r\n (C4          |  D4               |   C4                |  D4)            |\\\r\nw:pp          |\r\n D z  [DB=g]z ||\\\r\nw:ff\r\nK:C\r\n                 [E2c2e2] z2      |\r\n% page 11\r\n                                       D2   .D.D        |  C z     z2     |\\\r\nw:                                    p                 |\r\n [DB]z [DBg]z |  [E2c2e2] z2      |    D2   .D.D        |  z4             |\\\r\nw:ff          |                   |   p                 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n z2     A,2   |   z2     E2       |    z2     E2        |  z2      A,2    |\\\r\nw:      p     |\r\n z2     C2    |   z2     C2       |    B,2    A,B,      |  C2      z2     |\\\r\n z2     C2    |\r\n                  z2     B,2      |    z2     E2        |  z2      A,2    |\\\r\n z2     A,2   |   B,2    A,2      |    B,2    B,B,      |  A,2     z2     |\\\r\n z4           |   z4              |    B,2    B,B,      |  A,2     z2     |\\\r\n%%MIDI program 40       % General MIDI Violin\r\n E2    .^F.^G | [A,2A2]  z2       |    z4               |  z4             |]\r\nw:            |  f                |\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:16    % Viola\r\n%%MIDI channel 11\r\n%%MIDI program 41       % General MIDI Viola\r\n%%MIDI transpose -12\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nE2  .E.E      | (.E2     .E2)     | E2     .E.E         | (.E2   .E2)      |\\\r\nw:p\r\nE2  .E.[^FD]  | (.[E2G2] .[E2G2]) | [D2G2] .[CG].[DG]   | [E2G2] z2        |\\\r\nG2  .G.A      | (.B2     .B2)     | ^F2    .F.^G        | (.A2   .A2)      |\r\nE2  .E.E      | (.E2     .E2)     | E2     .[E^F].[E^G] | [E2A2] z2        |\\\r\n=G2 .G.A      | (.B2     .B2)     | ^F2    .F.^G        | (.A2   .A2)      |\\\r\nw:pp\r\nE2  .E.E      | (.E2     .E2)     | E2     .[E^F].[E^G] | [E2A2] z2        |\\\r\n(c4           | B4)               | ({Bc}d3 c/B/)       |\r\nw:p\r\n% page 2\r\n                                                          (Bc)   c2        |\\\r\nc3    (c/d/)  | (^de).e.e         | ({=de}f3 e/d/)      | (de)   e2        |\\\r\n(e4           | ^d4)              | (=dB/^c/ de/d/)     | (d^c)  =c2       |\\\r\n(c4           | B2       c2)      | ({Bc}d3 c/B/)       | .A(A/B/ .c)(c/d/ |\r\n(e4)          | ^d4)              | (=dB/^c/ de/d/)     | (d^c)  =c2       |\\\r\nw:pp\r\n(c4           | B2       c2)      | ({Bc}d3 c/B/)       | A2     z2        |\\\r\nz (AcE)       | z (^GBE)          | z (^GBE)            | z (AcE)          |\\\r\n%w:cresc. poco a poco\r\nz (AcC)       |\r\n                z (=GcC)          | z (BdG)             | z (GcC)          |\\\r\nz (ceE)       | z (^fbB)          | z (BdD)             | z (eaA)          |\\\r\nz (AeE)       | z (BeE)           | z (BeE)             | z (ceA)          |\\\r\nz (ceE)       | z (^fbB)          |\r\nw: f\r\n% page 3\r\n                                    z (BdD)             | z (eaA)          |\\\r\nw:                                  pi\\`u~f             |\r\nz (AeE)       | z (BeE)           | z (BeE)             | z (ceA)          |\\\r\n(3z.A.c E2    | (3z.^G.B E2       | (3z.^G.B E2         | (3z.A.c E2       |\\\r\nw:ff\r\n(3z.A.c C2    |\r\n                (3z.=G.c [C2G2]   | (3z.B.d  G2         | (3z.G.c C2       |\\\r\n(3z.G.c C2    | (3z.B.b  B2       | (3z.B.d  D2         | (3z.A.a A2       |\\\r\n(3z.A.c E2    | (3z.^G.B [E2A2]   | (3z.^G.B E2         |\r\n% page 4\r\n                                                          (3z.A.a (3AAB    |\\\r\n(3c=Gc  C2    | (3z.B.b  B2       | (3z.B.d  D2         | (3z.A.a A2       |\\\r\nw:dimin.      |\r\n(3z.A.c E2    | (3z.^G.B [E2A2]   | (3z.^G.e (3EEe      | A2      z2       |\\\r\nw:s.~d.       |                   |                     |   p\r\nz4 | z4 |\r\nz4            ||\\\r\nK:A\r\n                [C4-E4-]          | [C4E4]              |\\\r\nw:              p                 |\r\n[D4-F4-]      | ([D2F2] [CE]c)    |([B2d2]   [Ac][CE]   |\\\r\nw: {=<\r\n[D2F2]  E2    | F2      ^G2)      | (G2       E)E       |\\\r\nw:            | <}       {>       | *         * >}\r\n(E2     C2-)  | C4-               |\r\nw:*     {<    |                   |\r\n% page 5\r\n                                    (C2      D2-        | D2      E2)      |\\\r\nw:                                                      | *       <}\r\n(FGAE)        | (EGAF)            | (E2      (e2)       | f4)              |\\\r\nw:{>          | * * * >}\r\n(e4           | f4)               | (e4                 | (f4)             |\\\r\ne2)     E2-   |\r\n                E4-               | E4-                 | E4-              |\\\r\nw:              cresc.            |\r\nE4            | (E2      =G2      | F)(FDF)             | (CE)(ED          |\\\r\nw:            |  dimin.           |                     |  p\r\nC)(A   (3B^Bc)| E4-               | E4-                 |\r\nw:cresc.      |\r\n% page 6\r\n                                                          E4-              |\\\r\nE4            | (E2      =G2      | A)(A=FA)            | (E=G)(G=F)       |\\\r\nw:            |  dimin.           |                     |  p\r\n(E2     =c2   ||\\\r\nK:C\r\nd4            | c4)               | (d4                 | (c4)             |\r\nd4)           | z4                | z2        (3zz.B    |\\\r\nw:cresc.      |                   |                f    |\r\n(3.A.G.F (3.E.D.c | (3.B.A.G (3.F.E.D | .Cz  .E.E       | z4               |\\\r\nw:                |                   | *    ff         |\r\nL:1/16          % gonna presume staccati for these 16ths\r\nz8                 | z.B.^G.B  .e.B.G.B  | E2  z2     z4        |\r\nw:                 | p                   |\r\n% page 7\r\n                                                                  z.c.A.c   .e.c.A.c |\\\r\nE2  z2   z4        | z.e.c.e   .=g.e.c.e | G2  z2     z4        | z.e.c.e   .g.e.c.e |\\\r\nG2  z2   z4        | z.^f.^d.f .b.f.d.f  | A2  z2     z4        |\r\nw:                 | sempre~p            |\r\n                                                                  z.^c.A.c  .e.=c.A.c|\\\r\nE2  z2   z4        | z.B.^G.B  .e.c.A.c  | E2  z2     z4        | z.c.A.c   .e.c.A.c |\\\r\nE2  z2   z4        | z.^f.^d.f .b.f.d.f  | A2  z2     z4        |\r\n                                                                  z.^c.A.c  .e.=c.A.c|\\\r\nE2  z2   z4        | z.B.^G.B  .e.c.A.c  | E2  z2     z4        | z.e.^c.e  .=g.e.c.e|\\\r\nG2  z2   z4        | z.=F.D.F  .A.F.D.d  |^G2  z2     z4        |\r\n% page 8\r\n                                                                  z.e.^c.e  .=g.e.c.e|\\\r\nG2  z2   z4        | z.F.D.F   .A.F.D.d  |^G2  z2     z4        | z.e.^c.e  .=g.e.c.G|\\\r\nw:cresc.           |                     |                      | dimin.             |\r\n^G2 z2   z4        |\\\r\nL:1/8\r\n z4                | z4                  |\r\n                                             z4                 |   z4               |\\\r\n z4                | z4                  |   z4                 |   z4               |\\\r\nL:1/16\r\n cded    cdcB      | ABcd       e^f^ga   |\r\nw:pp\r\n                                            ^ge^fg    aba=g     |  ^ffga     bB^c^d  |\\\r\nL:1/8\r\n e2      .e.^f     | (.g2      .g2)      |  ^f2      .f.^g      |  .a.=f.e.d         |\\\r\nw:sempre~pp        |\r\nL:1/16\r\n ^ccde   AABc      | .d2.=c2._B2.A2      |\r\n                                            =BBcd     GGAB      |\\\r\nL:1/8\r\n c2      z2        | z2         z e-     |   e  d2      d-      |   d   c2      c'   |\\\r\nL:1/16\r\n_Bcdc    BdcB      | A_Bcd      efga     |\\\r\nL:1/8\r\n                                             =B2     .B.^c      |\r\n% page 9\r\n                                                                   (.d2     .d2)     |\\\r\nL:1/16\r\n% this next bit is quite awkward -- abc needs a notation for measured tremolos (& unmeasured)\r\n[Bd][Bd][Bd][Bd] [Bd][Bd][Bd][Bd]  |\\\r\nw:   cresc.        |\r\n                     [Bd][Bd][Bd][Bd] [Bd][Bd][Bd][Bd] |\\\r\n                                            [Bd][Bd][Bd][Bd] [Bd][Bd][Bd][Bd] |\\\r\n                                                                   [Bd]BBB BBed    |\\\r\nL:1/8\r\n[E2c2]  .[Ec].[Ec] |(.[E2B2]    .[E2B2]) | [E2B2]   .[EB].[EB]  |\r\nw:ff               |\r\n                                                                  (.[E2c2]  .[E2c2]) |\\\r\n[E2c2]  .[Ec].[Ec] | (.[E2d2]   .[E2c2]) | [E2B2]   .[EA].[EB]  |   [E2c2]     z2    |\\\r\n z4                | z4                  |\\\r\nz4            ||\\\r\nK:A\r\n                [C4-E4-]          |\r\nw:              p                 |\r\n% page 10\r\n                                    [C4E4]              |\\\r\n[D4-F4-]      | ([D2F2] [CE]c)    |([B2d2]   [Ac][CE])  |\\\r\nw: {=<\r\n([D2F2] E2    | F2      ^G2)      | (G2       E)E       |\\\r\nw:<}    {>    |                   | =>}                 |\r\n(E2     C2-)  | C4-               | (C2      D2-        | D2      E2)      |\r\nw:{=<         |                   |                     | *       <}\r\n(F2      E2   | F2     ^G2)       | (E4                 |\\\r\nw:{>          |                   |  =>}                |\r\n F2     ^G2)  |(E4                |  F2    ^G2)         |\\\r\nw:dimin.      |\r\n (E4          |  A4               |  =G4                | =F4)            |\\\r\nw:pp          |\r\n=G z  [G=g]z  ||\\\r\nw:ff\r\nK:C\r\n                 [C2c2]   z2      |\r\n% page 11\r\n                                       B2   .B.B        |  A z     z2     |\\\r\nw:                                    p                 |\r\n G  z [Gg] z  |  [C2c2]   z2      |    B2   .B.B        |  z4             |\\\r\nw:ff          |                   |   p                 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n z2     A2    |   z2     E2       |    z2     E2        |  z2      A2     |\\\r\nw:      p     |\r\n z2     A2    |   z2     G2       |    G2     GG        |  G2      z2     |\\\r\n z2     c2    |\r\n                  z2     B2       |    z2     e2        |  z2      A2     |\\\r\n z2     E2    |   E2     E2       |    E2     EE        |  E2      z2     |\\\r\n z4           |   z4              |    E2     EE        |  E2     ^F^G    |\\\r\n A2     z2    |\\\r\n%%MIDI program 41       % General MIDI Viola\r\n                  A2     z2       |    z4               |  z4             |]\r\nw:               f                |\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:17    % ViolinCello I\r\n%%MIDI channel 12\r\n%%MIDI program 42       % General MIDI Cello\r\n%%MIDI transpose -24\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nc2  .c.c      | (.B2     .B2)     | B2     .B.B         | (.c2   .c2)      |\\\r\nw:p\r\nc2  .c.c      | (.c2     .c2)     | B2     .A.B         | c2     z2        |\\\r\ne2  .e.e      | (.^d2    .d2)     | =d2    .d.d         | (.^c2 .=c2)      |\r\nc2  .c.c      | (.B2     .c2)     | B2     .B.B         | c2     z2        |\\\r\ne2  .e.e      | (.^d2    .d2)     | =d2    .d.d         | (.^c2 .=c2)      |\\\r\nw:pp\r\nc2  .c.c      | (.B2     .c2)     | B2     .B.B         | c2     z2        |\\\r\n(c'4          | b4)               | ({bc'}d'3 c'/b/)    |\r\nw:p\r\n% page 2\r\n                                                          (bc')   c'2      |\\\r\nc'3 (c'/d'/)  | (^d'e').e'.e'     | ({=d'e'}f'3 e'/d'/) | (d'e') e'2       |\\\r\n(e'4          | ^d'4)             | (=d'b/^c'/ d'e'/d'/)| (d'^c')  =c'2    |\\\r\n(c'4          | b2       c'2)     | ({bc'}d'3 c'/b/)    | .a(a/b/ .c')(c'/d'/ |\r\n(e'4)         | ^d'4)             | (=d'b/^c'/ d'e'/d'/)| (d'^c') =c'2     |\\\r\nw:pp          |\r\n(c'4          | b2       c'2)     | ({bc'}d'3 c'/b/)    | a2     z2        |\\\r\nz (ac'e)      | z (^gbe)          | z (^gbe)            | z (ac'e)         |\\\r\n%w:cresc. poco a poco\r\nz (ac'c)      |\r\n                z (=gc'c)         | z (bd'g)            | z (=gc'c)        |\\\r\nz (c'e'e)     | z (^fbB)          | z (bd'd)            | z (eaA)          |\\\r\nz (ae'e)      | z (be'e)          | z (be'e)            | z (c'e'a)        |\\\r\nz (c'e'e)     | z (^fbB)          |\r\nw: f          |\r\n% page 3\r\n                                    z (bd'd)            | z (eaA)          |\\\r\nw:                                  pi\\`u~f             |\r\nz (ae'e)      | z (be'e)          | z (be'e)            | z (c'e'a)        |\\\r\n(3.A.a.c' A2  | (3.^G.^g.b G2     | (3.E.^g.b E2        | (3.A.a.c' A2     |\\\r\nw:ff\r\n(3.A.a.c' A2  |\r\n                (3.=G.g.c' G2     | (3.G.b.d' G2        | (3.C.g.c' C2     |\\\r\n(3.C.g.c' C2  | (3.B.B.b   B2     | (3.B.b.d' B2        | (3.A.A.a  A2     |\\\r\n(3.A.a.c' A2  | (3.^G.^g.b A2     | (3.E.^g.b E2        |\r\n% page 4\r\n                                                          (3.A.A.a (3.A.A.B |\\\r\n(3.c.=g.c' C2 | (3.B.B.b   B2     | (3.B.b.d' B2        | (3.A.A.a  A2      |\\\r\nw:dimin.      |\r\n(3.A.a.c'  A2 | (3.^G.^g.b A2     | (3.E.^g.e' (3.e.e.e | A2        z2      |\\\r\nw:s.d.        |                   |                     |   p               |\r\nz4 | z4 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\nE2       ^F^G ||\\\r\nK:A\r\n                A2         aa     | A2       aa         |\\\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:*      {<\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:            | <}         {>     | *       * >}\r\nA2       aa   | A2         aa     |\r\nw:*      {<\r\n% page 5\r\n                                    A2       aa         | A2      aa       |\\\r\nw:                                                      | *       * <}\r\nFGAA          | B2         bb     | e2       e'e'       | e2      e'e'     |\\\r\nw:{>          | *          * >}\r\ne2      e'e'  | e2         e'e'   | e2       e'e'       | e2      e'e'     |\\\r\ne2      e'e'  |\r\n                c2         c'c'   | d2       d'd'       | c2      c'c'     |\\\r\nw:              cresc.            |\r\nd2      d'd'  | c2         c'c'   | d2       d'd'       | e2      e'e'     |\\\r\nw:            | dimin.            |                     | p\r\nA2      aa    | c2         c'c'   | d2       d'd'       |\r\nw:cresc.\r\n% page 6\r\n                                                          c2      c'c'     |\\\r\nd2      d'd'  | c2         =cc    | =F2      =ff        | =G2     =gg      |\\\r\nw:            | dimin.            |                     |  p\r\n=c2     =c'c' ||\\\r\nK:C\r\nc2      c'c'  | c2         c'c'   | c2       c'c'       | c2      c'c'     |\r\nc2      c'c'  | z4                | z4                  |\\\r\nw:cresc.      |\r\n%%MIDI program 42       % General MIDI Cello\r\nz2    (3zz.c' | (3.b.a.g (3.f.e.d | (3.c.B.A .^G.G      | z4               |\\\r\nw:         f  |                   |    * * *   ff       |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n E2      EE        |  E2       E2        |  E2        EE        |\r\nw:p                |\r\n% page 7\r\n                                                                  E2        EE       |\\\r\n E2      E^F       | =G2      =G2        |  G2        GG        | G2        z2       |\\\r\n G2      GA        |  B2       B2        | ^F2        F^G       |\r\n                                                                  A2        A2       |\\\r\n E2      EE        |  E2       E2        |  E2       ^F^G       | A2        z2       |\\\r\n=G2      GA        |  B2       B2        | ^F2        F^G       |\r\n                                                                  A2        A2       |\\\r\n E2      EE        |  E2       E2        |  E2       ^F^G       | A2        z2       |\\\r\n A2      AA        |  A2       z2        |  A2        AA        |\r\n% page 8\r\n                                                                  A2        z2       |\\\r\n AAA      z        |  AAA       z        |  AAA        z        | z2        AA       |\\\r\nw:cresc.           |                     |                      | dimin.             |\r\n z2      AA        |\\\r\n z2      AA        |  z4                 |\r\n                                             z4                 |   z4               |\\\r\n z4                | z4                  |   z4                 |   z4               |\\\r\n%%MIDI program 42       % General MIDI Cello\r\n a2      .a.b      | (.c'2    .c'2)      |\r\nw:pp               |\r\n                                             b2      .b.^c      |  .d'.=c'.b.a       |\\\r\nL:1/16\r\n gaba    gag^f     | e^fga     b^c'^d'e' |  e'ab^c'   =d'be'd'  |  =c'bc'd' e'e^f^g  |\\\r\nw:sempre~pp        |\r\n .a2.=g2.^f2.e2    | ^ffga     ddef      |\r\nL:1/8\r\n                                             g=fed-             |\\\r\n d  c2       g-    | g   c2      c'      |   z4                 |   z4               |\\\r\n d'2     .d'.e'    | (.f'2    .f'2)      |\\\r\nL:1/16\r\n                                             fegf     egfe      |\r\n% page 9\r\n                                                                    defg    a=b^c'd' |\\\r\n% abc needs a notation for measured tremolos (& unmeasured)\r\nd'ddd    dddd | dddd       dddd   |  dddd      dddd     |   dddd    ddcB     |\\\r\nw:   cresc.   |\r\nL:1/8\r\n A2      .A.A | (.^G2     .G2)    |  E2       .E.E      |\r\nw:ff          |\r\n                                                          (.A2     .A2)      |\\\r\n A2      .A.A | (.^G2     .A2)    |  E2       .e.e      |   A2      z2       |\\\r\n z4           | z4                |\\\r\n%%MIDI program 45       % General MIDI pizzicato string\r\nE2       ^F^G ||\\\r\nw:p           |\r\nK:A\r\n                A2         aa     |\r\n% page 10\r\n                                    A2       aa         |\\\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:*      {<\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:<}     {>   |                   | *       * >}\r\nA2       aa   | A2         aa     | A2       aa         | A2      aa       |\r\nw:*      {<   |                   |                     | *       * <}\r\n A2      aa   | A2         aa     | A2       aa         |\\\r\nw:{>          |                   | *        >}\r\n A2      aa   | A2         aa     | A2       aa         |\\\r\nw:dimin.      |\r\n%%MIDI program 42       % General MIDI Cello\r\n (a4          | =f4               |  e4                 | d4)             |\\\r\nw:pp          |\r\n=G z  =g z    ||\\\r\nw:ff\r\nK:C\r\n                 c2       z2      |\r\n% page 11\r\n                                       e2   .e.e        |  A z     z2     |\\\r\nw:                                    p                 |\r\n G  z   g  z  |   c2      z2      |    e2   .e.e        |  z4             |\\\r\nw:ff          |                   |   p                 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n z2     A2    |   z2     e2       |    z2     e2        |  z2      a2     |\\\r\nw:      p     |\r\n z2     a2    |   z2     g2       |    G2     GG        |  G2      z2     |\\\r\n z2     c'2   |\r\n                  z2     b2       |    z2     e'2       |  z2      a2     |\\\r\n z2     a2    |  ^g2     a2       |    E2    ^F^G       |  A2      z2     |\\\r\n z4           |   z4              |    E2    ^F^G       |  A2      z2     |\\\r\n A2     z2    |\\\r\n%%MIDI program 42       % General MIDI Cello\r\n                  A2     z2       |    z4               |  z4             |]\r\nw:               f                |\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:18    % ViolinCello II & Double Bass\r\n%%MIDI channel 13\r\n%%MIDI program 43       % General MIDI Contrabass\r\n%%MIDI transpose -36\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nA2  .A.A      | (.^G2    .G2)     | E2     .E.E         | (.A2   .A2)      |\\\r\nw:p\r\nA2  .A.A      | (.=G2    .G2)     | G2     .G.G         | c2     z2        |\\\r\nc2  .c.c      | (.B2     .B2)     | B2     .B.B         | (.A2   .A2)      |\r\nA2  .A.A      | (.^G2    .A2)     | E2     .E.E         | A2     z2        |\\\r\nc2  .c.c      | (.B2     .B2)     | B2     .B.B         | (.A2   .A2)      |\\\r\nw:pp\r\nA2  .A.A      | (.^G2    .A2)     | E2     .E.E         | A2     z2        |\\\r\nz2  .A.A      |  .^Gz    .^gz     | z2     .E.E         |\r\nw:  pp\r\n% page 2\r\n                                                          .Az    .az       |\\\r\nz2  AA        | =Gz      gz       | z2     gg           | cz     c'z       |\\\r\nz2  cc        | Bz       bz       | z2     ee           | Az     az        |\\\r\nz2  .A.A      | .^Gz     .Az      | z2     EE           | Az     az        |\r\nz2  cc        | Bz       bz       | z2     ee           | Az     az        |\\\r\nw:  pp\r\nz2  AA        | ^Gz      Az       | z2     EE           | Az     az        |\\\r\nA2  za        | ^G2      z^g      | E2     ze           | A2     za        |\\\r\n%w:cresc. poco a poco\r\nA2  za        |\r\n                =G2      zg       | G2     zg           | c2     zc'       |\\\r\nc2  zc'       | B2       zb       | B2     zb           | A2     za        |\\\r\nA2  za        | ^G2      zA       | E2     ze           | A2     za        |\\\r\nc2  zc'       | B2       zb       |\r\nw:f\r\n% page 3\r\n                                    B2     zb           | A2     za        |\\\r\nw:                                  pi\\`u~f             |\r\nA2  za        | ^G2      zA       | E2     ze           | A2     za        |\\\r\nA2 (3z.A.a    | ^G2     (3z.G.^g  | E2    (3z.E.e       | A2    (3z.A.a    |\\\r\nw:ff\r\nA2 (3z.A.a    |\r\n                =G2     (3z.G.g   | G2    (3z.G.g       | c2    (3z.c.c'   |\\\r\nc2 (3z.c.c'   | B2      (3z.B.b   | B2    (3z.B.b       | A2    (3z.A.a    |\\\r\nA2 (3z.A.a    | ^G2     (3z.A.a   | E2    (3z.E.e       |\r\n% page 4\r\n                                                          A2    (3z.A.B    |\\\r\nc2 (3z.c.c'   | B2      (3z.B.b   | B2    (3z.B.b       | A2    (3z.A.a    |\\\r\nw:dimin.      |\r\nA2 (3z.A.a    | ^G2     (3z.A.a   | E2    (3z.E.e       | A2    z2         |\\\r\nw:s.~d.       |                   |                     |   p\r\nz4 | z4 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\nE2       ^F^G ||\\\r\nK:A\r\n                A2         aa     | A2       aa         |\\\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:*      {<\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:            | <}         {>     | *       * >}\r\nA2       aa   | A2         aa     |\r\nw:*      {<\r\n% page 5\r\n                                    A2       aa         | A2      aa       |\\\r\nw:                                                      | *       * <}\r\nFGAA          | B2         bb     | e2       e'e'       | e2      e'e'     |\\\r\nw:{>          | *          * >}\r\ne2      e'e'  | e2         e'e'   | e2       e'e'       | e2      e'e'     |\\\r\ne2      e'e'  |\r\n                c2         c'c'   | d2       d'd'       | c2      c'c'     |\\\r\nw:              cresc.            |\r\nd2      d'd'  | c2         c'c'   | d2       d'd'       | e2      e'e'     |\\\r\nw:            | dimin.            |                     | p\r\nA2      aa    | c2         c'c'   | d2       d'd'       |\r\nw:cresc.      |\r\n% page 6\r\n                                                          c2      c'c'     |\\\r\nd2      d'd'  | c2         =cc    | =F2      =ff        | =G2     =gg      |\\\r\nw:            | dimin.            |                     |  p\r\n=c2     =c'c' ||\\\r\nK:C\r\nc2      c'c'  | c2         c'c'   | c2       c'c'       | c2      c'c'     |\r\nc2      c'c'  | z4                | z4                  |\\\r\nw:cresc.      |\r\n%%MIDI program 43       % General MIDI Contrabass\r\nz2    (3zz.c' | (3.b.a.g (3.f.e.d | (3.c.B.A .^G.G      | z4               |\\\r\nw:         f  |                   |    * * *   ff       |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n E2      EE        |  E2       E2        |  E2        EE        |\r\nw:p                |\r\n% page 7\r\n                                                                  E2        EE       |\\\r\n E2      E^F       | =G2      =G2        |  G2        GG        | G2        z2       |\\\r\n G2      GA        |  B2       B2        | ^F2        F^G       |\r\n                                                                  A2        A2       |\\\r\n E2      EE        |  E2       E2        |  E2       ^F^G       | A2        z2       |\\\r\n=G2      GA        |  B2       B2        | ^F2        F^G       |\r\n                                                                  A2        A2       |\\\r\n E2      EE        |  E2       E2        |  E2       ^F^G       | A2        z2       |\\\r\n A2      AA        |  A2       z2        |  A2        AA        |\r\n% page 8\r\n                                                                  A2        z2       |\\\r\n AAA      z        |  AAA       z        |  AAA        z        | z2        AA       |\\\r\nw:cresc.           |                     |                      | dimin.             |\r\n z2      AA        |\\\r\n z2      AA        |  z4                 |\r\n                                             z4                 |   z4               |\\\r\n z4                | z4                  |   z4                 |   z4               |\\\r\n%%MIDI program 43       % General MIDI Contrabass\r\n a2      .a.b      | (.c'2    .c'2)      |\r\nw:pp               |\r\n                                             b2      .b.^c      |  .d'.=c'.b.a       |\\\r\nL:1/16\r\n gaba    gag^f     | e^fga     b^c'^d'e' |  e'ab^c'   =d'be'd'  |  =c'bc'd' e'e^f^g  |\\\r\nw:sempre~pp        |\r\n .a2.=g2.^f2.e2    | ^ffga     ddef      |\r\nL:1/8\r\n                                             g=fed-             |\\\r\n d  c2       g-    | g   c2      c'      |   z4                 |   z4               |\\\r\n d'2     .d'.e'    | (.f'2    .f'2)      |\\\r\nL:1/16\r\n                                             fegf     egfe      |\r\n% page 9\r\n                                                                    defg    a=b^c'd' |\\\r\n% abc needs a notation for measured tremolos (& unmeasured)\r\nd'ddd    dddd | dddd       dddd   |  dddd      dddd     |   dddd    ddcB     |\\\r\nw:   cresc.   |\r\nL:1/8\r\n A2      .A.A | (.^G2     .G2)    |  E2       .E.E      |\r\nw:ff          |\r\n                                                          (.A2     .A2)      |\\\r\n A2      .A.A | (.^G2     .A2)    |  E2       .e.e      |   A2      z2       |\\\r\n z4           | z4                |\\\r\n%%MIDI program 45       % General MIDI pizzicato string\r\nE2       ^F^G ||\\\r\nw:p           |\r\nK:A\r\n                A2         aa     |\r\n% page 10\r\n                                    A2       aa         |\\\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:*      {<\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:<}     {>   |                   | *       * >}\r\nA2       aa   | A2         aa     | A2       aa         | A2      aa       |\r\nw:*      {<   |                   |                     | *       * <}\r\n A2      aa   | A2         aa     | A2       aa         |\\\r\nw:{>          |                   | *        >}\r\n A2      aa   | A2         aa     | A2       aa         |\\\r\nw:dimin.      |\r\n%%MIDI program 43       % General MIDI Contrabass\r\n (a4          | =f4               |  e4                 | d4)             |\\\r\nw:pp          |\r\n=G z  =g z    ||\\\r\nw:ff\r\nK:C\r\n                 c2       z2      |\r\n% page 11\r\n                                       e2   .e.e        |  A z     z2     |\\\r\nw:                                    p                 |\r\n G  z   g  z  |   c2      z2      |    e2   .e.e        |  z4             |\\\r\nw:ff          |                   |   p                 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n z2     A2    |   z2     e2       |    z2     e2        |  z2      a2     |\\\r\nw:      p     |\r\n z2     a2    |   z2     g2       |    G2     GG        |  G2      z2     |\\\r\n z2     c'2   |\r\n                  z2     b2       |    z2     e'2       |  z2      a2     |\\\r\n z2     a2    |  ^g2     a2       |    E2    ^F^G       |  A2      z2     |\\\r\n z4           |   z4              |    E2    ^F^G       |  A2      z2     |\\\r\n A2     z2    |\\\r\n%%MIDI program 43       % General MIDI Contrabass\r\n                  A2     z2       |    z4               |  z4             |]\r\nw:               f                |\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\r\nV:19    % ViolinCello II (for abc2midi)\r\n%%MIDI channel 12\r\n%%MIDI program 42       % General MIDI Cello\r\n%%MIDI transpose -24\r\n% page 1\r\nK:C\r\nz4 | z4 |\\\r\nA2  .A.A      | (.^G2    .G2)     | E2     .E.E         | (.A2   .A2)      |\\\r\nw:p\r\nA2  .A.A      | (.=G2    .G2)     | G2     .G.G         | c2     z2        |\\\r\nc2  .c.c      | (.B2     .B2)     | B2     .B.B         | (.A2   .A2)      |\r\nA2  .A.A      | (.^G2    .A2)     | E2     .E.E         | A2     z2        |\\\r\nc2  .c.c      | (.B2     .B2)     | B2     .B.B         | (.A2   .A2)      |\\\r\nw:pp\r\nA2  .A.A      | (.^G2    .A2)     | E2     .E.E         | A2     z2        |\\\r\nz2  .A.A      |  .^Gz    .^gz     | z2     .E.E         |\r\nw:  pp\r\n% page 2\r\n                                                          .Az    .az       |\\\r\nz2  AA        | =Gz      gz       | z2     gg           | cz     c'z       |\\\r\nz2  cc        | Bz       bz       | z2     ee           | Az     az        |\\\r\nz2  .A.A      | .^Gz     .Az      | z2     EE           | Az     az        |\r\nz2  cc        | Bz       bz       | z2     ee           | Az     az        |\\\r\nw:  pp\r\nz2  AA        | ^Gz      Az       | z2     EE           | Az     az        |\\\r\nA2  za        | ^G2      z^g      | E2     ze           | A2     za        |\\\r\n%w:cresc. poco a poco\r\nA2  za        |\r\n                =G2      zg       | G2     zg           | c2     zc'       |\\\r\nc2  zc'       | B2       zb       | B2     zb           | A2     za        |\\\r\nA2  za        | ^G2      zA       | E2     ze           | A2     za        |\\\r\nc2  zc'       | B2       zb       |\r\nw:f\r\n% page 3\r\n                                    B2     zb           | A2     za        |\\\r\nw:                                  pi\\`u~f             |\r\nA2  za        | ^G2      zA       | E2     ze           | A2     za        |\\\r\nA2 (3z.A.a    | ^G2     (3z.G.^g  | E2    (3z.E.e       | A2    (3z.A.a    |\\\r\nw:ff\r\nA2 (3z.A.a    |\r\n                =G2     (3z.G.g   | G2    (3z.G.g       | c2    (3z.c.c'   |\\\r\nc2 (3z.c.c'   | B2      (3z.B.b   | B2    (3z.B.b       | A2    (3z.A.a    |\\\r\nA2 (3z.A.a    | ^G2     (3z.A.a   | E2    (3z.E.e       |\r\n% page 4\r\n                                                          A2    (3z.A.B    |\\\r\nc2 (3z.c.c'   | B2      (3z.B.b   | B2    (3z.B.b       | A2    (3z.A.a    |\\\r\nw:dimin.      |\r\nA2 (3z.A.a    | ^G2     (3z.A.a   | E2    (3z.E.e       | A2    z2         |\\\r\nw:s.~d.       |                   |                     |   p\r\nz4 | z4 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\nE2       ^F^G ||\\\r\nK:A\r\n                A2         aa     | A2       aa         |\\\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:*      {<\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:            | <}         {>     | *       * >}\r\nA2       aa   | A2         aa     |\r\nw:*      {<\r\n% page 5\r\n                                    A2       aa         | A2      aa       |\\\r\nw:                                                      | *       * <}\r\nFGAA          | B2         bb     | e2       e'e'       | e2      e'e'     |\\\r\nw:{>          | *          * >}\r\ne2      e'e'  | e2         e'e'   | e2       e'e'       | e2      e'e'     |\\\r\ne2      e'e'  |\r\n                c2         c'c'   | d2       d'd'       | c2      c'c'     |\\\r\nw:              cresc.            |\r\nd2      d'd'  | c2         c'c'   | d2       d'd'       | e2      e'e'     |\\\r\nw:            | dimin.            |                     | p\r\nA2      aa    | c2         c'c'   | d2       d'd'       |\r\nw:cresc.      |\r\n% page 6\r\n                                                          c2      c'c'     |\\\r\nd2      d'd'  | c2         =cc    | =F2      =ff        | =G2     =gg      |\\\r\nw:            | dimin.            |                     |  p\r\n=c2     =c'c' ||\\\r\nK:C\r\nc2      c'c'  | c2         c'c'   | c2       c'c'       | c2      c'c'     |\r\nc2      c'c'  | z4                | z4                  |\\\r\nw:cresc.      |\r\n%%MIDI program 42       % General MIDI Cello\r\nz2    (3zz.c' | (3.b.a.g (3.f.e.d | (3.c.B.A .^G.G      | z4               |\\\r\nw:         f  |                   |    * * *   ff       |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n E2      EE        |  E2       E2        |  E2        EE        |\r\nw:p                |\r\n% page 7\r\n                                                                  E2        EE       |\\\r\n E2      E^F       | =G2      =G2        |  G2        GG        | G2        z2       |\\\r\n G2      GA        |  B2       B2        | ^F2        F^G       |\r\n                                                                  A2        A2       |\\\r\n E2      EE        |  E2       E2        |  E2       ^F^G       | A2        z2       |\\\r\n=G2      GA        |  B2       B2        | ^F2        F^G       |\r\n                                                                  A2        A2       |\\\r\n E2      EE        |  E2       E2        |  E2       ^F^G       | A2        z2       |\\\r\n A2      AA        |  A2       z2        |  A2        AA        |\r\n% page 8\r\n                                                                  A2        z2       |\\\r\n AAA      z        |  AAA       z        |  AAA        z        | z2        AA       |\\\r\nw:cresc.           |                     |                      | dimin.             |\r\n z2      AA        |\\\r\n z2      AA        |  z4                 |\r\n                                             z4                 |   z4               |\\\r\n z4                | z4                  |   z4                 |   z4               |\\\r\n%%MIDI program 42       % General MIDI Cello\r\n a2      .a.b      | (.c'2    .c'2)      |\r\nw:pp               |\r\n                                             b2      .b.^c      |  .d'.=c'.b.a       |\\\r\nL:1/16\r\n gaba    gag^f     | e^fga     b^c'^d'e' |  e'ab^c'   =d'be'd'  |  =c'bc'd' e'e^f^g  |\\\r\nw:sempre~pp        |\r\n .a2.=g2.^f2.e2    | ^ffga     ddef      |\r\nL:1/8\r\n                                             g=fed-             |\\\r\n d  c2       g-    | g   c2      c'      |   z4                 |   z4               |\\\r\n d'2     .d'.e'    | (.f'2    .f'2)      |\\\r\nL:1/16\r\n                                             fegf     egfe      |\r\n% page 9\r\n                                                                    defg    a=b^c'd' |\\\r\n% abc needs a notation for measured tremolos (& unmeasured)\r\nd'ddd    dddd | dddd       dddd   |  dddd      dddd     |   dddd    ddcB     |\\\r\nw:   cresc.   |\r\nL:1/8\r\n A2      .A.A | (.^G2     .G2)    |  E2       .E.E      |\r\nw:ff          |\r\n                                                          (.A2     .A2)      |\\\r\n A2      .A.A | (.^G2     .A2)    |  E2       .e.e      |   A2      z2       |\\\r\n z4           | z4                |\\\r\n%%MIDI program 45       % General MIDI pizzicato string\r\nE2       ^F^G ||\\\r\nw:p           |\r\nK:A\r\n                A2         aa     |\r\n% page 10\r\n                                    A2       aa         |\\\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:*      {<\r\nA2       aa   | A2         aa     | A2       aa         |\\\r\nw:<}     {>   |                   | *       * >}\r\nA2       aa   | A2         aa     | A2       aa         | A2      aa       |\r\nw:*      {<   |                   |                     | *       * <}\r\n A2      aa   | A2         aa     | A2       aa         |\\\r\nw:{>          |                   | *        >}\r\n A2      aa   | A2         aa     | A2       aa         |\\\r\nw:dimin.      |\r\n%%MIDI program 42       % General MIDI Cello\r\n (a4          | =f4               |  e4                 | d4)             |\\\r\nw:pp          |\r\n=G z  =g z    ||\\\r\nw:ff\r\nK:C\r\n                 c2       z2      |\r\n% page 11\r\n                                       e2   .e.e        |  A z     z2     |\\\r\nw:                                    p                 |\r\n G  z   g  z  |   c2      z2      |    e2   .e.e        |  z4             |\\\r\nw:ff          |                   |   p                 |\r\n%%MIDI program 45       % General MIDI pizzicato string\r\n z2     A2    |   z2     e2       |    z2     e2        |  z2      a2     |\\\r\nw:      p     |\r\n z2     a2    |   z2     g2       |    G2     GG        |  G2      z2     |\\\r\n z2     c'2   |\r\n                  z2     b2       |    z2     e'2       |  z2      a2     |\\\r\n z2     a2    |  ^g2     a2       |    E2    ^F^G       |  A2      z2     |\\\r\n z4           |   z4              |    E2    ^F^G       |  A2      z2     |\\\r\n A2     z2    |\\\r\n%%MIDI program 42       % General MIDI Cello\r\n                  A2     z2       |    z4               |  z4             |]\r\nw:               f                |\r\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
 
 /***/ })
 
@@ -53640,7 +72815,10 @@ var App = function () {
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		var execOptions = { id: moduleId, module: module, factory: __webpack_modules__[moduleId], require: __webpack_require__ };
+/******/ 		__webpack_require__.i.forEach(function(handler) { handler(execOptions); });
+/******/ 		module = execOptions.module;
+/******/ 		execOptions.factory.call(module.exports, module, module.exports, execOptions.require);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -53648,6 +72826,15 @@ var App = function () {
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = __webpack_module_cache__;
+/******/ 	
+/******/ 	// expose the module execution interceptor
+/******/ 	__webpack_require__.i = [];
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
@@ -53674,9 +72861,86 @@ var App = function () {
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/get javascript update chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference all chunks
+/******/ 		__webpack_require__.hu = (chunkId) => {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + "." + __webpack_require__.h() + ".hot-update.js";
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get update manifest filename */
+/******/ 	(() => {
+/******/ 		__webpack_require__.hmrF = () => ("main." + __webpack_require__.h() + ".hot-update.json");
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/getFullHash */
+/******/ 	(() => {
+/******/ 		__webpack_require__.h = () => ("c2698b36bd172c7170c0")
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	(() => {
+/******/ 		var inProgress = {};
+/******/ 		var dataWebpackPrefix = "noteworthy:";
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = (url, done, key, chunkId) => {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url || s.getAttribute("data-webpack") == dataWebpackPrefix + key) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.setAttribute("data-webpack", dataWebpackPrefix + key);
+/******/ 		
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = (prev, event) => {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach((fn) => (fn(event)));
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
@@ -53699,31 +72963,963 @@ var App = function () {
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/hot module replacement */
+/******/ 	(() => {
+/******/ 		var currentModuleData = {};
+/******/ 		var installedModules = __webpack_require__.c;
+/******/ 		
+/******/ 		// module and require creation
+/******/ 		var currentChildModule;
+/******/ 		var currentParents = [];
+/******/ 		
+/******/ 		// status
+/******/ 		var registeredStatusHandlers = [];
+/******/ 		var currentStatus = "idle";
+/******/ 		
+/******/ 		// while downloading
+/******/ 		var blockingPromises = 0;
+/******/ 		var blockingPromisesWaiting = [];
+/******/ 		
+/******/ 		// The update info
+/******/ 		var currentUpdateApplyHandlers;
+/******/ 		var queuedInvalidatedModules;
+/******/ 		
+/******/ 		__webpack_require__.hmrD = currentModuleData;
+/******/ 		
+/******/ 		__webpack_require__.i.push(function (options) {
+/******/ 			var module = options.module;
+/******/ 			var require = createRequire(options.require, options.id);
+/******/ 			module.hot = createModuleHotObject(options.id, module);
+/******/ 			module.parents = currentParents;
+/******/ 			module.children = [];
+/******/ 			currentParents = [];
+/******/ 			options.require = require;
+/******/ 		});
+/******/ 		
+/******/ 		__webpack_require__.hmrC = {};
+/******/ 		__webpack_require__.hmrI = {};
+/******/ 		
+/******/ 		function createRequire(require, moduleId) {
+/******/ 			var me = installedModules[moduleId];
+/******/ 			if (!me) return require;
+/******/ 			var fn = function (request) {
+/******/ 				if (me.hot.active) {
+/******/ 					if (installedModules[request]) {
+/******/ 						var parents = installedModules[request].parents;
+/******/ 						if (parents.indexOf(moduleId) === -1) {
+/******/ 							parents.push(moduleId);
+/******/ 						}
+/******/ 					} else {
+/******/ 						currentParents = [moduleId];
+/******/ 						currentChildModule = request;
+/******/ 					}
+/******/ 					if (me.children.indexOf(request) === -1) {
+/******/ 						me.children.push(request);
+/******/ 					}
+/******/ 				} else {
+/******/ 					console.warn(
+/******/ 						"[HMR] unexpected require(" +
+/******/ 							request +
+/******/ 							") from disposed module " +
+/******/ 							moduleId
+/******/ 					);
+/******/ 					currentParents = [];
+/******/ 				}
+/******/ 				return require(request);
+/******/ 			};
+/******/ 			var createPropertyDescriptor = function (name) {
+/******/ 				return {
+/******/ 					configurable: true,
+/******/ 					enumerable: true,
+/******/ 					get: function () {
+/******/ 						return require[name];
+/******/ 					},
+/******/ 					set: function (value) {
+/******/ 						require[name] = value;
+/******/ 					}
+/******/ 				};
+/******/ 			};
+/******/ 			for (var name in require) {
+/******/ 				if (Object.prototype.hasOwnProperty.call(require, name) && name !== "e") {
+/******/ 					Object.defineProperty(fn, name, createPropertyDescriptor(name));
+/******/ 				}
+/******/ 			}
+/******/ 			fn.e = function (chunkId, fetchPriority) {
+/******/ 				return trackBlockingPromise(require.e(chunkId, fetchPriority));
+/******/ 			};
+/******/ 			return fn;
+/******/ 		}
+/******/ 		
+/******/ 		function createModuleHotObject(moduleId, me) {
+/******/ 			var _main = currentChildModule !== moduleId;
+/******/ 			var hot = {
+/******/ 				// private stuff
+/******/ 				_acceptedDependencies: {},
+/******/ 				_acceptedErrorHandlers: {},
+/******/ 				_declinedDependencies: {},
+/******/ 				_selfAccepted: false,
+/******/ 				_selfDeclined: false,
+/******/ 				_selfInvalidated: false,
+/******/ 				_disposeHandlers: [],
+/******/ 				_main: _main,
+/******/ 				_requireSelf: function () {
+/******/ 					currentParents = me.parents.slice();
+/******/ 					currentChildModule = _main ? undefined : moduleId;
+/******/ 					__webpack_require__(moduleId);
+/******/ 				},
+/******/ 		
+/******/ 				// Module API
+/******/ 				active: true,
+/******/ 				accept: function (dep, callback, errorHandler) {
+/******/ 					if (dep === undefined) hot._selfAccepted = true;
+/******/ 					else if (typeof dep === "function") hot._selfAccepted = dep;
+/******/ 					else if (typeof dep === "object" && dep !== null) {
+/******/ 						for (var i = 0; i < dep.length; i++) {
+/******/ 							hot._acceptedDependencies[dep[i]] = callback || function () {};
+/******/ 							hot._acceptedErrorHandlers[dep[i]] = errorHandler;
+/******/ 						}
+/******/ 					} else {
+/******/ 						hot._acceptedDependencies[dep] = callback || function () {};
+/******/ 						hot._acceptedErrorHandlers[dep] = errorHandler;
+/******/ 					}
+/******/ 				},
+/******/ 				decline: function (dep) {
+/******/ 					if (dep === undefined) hot._selfDeclined = true;
+/******/ 					else if (typeof dep === "object" && dep !== null)
+/******/ 						for (var i = 0; i < dep.length; i++)
+/******/ 							hot._declinedDependencies[dep[i]] = true;
+/******/ 					else hot._declinedDependencies[dep] = true;
+/******/ 				},
+/******/ 				dispose: function (callback) {
+/******/ 					hot._disposeHandlers.push(callback);
+/******/ 				},
+/******/ 				addDisposeHandler: function (callback) {
+/******/ 					hot._disposeHandlers.push(callback);
+/******/ 				},
+/******/ 				removeDisposeHandler: function (callback) {
+/******/ 					var idx = hot._disposeHandlers.indexOf(callback);
+/******/ 					if (idx >= 0) hot._disposeHandlers.splice(idx, 1);
+/******/ 				},
+/******/ 				invalidate: function () {
+/******/ 					this._selfInvalidated = true;
+/******/ 					switch (currentStatus) {
+/******/ 						case "idle":
+/******/ 							currentUpdateApplyHandlers = [];
+/******/ 							Object.keys(__webpack_require__.hmrI).forEach(function (key) {
+/******/ 								__webpack_require__.hmrI[key](
+/******/ 									moduleId,
+/******/ 									currentUpdateApplyHandlers
+/******/ 								);
+/******/ 							});
+/******/ 							setStatus("ready");
+/******/ 							break;
+/******/ 						case "ready":
+/******/ 							Object.keys(__webpack_require__.hmrI).forEach(function (key) {
+/******/ 								__webpack_require__.hmrI[key](
+/******/ 									moduleId,
+/******/ 									currentUpdateApplyHandlers
+/******/ 								);
+/******/ 							});
+/******/ 							break;
+/******/ 						case "prepare":
+/******/ 						case "check":
+/******/ 						case "dispose":
+/******/ 						case "apply":
+/******/ 							(queuedInvalidatedModules = queuedInvalidatedModules || []).push(
+/******/ 								moduleId
+/******/ 							);
+/******/ 							break;
+/******/ 						default:
+/******/ 							// ignore requests in error states
+/******/ 							break;
+/******/ 					}
+/******/ 				},
+/******/ 		
+/******/ 				// Management API
+/******/ 				check: hotCheck,
+/******/ 				apply: hotApply,
+/******/ 				status: function (l) {
+/******/ 					if (!l) return currentStatus;
+/******/ 					registeredStatusHandlers.push(l);
+/******/ 				},
+/******/ 				addStatusHandler: function (l) {
+/******/ 					registeredStatusHandlers.push(l);
+/******/ 				},
+/******/ 				removeStatusHandler: function (l) {
+/******/ 					var idx = registeredStatusHandlers.indexOf(l);
+/******/ 					if (idx >= 0) registeredStatusHandlers.splice(idx, 1);
+/******/ 				},
+/******/ 		
+/******/ 				// inherit from previous dispose call
+/******/ 				data: currentModuleData[moduleId]
+/******/ 			};
+/******/ 			currentChildModule = undefined;
+/******/ 			return hot;
+/******/ 		}
+/******/ 		
+/******/ 		function setStatus(newStatus) {
+/******/ 			currentStatus = newStatus;
+/******/ 			var results = [];
+/******/ 		
+/******/ 			for (var i = 0; i < registeredStatusHandlers.length; i++)
+/******/ 				results[i] = registeredStatusHandlers[i].call(null, newStatus);
+/******/ 		
+/******/ 			return Promise.all(results).then(function () {});
+/******/ 		}
+/******/ 		
+/******/ 		function unblock() {
+/******/ 			if (--blockingPromises === 0) {
+/******/ 				setStatus("ready").then(function () {
+/******/ 					if (blockingPromises === 0) {
+/******/ 						var list = blockingPromisesWaiting;
+/******/ 						blockingPromisesWaiting = [];
+/******/ 						for (var i = 0; i < list.length; i++) {
+/******/ 							list[i]();
+/******/ 						}
+/******/ 					}
+/******/ 				});
+/******/ 			}
+/******/ 		}
+/******/ 		
+/******/ 		function trackBlockingPromise(promise) {
+/******/ 			switch (currentStatus) {
+/******/ 				case "ready":
+/******/ 					setStatus("prepare");
+/******/ 				/* fallthrough */
+/******/ 				case "prepare":
+/******/ 					blockingPromises++;
+/******/ 					promise.then(unblock, unblock);
+/******/ 					return promise;
+/******/ 				default:
+/******/ 					return promise;
+/******/ 			}
+/******/ 		}
+/******/ 		
+/******/ 		function waitForBlockingPromises(fn) {
+/******/ 			if (blockingPromises === 0) return fn();
+/******/ 			return new Promise(function (resolve) {
+/******/ 				blockingPromisesWaiting.push(function () {
+/******/ 					resolve(fn());
+/******/ 				});
+/******/ 			});
+/******/ 		}
+/******/ 		
+/******/ 		function hotCheck(applyOnUpdate) {
+/******/ 			if (currentStatus !== "idle") {
+/******/ 				throw new Error("check() is only allowed in idle status");
+/******/ 			}
+/******/ 			return setStatus("check")
+/******/ 				.then(__webpack_require__.hmrM)
+/******/ 				.then(function (update) {
+/******/ 					if (!update) {
+/******/ 						return setStatus(applyInvalidatedModules() ? "ready" : "idle").then(
+/******/ 							function () {
+/******/ 								return null;
+/******/ 							}
+/******/ 						);
+/******/ 					}
+/******/ 		
+/******/ 					return setStatus("prepare").then(function () {
+/******/ 						var updatedModules = [];
+/******/ 						currentUpdateApplyHandlers = [];
+/******/ 		
+/******/ 						return Promise.all(
+/******/ 							Object.keys(__webpack_require__.hmrC).reduce(function (
+/******/ 								promises,
+/******/ 								key
+/******/ 							) {
+/******/ 								__webpack_require__.hmrC[key](
+/******/ 									update.c,
+/******/ 									update.r,
+/******/ 									update.m,
+/******/ 									promises,
+/******/ 									currentUpdateApplyHandlers,
+/******/ 									updatedModules
+/******/ 								);
+/******/ 								return promises;
+/******/ 							}, [])
+/******/ 						).then(function () {
+/******/ 							return waitForBlockingPromises(function () {
+/******/ 								if (applyOnUpdate) {
+/******/ 									return internalApply(applyOnUpdate);
+/******/ 								}
+/******/ 								return setStatus("ready").then(function () {
+/******/ 									return updatedModules;
+/******/ 								});
+/******/ 							});
+/******/ 						});
+/******/ 					});
+/******/ 				});
+/******/ 		}
+/******/ 		
+/******/ 		function hotApply(options) {
+/******/ 			if (currentStatus !== "ready") {
+/******/ 				return Promise.resolve().then(function () {
+/******/ 					throw new Error(
+/******/ 						"apply() is only allowed in ready status (state: " +
+/******/ 							currentStatus +
+/******/ 							")"
+/******/ 					);
+/******/ 				});
+/******/ 			}
+/******/ 			return internalApply(options);
+/******/ 		}
+/******/ 		
+/******/ 		function internalApply(options) {
+/******/ 			options = options || {};
+/******/ 		
+/******/ 			applyInvalidatedModules();
+/******/ 		
+/******/ 			var results = currentUpdateApplyHandlers.map(function (handler) {
+/******/ 				return handler(options);
+/******/ 			});
+/******/ 			currentUpdateApplyHandlers = undefined;
+/******/ 		
+/******/ 			var errors = results
+/******/ 				.map(function (r) {
+/******/ 					return r.error;
+/******/ 				})
+/******/ 				.filter(Boolean);
+/******/ 		
+/******/ 			if (errors.length > 0) {
+/******/ 				return setStatus("abort").then(function () {
+/******/ 					throw errors[0];
+/******/ 				});
+/******/ 			}
+/******/ 		
+/******/ 			// Now in "dispose" phase
+/******/ 			var disposePromise = setStatus("dispose");
+/******/ 		
+/******/ 			results.forEach(function (result) {
+/******/ 				if (result.dispose) result.dispose();
+/******/ 			});
+/******/ 		
+/******/ 			// Now in "apply" phase
+/******/ 			var applyPromise = setStatus("apply");
+/******/ 		
+/******/ 			var error;
+/******/ 			var reportError = function (err) {
+/******/ 				if (!error) error = err;
+/******/ 			};
+/******/ 		
+/******/ 			var outdatedModules = [];
+/******/ 		
+/******/ 			var onAccepted = function () {
+/******/ 				return Promise.all([disposePromise, applyPromise]).then(function () {
+/******/ 					// handle errors in accept handlers and self accepted module load
+/******/ 					if (error) {
+/******/ 						return setStatus("fail").then(function () {
+/******/ 							throw error;
+/******/ 						});
+/******/ 					}
+/******/ 		
+/******/ 					if (queuedInvalidatedModules) {
+/******/ 						return internalApply(options).then(function (list) {
+/******/ 							outdatedModules.forEach(function (moduleId) {
+/******/ 								if (list.indexOf(moduleId) < 0) list.push(moduleId);
+/******/ 							});
+/******/ 							return list;
+/******/ 						});
+/******/ 					}
+/******/ 		
+/******/ 					return setStatus("idle").then(function () {
+/******/ 						return outdatedModules;
+/******/ 					});
+/******/ 				});
+/******/ 			};
+/******/ 		
+/******/ 			return Promise.all(
+/******/ 				results
+/******/ 					.filter(function (result) {
+/******/ 						return result.apply;
+/******/ 					})
+/******/ 					.map(function (result) {
+/******/ 						return result.apply(reportError);
+/******/ 					})
+/******/ 			)
+/******/ 				.then(function (applyResults) {
+/******/ 					applyResults.forEach(function (modules) {
+/******/ 						if (modules) {
+/******/ 							for (var i = 0; i < modules.length; i++) {
+/******/ 								outdatedModules.push(modules[i]);
+/******/ 							}
+/******/ 						}
+/******/ 					});
+/******/ 				})
+/******/ 				.then(onAccepted);
+/******/ 		}
+/******/ 		
+/******/ 		function applyInvalidatedModules() {
+/******/ 			if (queuedInvalidatedModules) {
+/******/ 				if (!currentUpdateApplyHandlers) currentUpdateApplyHandlers = [];
+/******/ 				Object.keys(__webpack_require__.hmrI).forEach(function (key) {
+/******/ 					queuedInvalidatedModules.forEach(function (moduleId) {
+/******/ 						__webpack_require__.hmrI[key](
+/******/ 							moduleId,
+/******/ 							currentUpdateApplyHandlers
+/******/ 						);
+/******/ 					});
+/******/ 				});
+/******/ 				queuedInvalidatedModules = undefined;
+/******/ 				return true;
+/******/ 			}
+/******/ 		}
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript && document.currentScript.tagName.toUpperCase() === 'SCRIPT')
+/******/ 				scriptUrl = document.currentScript.src;
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) {
+/******/ 					var i = scripts.length - 1;
+/******/ 					while (i > -1 && (!scriptUrl || !/^http(s?):/.test(scriptUrl))) scriptUrl = scripts[i--].src;
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/^blob:/, "").replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = __webpack_require__.hmrS_jsonp = __webpack_require__.hmrS_jsonp || {
+/******/ 			"main": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		var currentUpdatedModulesList;
+/******/ 		var waitingUpdateResolves = {};
+/******/ 		function loadUpdateChunk(chunkId, updatedModulesList) {
+/******/ 			currentUpdatedModulesList = updatedModulesList;
+/******/ 			return new Promise((resolve, reject) => {
+/******/ 				waitingUpdateResolves[chunkId] = resolve;
+/******/ 				// start update chunk loading
+/******/ 				var url = __webpack_require__.p + __webpack_require__.hu(chunkId);
+/******/ 				// create error before stack unwound to get useful stacktrace later
+/******/ 				var error = new Error();
+/******/ 				var loadingEnded = (event) => {
+/******/ 					if(waitingUpdateResolves[chunkId]) {
+/******/ 						waitingUpdateResolves[chunkId] = undefined
+/******/ 						var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 						var realSrc = event && event.target && event.target.src;
+/******/ 						error.message = 'Loading hot update chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 						error.name = 'ChunkLoadError';
+/******/ 						error.type = errorType;
+/******/ 						error.request = realSrc;
+/******/ 						reject(error);
+/******/ 					}
+/******/ 				};
+/******/ 				__webpack_require__.l(url, loadingEnded);
+/******/ 			});
+/******/ 		}
+/******/ 		
+/******/ 		self["webpackHotUpdatenoteworthy"] = (chunkId, moreModules, runtime) => {
+/******/ 			for(var moduleId in moreModules) {
+/******/ 				if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 					currentUpdate[moduleId] = moreModules[moduleId];
+/******/ 					if(currentUpdatedModulesList) currentUpdatedModulesList.push(moduleId);
+/******/ 				}
+/******/ 			}
+/******/ 			if(runtime) currentUpdateRuntime.push(runtime);
+/******/ 			if(waitingUpdateResolves[chunkId]) {
+/******/ 				waitingUpdateResolves[chunkId]();
+/******/ 				waitingUpdateResolves[chunkId] = undefined;
+/******/ 			}
+/******/ 		};
+/******/ 		
+/******/ 		var currentUpdateChunks;
+/******/ 		var currentUpdate;
+/******/ 		var currentUpdateRemovedChunks;
+/******/ 		var currentUpdateRuntime;
+/******/ 		function applyHandler(options) {
+/******/ 			if (__webpack_require__.f) delete __webpack_require__.f.jsonpHmr;
+/******/ 			currentUpdateChunks = undefined;
+/******/ 			function getAffectedModuleEffects(updateModuleId) {
+/******/ 				var outdatedModules = [updateModuleId];
+/******/ 				var outdatedDependencies = {};
+/******/ 		
+/******/ 				var queue = outdatedModules.map(function (id) {
+/******/ 					return {
+/******/ 						chain: [id],
+/******/ 						id: id
+/******/ 					};
+/******/ 				});
+/******/ 				while (queue.length > 0) {
+/******/ 					var queueItem = queue.pop();
+/******/ 					var moduleId = queueItem.id;
+/******/ 					var chain = queueItem.chain;
+/******/ 					var module = __webpack_require__.c[moduleId];
+/******/ 					if (
+/******/ 						!module ||
+/******/ 						(module.hot._selfAccepted && !module.hot._selfInvalidated)
+/******/ 					)
+/******/ 						continue;
+/******/ 					if (module.hot._selfDeclined) {
+/******/ 						return {
+/******/ 							type: "self-declined",
+/******/ 							chain: chain,
+/******/ 							moduleId: moduleId
+/******/ 						};
+/******/ 					}
+/******/ 					if (module.hot._main) {
+/******/ 						return {
+/******/ 							type: "unaccepted",
+/******/ 							chain: chain,
+/******/ 							moduleId: moduleId
+/******/ 						};
+/******/ 					}
+/******/ 					for (var i = 0; i < module.parents.length; i++) {
+/******/ 						var parentId = module.parents[i];
+/******/ 						var parent = __webpack_require__.c[parentId];
+/******/ 						if (!parent) continue;
+/******/ 						if (parent.hot._declinedDependencies[moduleId]) {
+/******/ 							return {
+/******/ 								type: "declined",
+/******/ 								chain: chain.concat([parentId]),
+/******/ 								moduleId: moduleId,
+/******/ 								parentId: parentId
+/******/ 							};
+/******/ 						}
+/******/ 						if (outdatedModules.indexOf(parentId) !== -1) continue;
+/******/ 						if (parent.hot._acceptedDependencies[moduleId]) {
+/******/ 							if (!outdatedDependencies[parentId])
+/******/ 								outdatedDependencies[parentId] = [];
+/******/ 							addAllToSet(outdatedDependencies[parentId], [moduleId]);
+/******/ 							continue;
+/******/ 						}
+/******/ 						delete outdatedDependencies[parentId];
+/******/ 						outdatedModules.push(parentId);
+/******/ 						queue.push({
+/******/ 							chain: chain.concat([parentId]),
+/******/ 							id: parentId
+/******/ 						});
+/******/ 					}
+/******/ 				}
+/******/ 		
+/******/ 				return {
+/******/ 					type: "accepted",
+/******/ 					moduleId: updateModuleId,
+/******/ 					outdatedModules: outdatedModules,
+/******/ 					outdatedDependencies: outdatedDependencies
+/******/ 				};
+/******/ 			}
+/******/ 		
+/******/ 			function addAllToSet(a, b) {
+/******/ 				for (var i = 0; i < b.length; i++) {
+/******/ 					var item = b[i];
+/******/ 					if (a.indexOf(item) === -1) a.push(item);
+/******/ 				}
+/******/ 			}
+/******/ 		
+/******/ 			// at begin all updates modules are outdated
+/******/ 			// the "outdated" status can propagate to parents if they don't accept the children
+/******/ 			var outdatedDependencies = {};
+/******/ 			var outdatedModules = [];
+/******/ 			var appliedUpdate = {};
+/******/ 		
+/******/ 			var warnUnexpectedRequire = function warnUnexpectedRequire(module) {
+/******/ 				console.warn(
+/******/ 					"[HMR] unexpected require(" + module.id + ") to disposed module"
+/******/ 				);
+/******/ 			};
+/******/ 		
+/******/ 			for (var moduleId in currentUpdate) {
+/******/ 				if (__webpack_require__.o(currentUpdate, moduleId)) {
+/******/ 					var newModuleFactory = currentUpdate[moduleId];
+/******/ 					var result = newModuleFactory
+/******/ 						? getAffectedModuleEffects(moduleId)
+/******/ 						: {
+/******/ 								type: "disposed",
+/******/ 								moduleId: moduleId
+/******/ 							};
+/******/ 					/** @type {Error|false} */
+/******/ 					var abortError = false;
+/******/ 					var doApply = false;
+/******/ 					var doDispose = false;
+/******/ 					var chainInfo = "";
+/******/ 					if (result.chain) {
+/******/ 						chainInfo = "\nUpdate propagation: " + result.chain.join(" -> ");
+/******/ 					}
+/******/ 					switch (result.type) {
+/******/ 						case "self-declined":
+/******/ 							if (options.onDeclined) options.onDeclined(result);
+/******/ 							if (!options.ignoreDeclined)
+/******/ 								abortError = new Error(
+/******/ 									"Aborted because of self decline: " +
+/******/ 										result.moduleId +
+/******/ 										chainInfo
+/******/ 								);
+/******/ 							break;
+/******/ 						case "declined":
+/******/ 							if (options.onDeclined) options.onDeclined(result);
+/******/ 							if (!options.ignoreDeclined)
+/******/ 								abortError = new Error(
+/******/ 									"Aborted because of declined dependency: " +
+/******/ 										result.moduleId +
+/******/ 										" in " +
+/******/ 										result.parentId +
+/******/ 										chainInfo
+/******/ 								);
+/******/ 							break;
+/******/ 						case "unaccepted":
+/******/ 							if (options.onUnaccepted) options.onUnaccepted(result);
+/******/ 							if (!options.ignoreUnaccepted)
+/******/ 								abortError = new Error(
+/******/ 									"Aborted because " + moduleId + " is not accepted" + chainInfo
+/******/ 								);
+/******/ 							break;
+/******/ 						case "accepted":
+/******/ 							if (options.onAccepted) options.onAccepted(result);
+/******/ 							doApply = true;
+/******/ 							break;
+/******/ 						case "disposed":
+/******/ 							if (options.onDisposed) options.onDisposed(result);
+/******/ 							doDispose = true;
+/******/ 							break;
+/******/ 						default:
+/******/ 							throw new Error("Unexception type " + result.type);
+/******/ 					}
+/******/ 					if (abortError) {
+/******/ 						return {
+/******/ 							error: abortError
+/******/ 						};
+/******/ 					}
+/******/ 					if (doApply) {
+/******/ 						appliedUpdate[moduleId] = newModuleFactory;
+/******/ 						addAllToSet(outdatedModules, result.outdatedModules);
+/******/ 						for (moduleId in result.outdatedDependencies) {
+/******/ 							if (__webpack_require__.o(result.outdatedDependencies, moduleId)) {
+/******/ 								if (!outdatedDependencies[moduleId])
+/******/ 									outdatedDependencies[moduleId] = [];
+/******/ 								addAllToSet(
+/******/ 									outdatedDependencies[moduleId],
+/******/ 									result.outdatedDependencies[moduleId]
+/******/ 								);
+/******/ 							}
+/******/ 						}
+/******/ 					}
+/******/ 					if (doDispose) {
+/******/ 						addAllToSet(outdatedModules, [result.moduleId]);
+/******/ 						appliedUpdate[moduleId] = warnUnexpectedRequire;
+/******/ 					}
+/******/ 				}
+/******/ 			}
+/******/ 			currentUpdate = undefined;
+/******/ 		
+/******/ 			// Store self accepted outdated modules to require them later by the module system
+/******/ 			var outdatedSelfAcceptedModules = [];
+/******/ 			for (var j = 0; j < outdatedModules.length; j++) {
+/******/ 				var outdatedModuleId = outdatedModules[j];
+/******/ 				var module = __webpack_require__.c[outdatedModuleId];
+/******/ 				if (
+/******/ 					module &&
+/******/ 					(module.hot._selfAccepted || module.hot._main) &&
+/******/ 					// removed self-accepted modules should not be required
+/******/ 					appliedUpdate[outdatedModuleId] !== warnUnexpectedRequire &&
+/******/ 					// when called invalidate self-accepting is not possible
+/******/ 					!module.hot._selfInvalidated
+/******/ 				) {
+/******/ 					outdatedSelfAcceptedModules.push({
+/******/ 						module: outdatedModuleId,
+/******/ 						require: module.hot._requireSelf,
+/******/ 						errorHandler: module.hot._selfAccepted
+/******/ 					});
+/******/ 				}
+/******/ 			}
+/******/ 		
+/******/ 			var moduleOutdatedDependencies;
+/******/ 		
+/******/ 			return {
+/******/ 				dispose: function () {
+/******/ 					currentUpdateRemovedChunks.forEach(function (chunkId) {
+/******/ 						delete installedChunks[chunkId];
+/******/ 					});
+/******/ 					currentUpdateRemovedChunks = undefined;
+/******/ 		
+/******/ 					var idx;
+/******/ 					var queue = outdatedModules.slice();
+/******/ 					while (queue.length > 0) {
+/******/ 						var moduleId = queue.pop();
+/******/ 						var module = __webpack_require__.c[moduleId];
+/******/ 						if (!module) continue;
+/******/ 		
+/******/ 						var data = {};
+/******/ 		
+/******/ 						// Call dispose handlers
+/******/ 						var disposeHandlers = module.hot._disposeHandlers;
+/******/ 						for (j = 0; j < disposeHandlers.length; j++) {
+/******/ 							disposeHandlers[j].call(null, data);
+/******/ 						}
+/******/ 						__webpack_require__.hmrD[moduleId] = data;
+/******/ 		
+/******/ 						// disable module (this disables requires from this module)
+/******/ 						module.hot.active = false;
+/******/ 		
+/******/ 						// remove module from cache
+/******/ 						delete __webpack_require__.c[moduleId];
+/******/ 		
+/******/ 						// when disposing there is no need to call dispose handler
+/******/ 						delete outdatedDependencies[moduleId];
+/******/ 		
+/******/ 						// remove "parents" references from all children
+/******/ 						for (j = 0; j < module.children.length; j++) {
+/******/ 							var child = __webpack_require__.c[module.children[j]];
+/******/ 							if (!child) continue;
+/******/ 							idx = child.parents.indexOf(moduleId);
+/******/ 							if (idx >= 0) {
+/******/ 								child.parents.splice(idx, 1);
+/******/ 							}
+/******/ 						}
+/******/ 					}
+/******/ 		
+/******/ 					// remove outdated dependency from module children
+/******/ 					var dependency;
+/******/ 					for (var outdatedModuleId in outdatedDependencies) {
+/******/ 						if (__webpack_require__.o(outdatedDependencies, outdatedModuleId)) {
+/******/ 							module = __webpack_require__.c[outdatedModuleId];
+/******/ 							if (module) {
+/******/ 								moduleOutdatedDependencies =
+/******/ 									outdatedDependencies[outdatedModuleId];
+/******/ 								for (j = 0; j < moduleOutdatedDependencies.length; j++) {
+/******/ 									dependency = moduleOutdatedDependencies[j];
+/******/ 									idx = module.children.indexOf(dependency);
+/******/ 									if (idx >= 0) module.children.splice(idx, 1);
+/******/ 								}
+/******/ 							}
+/******/ 						}
+/******/ 					}
+/******/ 				},
+/******/ 				apply: function (reportError) {
+/******/ 					var acceptPromises = [];
+/******/ 					// insert new code
+/******/ 					for (var updateModuleId in appliedUpdate) {
+/******/ 						if (__webpack_require__.o(appliedUpdate, updateModuleId)) {
+/******/ 							__webpack_require__.m[updateModuleId] = appliedUpdate[updateModuleId];
+/******/ 						}
+/******/ 					}
+/******/ 		
+/******/ 					// run new runtime modules
+/******/ 					for (var i = 0; i < currentUpdateRuntime.length; i++) {
+/******/ 						currentUpdateRuntime[i](__webpack_require__);
+/******/ 					}
+/******/ 		
+/******/ 					// call accept handlers
+/******/ 					for (var outdatedModuleId in outdatedDependencies) {
+/******/ 						if (__webpack_require__.o(outdatedDependencies, outdatedModuleId)) {
+/******/ 							var module = __webpack_require__.c[outdatedModuleId];
+/******/ 							if (module) {
+/******/ 								moduleOutdatedDependencies =
+/******/ 									outdatedDependencies[outdatedModuleId];
+/******/ 								var callbacks = [];
+/******/ 								var errorHandlers = [];
+/******/ 								var dependenciesForCallbacks = [];
+/******/ 								for (var j = 0; j < moduleOutdatedDependencies.length; j++) {
+/******/ 									var dependency = moduleOutdatedDependencies[j];
+/******/ 									var acceptCallback =
+/******/ 										module.hot._acceptedDependencies[dependency];
+/******/ 									var errorHandler =
+/******/ 										module.hot._acceptedErrorHandlers[dependency];
+/******/ 									if (acceptCallback) {
+/******/ 										if (callbacks.indexOf(acceptCallback) !== -1) continue;
+/******/ 										callbacks.push(acceptCallback);
+/******/ 										errorHandlers.push(errorHandler);
+/******/ 										dependenciesForCallbacks.push(dependency);
+/******/ 									}
+/******/ 								}
+/******/ 								for (var k = 0; k < callbacks.length; k++) {
+/******/ 									var result;
+/******/ 									try {
+/******/ 										result = callbacks[k].call(null, moduleOutdatedDependencies);
+/******/ 									} catch (err) {
+/******/ 										if (typeof errorHandlers[k] === "function") {
+/******/ 											try {
+/******/ 												errorHandlers[k](err, {
+/******/ 													moduleId: outdatedModuleId,
+/******/ 													dependencyId: dependenciesForCallbacks[k]
+/******/ 												});
+/******/ 											} catch (err2) {
+/******/ 												if (options.onErrored) {
+/******/ 													options.onErrored({
+/******/ 														type: "accept-error-handler-errored",
+/******/ 														moduleId: outdatedModuleId,
+/******/ 														dependencyId: dependenciesForCallbacks[k],
+/******/ 														error: err2,
+/******/ 														originalError: err
+/******/ 													});
+/******/ 												}
+/******/ 												if (!options.ignoreErrored) {
+/******/ 													reportError(err2);
+/******/ 													reportError(err);
+/******/ 												}
+/******/ 											}
+/******/ 										} else {
+/******/ 											if (options.onErrored) {
+/******/ 												options.onErrored({
+/******/ 													type: "accept-errored",
+/******/ 													moduleId: outdatedModuleId,
+/******/ 													dependencyId: dependenciesForCallbacks[k],
+/******/ 													error: err
+/******/ 												});
+/******/ 											}
+/******/ 											if (!options.ignoreErrored) {
+/******/ 												reportError(err);
+/******/ 											}
+/******/ 										}
+/******/ 									}
+/******/ 									if (result && typeof result.then === "function") {
+/******/ 										acceptPromises.push(result);
+/******/ 									}
+/******/ 								}
+/******/ 							}
+/******/ 						}
+/******/ 					}
+/******/ 		
+/******/ 					var onAccepted = function () {
+/******/ 						// Load self accepted modules
+/******/ 						for (var o = 0; o < outdatedSelfAcceptedModules.length; o++) {
+/******/ 							var item = outdatedSelfAcceptedModules[o];
+/******/ 							var moduleId = item.module;
+/******/ 							try {
+/******/ 								item.require(moduleId);
+/******/ 							} catch (err) {
+/******/ 								if (typeof item.errorHandler === "function") {
+/******/ 									try {
+/******/ 										item.errorHandler(err, {
+/******/ 											moduleId: moduleId,
+/******/ 											module: __webpack_require__.c[moduleId]
+/******/ 										});
+/******/ 									} catch (err1) {
+/******/ 										if (options.onErrored) {
+/******/ 											options.onErrored({
+/******/ 												type: "self-accept-error-handler-errored",
+/******/ 												moduleId: moduleId,
+/******/ 												error: err1,
+/******/ 												originalError: err
+/******/ 											});
+/******/ 										}
+/******/ 										if (!options.ignoreErrored) {
+/******/ 											reportError(err1);
+/******/ 											reportError(err);
+/******/ 										}
+/******/ 									}
+/******/ 								} else {
+/******/ 									if (options.onErrored) {
+/******/ 										options.onErrored({
+/******/ 											type: "self-accept-errored",
+/******/ 											moduleId: moduleId,
+/******/ 											error: err
+/******/ 										});
+/******/ 									}
+/******/ 									if (!options.ignoreErrored) {
+/******/ 										reportError(err);
+/******/ 									}
+/******/ 								}
+/******/ 							}
+/******/ 						}
+/******/ 					};
+/******/ 		
+/******/ 					return Promise.all(acceptPromises)
+/******/ 						.then(onAccepted)
+/******/ 						.then(function () {
+/******/ 							return outdatedModules;
+/******/ 						});
+/******/ 				}
+/******/ 			};
+/******/ 		}
+/******/ 		__webpack_require__.hmrI.jsonp = function (moduleId, applyHandlers) {
+/******/ 			if (!currentUpdate) {
+/******/ 				currentUpdate = {};
+/******/ 				currentUpdateRuntime = [];
+/******/ 				currentUpdateRemovedChunks = [];
+/******/ 				applyHandlers.push(applyHandler);
+/******/ 			}
+/******/ 			if (!__webpack_require__.o(currentUpdate, moduleId)) {
+/******/ 				currentUpdate[moduleId] = __webpack_require__.m[moduleId];
+/******/ 			}
+/******/ 		};
+/******/ 		__webpack_require__.hmrC.jsonp = function (
+/******/ 			chunkIds,
+/******/ 			removedChunks,
+/******/ 			removedModules,
+/******/ 			promises,
+/******/ 			applyHandlers,
+/******/ 			updatedModulesList
+/******/ 		) {
+/******/ 			applyHandlers.push(applyHandler);
+/******/ 			currentUpdateChunks = {};
+/******/ 			currentUpdateRemovedChunks = removedChunks;
+/******/ 			currentUpdate = removedModules.reduce(function (obj, key) {
+/******/ 				obj[key] = false;
+/******/ 				return obj;
+/******/ 			}, {});
+/******/ 			currentUpdateRuntime = [];
+/******/ 			chunkIds.forEach(function (chunkId) {
+/******/ 				if (
+/******/ 					__webpack_require__.o(installedChunks, chunkId) &&
+/******/ 					installedChunks[chunkId] !== undefined
+/******/ 				) {
+/******/ 					promises.push(loadUpdateChunk(chunkId, updatedModulesList));
+/******/ 					currentUpdateChunks[chunkId] = true;
+/******/ 				} else {
+/******/ 					currentUpdateChunks[chunkId] = false;
+/******/ 				}
+/******/ 			});
+/******/ 			if (__webpack_require__.f) {
+/******/ 				__webpack_require__.f.jsonpHmr = function (chunkId, promises) {
+/******/ 					if (
+/******/ 						currentUpdateChunks &&
+/******/ 						__webpack_require__.o(currentUpdateChunks, chunkId) &&
+/******/ 						!currentUpdateChunks[chunkId]
+/******/ 					) {
+/******/ 						promises.push(loadUpdateChunk(chunkId));
+/******/ 						currentUpdateChunks[chunkId] = true;
+/******/ 					}
+/******/ 				};
+/******/ 			}
+/******/ 		};
+/******/ 		
+/******/ 		__webpack_require__.hmrM = () => {
+/******/ 			if (typeof fetch === "undefined") throw new Error("No browser support: need fetch API");
+/******/ 			return fetch(__webpack_require__.p + __webpack_require__.hmrF()).then((response) => {
+/******/ 				if(response.status === 404) return; // no update available
+/******/ 				if(!response.ok) throw new Error("Failed to fetch update manifest " + response.statusText);
+/******/ 				return response.json();
+/******/ 			});
+/******/ 		};
+/******/ 		
+/******/ 		// no on chunks loaded
+/******/ 		
+/******/ 		// no jsonp function
+/******/ 	})();
+/******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
-(() => {
-"use strict";
-/*!***********************!*\
-  !*** ./src/index.tsx ***!
-  \***********************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
-/* harmony import */ var _App__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./App */ "./src/App.tsx");
-
-
-
-var rootElement = document.getElementById('root');
-if (!rootElement)
-    throw new Error('Failed to find the root element');
-var root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(rootElement);
-root.render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().StrictMode), null,
-    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_App__WEBPACK_IMPORTED_MODULE_2__["default"], null)));
-
-})();
-
+/******/ 	
+/******/ 	// module cache are used so entry inlining is disabled
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	__webpack_require__("./node_modules/webpack-dev-server/client/index.js?protocol=ws%3A&hostname=0.0.0.0&port=3000&pathname=%2Fws&logging=info&overlay=true&reconnect=10&hot=true&live-reload=true");
+/******/ 	__webpack_require__("./node_modules/webpack/hot/dev-server.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/index.tsx");
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=bundle.js.map
