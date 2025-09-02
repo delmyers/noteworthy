@@ -1,5 +1,5 @@
 
-import abcjs, { TuneObject } from 'abcjs'
+import abcjs, { TuneObject, TuneLine } from 'abcjs'
 import defaultAbc from './resources/music.abc'
 export class Music
 {
@@ -29,10 +29,23 @@ export class Music
   {
     
     // assume only one entry
-    const tune: abcjs.TuneObject = abcjs.parseOnly(rawAbc)[0];
+    const tune: TuneObject = abcjs.parseOnly(rawAbc)[0];
+    const lines: TuneLine[] = tune.deline();
 
-    return rawAbc;
-  }
+    // reconstruct the abc text from the parsed object
+    // this will ensure consistent formatting
+    // and remove any extraneous whitespace or comments
+    // that might interfere with rendering or editing
+    let normalized: string = '';
+    
+    for (const line of lines) {
+      for (const staff of line.staff) {
+
+        }
+      }
+     
+      return rawAbc; // fallback to original if parsing fails
+    }
 
 };
 

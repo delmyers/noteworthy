@@ -6,8 +6,7 @@ import AbcMusicViewer from './AbcMusic';
 const App: React.FC = () => {
   Music.Instance; // Ensure the singleton is initialized
   return (
-    <div>
-      <SlateEditor />
+    <div id="musicroot" style={({width: '10000px', height: '100%', overflow: 'auto hidden'})}>
       <AbcMusicViewer />
     </div>
   );
