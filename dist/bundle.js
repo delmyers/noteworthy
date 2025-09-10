@@ -57025,7 +57025,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var App = function () {
     _Music__WEBPACK_IMPORTED_MODULE_1__["default"].Instance; // Ensure the singleton is initialized
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "musicroot", style: ({ width: '10000px', height: '100%', overflow: 'auto hidden' }) },
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "musicroot", style: ({ width: '1000000px', height: '100%', overflow: 'auto hidden' }) },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_AbcMusic__WEBPACK_IMPORTED_MODULE_2__["default"], null)));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
@@ -57050,6 +57050,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _resources_music_abc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./resources/music.abc */ "./src/resources/music.abc");
 
 
+var ParsedStaff = /** @class */ (function () {
+    function ParsedStaff() {
+    }
+    return ParsedStaff;
+}());
+var VoiceData = /** @class */ (function () {
+    function VoiceData() {
+        this.bars = '';
+    }
+    return VoiceData;
+}());
 var Music = /** @class */ (function () {
     function Music(abc) {
         this._abcText = '';
@@ -57076,21 +57087,123 @@ var Music = /** @class */ (function () {
         return new Music(Music.normalizeMusic(_resources_music_abc__WEBPACK_IMPORTED_MODULE_1__));
     };
     Music.normalizeMusic = function (rawAbc) {
+        var sanitized = rawAbc.replace(/\r\n/g, '\n').trim();
+        // replace multiple blank lines with a single blank line
+        sanitized = sanitized.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        sanitized = sanitized.replace(/\(\s+/g, '('); // remove spaces after (
         // assume only one entry
-        var tune = abcjs__WEBPACK_IMPORTED_MODULE_0___default().parseOnly(rawAbc)[0];
+        var tune = abcjs__WEBPACK_IMPORTED_MODULE_0___default().renderAbc('*', sanitized)[0];
         var lines = tune.deline();
         // reconstruct the abc text from the parsed object
         // this will ensure consistent formatting
         // and remove any extraneous whitespace or comments
         // that might interfere with rendering or editing
         var normalized = '';
+        // There is no way to get the original voice id from
+        // the parsed object. So, we make a map of staff names
+        // to voices, and increment the voice id for each new
+        var vid = 0;
+        var voices = [];
+        function elementStartsSlur(el) {
+            if (el.el_type === 'note' && el.pitches) {
+                var n = el;
+                for (var _i = 0, _a = n.pitches; _i < _a.length; _i++) {
+                    var pitch = _a[_i];
+                    if (pitch.startSlur) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         for (var _i = 0, lines_1 = lines; _i < lines_1.length; _i++) {
             var line = lines_1[_i];
             for (var _a = 0, _b = line.staff; _a < _b.length; _a++) {
                 var staff = _b[_a];
+                var ps = staff;
+                for (var vi = 0; vi < staff.voices.length; vi++) {
+                    var vm = {
+                        vid: ++vid,
+                        nm: ps.title ? ps.title[vi] : undefined,
+                        snm: ps.abbrevTitle ? ps.abbrevTitle[vi] : undefined,
+                        clef: ps.clef ? ps.clef.type : undefined,
+                        bars: ''
+                    };
+                    voices.push(vm);
+                    for (var _c = 0, _d = staff.voices[vi]; _c < _d.length; _c++) {
+                        var element = _d[_c];
+                        var el = element;
+                        if (el.startChar !== undefined && el.endChar !== undefined) {
+                            if (elementStartsSlur(element)) {
+                                if (sanitized[el.startChar] !== '(') {
+                                    el.startChar -= 1;
+                                }
+                            }
+                            vm.bars += " " + sanitized.substring(el.startChar, el.endChar);
+                        }
+                    }
+                }
             }
         }
-        return rawAbc; // fallback to original if parsing fails
+        normalized += "X:1" + "\n";
+        if (tune.metaText) {
+            if (tune.metaText.title) {
+                normalized += "T:".concat(tune.metaText.title) + '\n';
+            }
+            if (tune.metaText.composer) {
+                normalized += "C:".concat(tune.metaText.composer) + '\n';
+            }
+            if (tune.metaText.source) {
+                normalized += "S:".concat(tune.metaText.source) + '\n';
+            }
+            if (tune.metaText.rhythm) {
+                normalized += "R:".concat(tune.metaText.rhythm) + '\n';
+            }
+            if (tune.metaText.tempo) {
+                normalized += sanitized.substring(tune.metaText.tempo.startChar, tune.metaText.tempo.endChar) + '\n';
+            }
+        }
+        if (tune.getMeterFraction()) {
+            normalized += "M:".concat(tune.getMeterFraction().num, "/").concat(tune.getMeterFraction().den) + '\n';
+        }
+        if (tune.getBeatLength()) {
+            normalized += "L:1/".concat(1 / tune.getBeatLength()) + '\n';
+        }
+        var getKeySignatureString = function (k) {
+            var ks = "";
+            if (k) {
+                ks += "K:".concat(k.root).concat(k.accidentals);
+                if (k.mode) {
+                    ks += " ".concat(k.mode);
+                }
+            }
+            return ks;
+        };
+        if (tune.getKeySignature()) {
+            normalized += getKeySignatureString(tune.getKeySignature()) + '\n';
+        }
+        for (var _e = 0, voices_1 = voices; _e < voices_1.length; _e++) {
+            var v = voices_1[_e];
+            if (v.nm || v.snm || v.clef) {
+                normalized += "V:".concat(v.vid);
+                if (v.nm) {
+                    normalized += " name=\"".concat(v.nm, "\"");
+                }
+                if (v.snm) {
+                    normalized += " snm=\"".concat(v.snm, "\"");
+                }
+                if (v.clef) {
+                    normalized += " clef=".concat(v.clef);
+                }
+                normalized += '\n';
+            }
+        }
+        for (var _f = 0, voices_2 = voices; _f < voices_2.length; _f++) {
+            var v = voices_2[_f];
+            normalized += "[V:".concat(v.vid, "] ");
+            normalized += v.bars + '\n';
+        }
+        return normalized; // fallback to original if parsing fails
     };
     Music._instance = null;
     return Music;
@@ -57220,7 +57333,7 @@ module.exports = "%abc\r\n%%vocalfont Times-BoldItalic 13.0\r\n\r\nX:1\r\nI:line
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("db2a5672b1624213c4ac")
+/******/ 		__webpack_require__.h = () => ("9495c300648ffb29e4da")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
