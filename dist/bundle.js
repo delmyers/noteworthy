@@ -57020,15 +57020,111 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _Music__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Music */ "./src/Music.tsx");
 /* harmony import */ var _AbcMusic__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AbcMusic */ "./src/AbcMusic.tsx");
+/* harmony import */ var _BottomFlyout__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./BottomFlyout */ "./src/BottomFlyout.tsx");
+
 
 
 
 var App = function () {
     _Music__WEBPACK_IMPORTED_MODULE_1__["default"].Instance; // Ensure the singleton is initialized
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "musicroot", style: ({ width: '1000000px', height: '100%', overflow: 'auto hidden' }) },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_AbcMusic__WEBPACK_IMPORTED_MODULE_2__["default"], null)));
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "musicroot", style: ({ width: '100000px', height: '100%', overflow: 'auto hidden' }) },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_AbcMusic__WEBPACK_IMPORTED_MODULE_2__["default"], null),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_BottomFlyout__WEBPACK_IMPORTED_MODULE_3__["default"], null)));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
+
+
+/***/ }),
+
+/***/ "./src/BottomFlyout.tsx":
+/*!******************************!*\
+  !*** ./src/BottomFlyout.tsx ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+var noteIcons = [
+    // Whole note
+    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("svg", { width: "32", height: "32", viewBox: "0 0 32 32" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ellipse", { cx: "16", cy: "16", rx: "10", ry: "6", fill: "black" })),
+    // Half note
+    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("svg", { width: "32", height: "32", viewBox: "0 0 32 32" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ellipse", { cx: "12", cy: "24", rx: "6", ry: "3", fill: "white", stroke: "black" }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: "17", y: "8", width: "2", height: "16", fill: "black" })),
+    // Quarter note
+    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("svg", { width: "32", height: "32", viewBox: "0 0 32 32" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ellipse", { cx: "12", cy: "24", rx: "6", ry: "3", fill: "black" }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: "17", y: "8", width: "2", height: "16", fill: "black" })),
+    // Eighth note
+    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("svg", { width: "32", height: "32", viewBox: "0 0 32 32" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ellipse", { cx: "12", cy: "24", rx: "6", ry: "3", fill: "black" }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: "17", y: "8", width: "2", height: "16", fill: "black" }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("path", { d: "M18 8 Q26 12 18 16", stroke: "black", fill: "none", strokeWidth: "2" })),
+    // Sixteenth note
+    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("svg", { width: "32", height: "32", viewBox: "0 0 32 32" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ellipse", { cx: "12", cy: "24", rx: "6", ry: "3", fill: "black" }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: "17", y: "8", width: "2", height: "16", fill: "black" }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("path", { d: "M18 8 Q26 12 18 16", stroke: "black", fill: "none", strokeWidth: "2" }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("path", { d: "M18 12 Q26 16 18 20", stroke: "black", fill: "none", strokeWidth: "2" })),
+];
+var BottomFlyout = function () {
+    var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false), open = _a[0], setOpen = _a[1];
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: {
+                position: "fixed",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: open ? "20vh" : "0",
+                background: "rgba(255,255,255,0.98)",
+                boxShadow: open ? "0 -2px 16px rgba(0,0,0,0.2)" : "none",
+                transition: "height 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.3s",
+                overflow: "hidden",
+                zIndex: 1000,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            } }, open && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { width: "100%", display: "flex", justifyContent: "center" } }, noteIcons.map(function (icon, idx) { return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { key: idx, style: {
+                background: "none",
+                border: "none",
+                margin: "0 16px",
+                cursor: "pointer",
+                outline: "none",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            }, "aria-label": "Note ".concat(idx + 1) }, icon)); })))),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { onClick: function () { return setOpen(function (v) { return !v; }); }, style: {
+                position: "fixed",
+                left: "50%",
+                transform: "translateX(-50%)",
+                bottom: open ? "20vh" : "16px",
+                background: "#333",
+                border: "none",
+                borderRadius: "50%",
+                width: 48,
+                height: 48,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1001,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                transition: "bottom 0.3s cubic-bezier(.4,2,.6,1)",
+            }, "aria-label": "Open flyout" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("svg", { width: "24", height: "24" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "6", cy: "12", r: "2", fill: "#fff" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "12", cy: "12", r: "2", fill: "#fff" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "18", cy: "12", r: "2", fill: "#fff" })))));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (BottomFlyout);
 
 
 /***/ }),
@@ -57333,7 +57429,7 @@ module.exports = "%abc\r\n%%vocalfont Times-BoldItalic 13.0\r\n\r\nX:1\r\nI:line
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("9495c300648ffb29e4da")
+/******/ 		__webpack_require__.h = () => ("fe1b834f55f292d438d9")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
