@@ -7,11 +7,15 @@ import BottomFlyout from './BottomFlyout';
 const App: React.FC = () => {
   Music.Instance; // Ensure the singleton is initialized
   return (
-    <div id="musicroot" style={({width: '100000px', height: '100%', overflow: 'auto hidden'})}>
-      <AbcMusicViewer />
-      <BottomFlyout />
+    <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', overflow: 'auto', padding: '0px' }}>
+        <AbcMusicViewer />
+      </div>
+      <div>
+        <BottomFlyout />
+      </div>
     </div>
-          
+        
   );
 };
 

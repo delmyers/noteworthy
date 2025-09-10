@@ -12,15 +12,18 @@ const AbcMusicViewer: React.FC = () => {
                 add_classes: true,
                 viewportHorizontal: true,
                 scrollHorizontal: true,
-                oneSvgPerLine: true,
-                lineBreaks: [1000], // effectively disable line breaks
+                lineBreaks: [1000000], // effectively disable line breaks
+                oneSvgPerLine: true
             };
-            abcRef.current.id = 'paper';
-            abcjs.renderAbc(abcRef.current, m.abc, params);
+            abcjs.renderAbc('paper', m.abc, params);
         }
     }, []);
 
-    return (<div ref={abcRef} />);
+    return (
+        <div style={{height:'95vh'}}>
+            <div id='paper' ref={abcRef}/>
+        </div>);
 };
+
 
 export default AbcMusicViewer;

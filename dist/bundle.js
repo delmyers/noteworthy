@@ -56991,14 +56991,14 @@ var AbcMusicViewer = function () {
                 add_classes: true,
                 viewportHorizontal: true,
                 scrollHorizontal: true,
-                oneSvgPerLine: true,
-                lineBreaks: [1000], // effectively disable line breaks
+                lineBreaks: [1000000], // effectively disable line breaks
+                oneSvgPerLine: true
             };
-            abcRef.current.id = 'paper';
-            abcjs__WEBPACK_IMPORTED_MODULE_2___default().renderAbc(abcRef.current, m.abc, params);
+            abcjs__WEBPACK_IMPORTED_MODULE_2___default().renderAbc('paper', m.abc, params);
         }
     }, []);
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { ref: abcRef }));
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { height: '95vh' } },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: 'paper', ref: abcRef })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AbcMusicViewer);
 
@@ -57027,9 +57027,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var App = function () {
     _Music__WEBPACK_IMPORTED_MODULE_1__["default"].Instance; // Ensure the singleton is initialized
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "musicroot", style: ({ width: '100000px', height: '100%', overflow: 'auto hidden' }) },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_AbcMusic__WEBPACK_IMPORTED_MODULE_2__["default"], null),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_BottomFlyout__WEBPACK_IMPORTED_MODULE_3__["default"], null)));
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { display: 'flex', flexDirection: 'column' } },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { display: 'flex', overflow: 'auto', padding: '0px' } },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_AbcMusic__WEBPACK_IMPORTED_MODULE_2__["default"], null)),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null,
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_BottomFlyout__WEBPACK_IMPORTED_MODULE_3__["default"], null))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
 
@@ -57105,24 +57107,25 @@ var BottomFlyout = function () {
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { onClick: function () { return setOpen(function (v) { return !v; }); }, style: {
                 position: "fixed",
                 left: "50%",
-                transform: "translateX(-50%)",
-                bottom: open ? "20vh" : "16px",
+                bottom: open ? "20vh" : "0px",
+                padding: 0,
+                margin: 0,
                 background: "#333",
                 border: "none",
-                borderRadius: "50%",
-                width: 48,
-                height: 48,
+                width: 32,
+                height: 8,
                 display: "flex",
-                alignItems: "center",
+                alignItems: "flex-end",
                 justifyContent: "center",
                 zIndex: 1001,
                 boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                 transition: "bottom 0.3s cubic-bezier(.4,2,.6,1)",
+                //clipPath: "inset(0 0 0 0 round 50% 50% 0 0)",
             }, "aria-label": "Open flyout" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("svg", { width: "24", height: "24" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "6", cy: "12", r: "2", fill: "#fff" }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "12", cy: "12", r: "2", fill: "#fff" }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "18", cy: "12", r: "2", fill: "#fff" })))));
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "0", cy: "20", r: "1", fill: "#fff" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "16", cy: "20", r: "1", fill: "#fff" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("circle", { cx: "16", cy: "20", r: "1", fill: "#fff" })))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (BottomFlyout);
 
@@ -57429,7 +57432,7 @@ module.exports = "%abc\r\n%%vocalfont Times-BoldItalic 13.0\r\n\r\nX:1\r\nI:line
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("fe1b834f55f292d438d9")
+/******/ 		__webpack_require__.h = () => ("41d8249221e2cbfc43df")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
