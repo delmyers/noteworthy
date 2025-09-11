@@ -108,6 +108,11 @@ export class Music
                 }
               }
               vm.bars += " " + sanitized.substring(el.startChar, el.endChar);
+
+              if (element.el_type === 'bar') {
+                // one bar per line
+                vm.bars += '\n';
+              }
             }
           }
         }
@@ -148,6 +153,8 @@ export class Music
       normalized += `L:1/${1/tune.getBeatLength()}`+'\n';
     }
 
+    normalized += 'I:linebreak <none>\n';
+
     let getKeySignatureString = function (k: abcjs.KeySignature) : string {
       let ks: string = "";
       
@@ -186,9 +193,11 @@ export class Music
 
     for (const v of voices)
     {
-      normalized += `[V:${v.vid}] `;
+      normalized += 'V:' + v.vid + '\n';
       normalized += v.bars + '\n';
     }
+
+    normalized = normalized.replace(/^\s+/gm, ''); // trim leading whitespace on each line
 
     return normalized; // fallback to original if parsing fails
   }

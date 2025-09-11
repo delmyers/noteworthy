@@ -57239,6 +57239,10 @@ var Music = /** @class */ (function () {
                                 }
                             }
                             vm.bars += " " + sanitized.substring(el.startChar, el.endChar);
+                            if (element.el_type === 'bar') {
+                                // one bar per line
+                                vm.bars += '\n';
+                            }
                         }
                     }
                 }
@@ -57268,6 +57272,7 @@ var Music = /** @class */ (function () {
         if (tune.getBeatLength()) {
             normalized += "L:1/".concat(1 / tune.getBeatLength()) + '\n';
         }
+        normalized += 'I:linebreak <none>\n';
         var getKeySignatureString = function (k) {
             var ks = "";
             if (k) {
@@ -57299,9 +57304,10 @@ var Music = /** @class */ (function () {
         }
         for (var _f = 0, voices_2 = voices; _f < voices_2.length; _f++) {
             var v = voices_2[_f];
-            normalized += "[V:".concat(v.vid, "] ");
+            normalized += 'V:' + v.vid + '\n';
             normalized += v.bars + '\n';
         }
+        normalized = normalized.replace(/^\s+/gm, ''); // trim leading whitespace on each line
         return normalized; // fallback to original if parsing fails
     };
     Music._instance = null;
@@ -57432,7 +57438,7 @@ module.exports = "%abc\r\n%%vocalfont Times-BoldItalic 13.0\r\n\r\nX:1\r\nI:line
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("41d8249221e2cbfc43df")
+/******/ 		__webpack_require__.h = () => ("648a89691fee156af279")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
