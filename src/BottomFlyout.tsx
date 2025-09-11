@@ -65,28 +65,28 @@ const BottomFlyout: React.FC = () => {
         onClick={() => setOpen((v) => !v)}
         style={{
             position: "fixed",
-            left: "50%",
+            left: "0%",
             bottom: open ? "20vh" : "0px",
             padding: 0,
             margin: 0,
             background: "#333",
             border: "none",
-            width: 32,
-            height: 8,
+            width: "100%",
+            height: 12,
             display: "flex",
             alignItems: "flex-end",
             justifyContent: "center",
             zIndex: 1001,
             boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
             transition: "bottom 0.3s cubic-bezier(.4,2,.6,1)",
-            //clipPath: "inset(0 0 0 0 round 50% 50% 0 0)",
+            clipPath: "inset(4px 0 0 0 round 95% 95% 0 0)",
         }}
         aria-label="Open flyout"
       >
         <svg width="24" height="24">
-          <circle cx="0" cy="20" r="1" fill="#fff" />
-          <circle cx="16" cy="20" r="1" fill="#fff" />
-          <circle cx="16" cy="20" r="1" fill="#fff" />
+          <circle cx="4" cy="20" r="2" fill="#fff" />
+          <circle cx="12" cy="20" r="2" fill="#fff" />
+          <circle cx="20" cy="20" r="2" fill="#fff" />
         </svg>
       </button>
     </>
