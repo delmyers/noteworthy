@@ -26,7 +26,7 @@ const BottomFlyout: React.FC = () => {
           right: 0,
           bottom: 0,
           height: open ? "20vh" : "0",
-          background: "rgba(255,255,255,0.98)",
+          background: "#666",
           boxShadow: open ? "0 -2px 16px rgba(0,0,0,0.2)" : "none",
           transition: "height 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.3s",
           overflow: "hidden",
